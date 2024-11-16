@@ -1,7 +1,7 @@
 ---
 title: "PermX"
-description: "Writeup for the 'Easy' rated box PermX"
-date: 2024-11-16 00:00:00 +0800
+description: "Writeup for the 'Easy' rated machine: PermX"
+date: 2024-11-16 00:00:00 +0100
 categories: [CTFs, HackTheBox]
 tags: [writeup, hackthebox]
 pin: false
@@ -132,7 +132,7 @@ After running the script, we receive a shell on our netcat listener:
 
 ![](/assets/img/2024-11-16-writeup-htb-permx/foothold_shell.png)
 
-### User Flag
+### Privilege Escalation
 ___
 Looking around the different files on the server, we notice some interesting ones in `/var/www/chamilo/app/config`, espacially `configuration.php` containing some database credentials:
 
@@ -148,8 +148,6 @@ We successfully logged in and can now retrieve the user flag:
 
 ![](/assets/img/2024-11-16-writeup-htb-permx/user_flag.png)
 
-### Root flag
-___
 Enumerating our sudo privileges as `mtz`, we can see that we can run `/opt/acl.sh` as root:
 
 ![](/assets/img/2024-11-16-writeup-htb-permx/sudo_privs.png)

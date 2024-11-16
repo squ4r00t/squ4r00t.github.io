@@ -1,7 +1,7 @@
 ---
 title: "Modifying Serialized Objects"
 description: "Editing a serialized object in session cookie in order to gain administrative privileges"
-date: 2024-11-11 00:00:00 +0800
+date: 2024-11-11 00:00:00 +0100
 categories: [Portswigger Labs, Deserialization]
 tags: [writeup, portswigger]
 pin: false

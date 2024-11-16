@@ -1,7 +1,7 @@
 ---
 title: "Pyrat"
 description: "Writeup of the 'Easy' Tryhackme room: Pyrat"
-date: 2024-10-09 00:00:00 +0800
+date: 2024-10-09 00:00:00 +0100
 categories: [CTFs, Tryhackme]
 tags: [writeup, tryhackme]
 pin: false
