@@ -1,9 +1,9 @@
 ---
-title: "Portswigger Lab: Modifying Serialized Objects"
+title: "Modifying Serialized Objects"
 description: "Editing a serialized object in session cookie in order to gain administrative privileges"
 author: "squ4r00t"
 date: 2024-11-11 00:00:00 +0800
-categories: [Web, Deserialization]
+categories: [Portswigger Labs, Deserialization]
 tags: [writeup, portswigger]
 pin: false
 math: true
