@@ -1,9 +1,6 @@
 ---
 title: "Pyrat"
-description: "
-Writeup of the 'Easy' Tryhackme room: Pyrat
-"
-author: "squ4r00t"
+description: "Writeup of the 'Easy' Tryhackme room: Pyrat"
 date: 2024-10-09 00:00:00 +0800
 categories: [CTFs, Tryhackme]
 tags: [writeup, tryhackme]
@@ -17,8 +14,9 @@ image:
 ### Overview
 ___
 Pyrat is an “Easy” room where we encounter a rather “unusual” python HTTP server returning a curious response. With more testing, we realise that it is vulnerable to Python code execution which gives us foothold into the box. After some exploration, we find files that help us better understand how the Python server work and with some fuzzing with a custom script we finally get root access.
-Initial Scan
 
+### Initial Scan
+___
 We start with the nmap scan on all ports:
 
 ```bash
