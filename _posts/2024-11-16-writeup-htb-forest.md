@@ -19,7 +19,7 @@ Forest in an easy difficulty Windows Domain Controller. We are able to enumerate
 ___
 
 ```bash
-naabu -host 10.129.30.97 -nmap-cli "nmap -A -T4 -oN nmap"
+naabu -host 10.129.30.97 -port 0-65535 -nmap-cli "nmap -A -T4 -oN nmap"
 
                   __
   ___  ___  ___ _/ /  __ __
