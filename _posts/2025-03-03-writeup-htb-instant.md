@@ -13,7 +13,11 @@ image:
 
 ### Overview
 ___
+Instant is a medium difficulty machine covering Reverse Engineering of an android apk, API hacking and decryption of encrypted PuTTY session data.
 
+It starts off by downloading the apk of a banking/finance app. After some static analysis, we find some endpoints in the source code. One of these endpoints contains the documentation of the API that the app communicates with. Reading that documentation allows us to spot vulnerability in one of the endpoints allowing us to read local files on the server. By leveraging that vulnerability, we are able to read the private key of a user on the box.
+
+After login in as that user, we find a certain file containing encrypted data of a PuTTY session which we are able to decrypt using a python script allowing us to get a root shell.
 
 ### Nmap
 ___
