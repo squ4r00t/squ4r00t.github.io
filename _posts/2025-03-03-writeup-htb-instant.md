@@ -1,6 +1,6 @@
 ---
 title: "Instant"
-description: "Writeup for the 'Medium' machine: Instant"
+description: "Writeup for the 'Medium' rated machine: Instant"
 date: 2025-03-03 00:00:00 +0100
 categories: [CTFs, HackTheBox]
 tags: [writeup, hackthebox]
@@ -8,7 +8,7 @@ pin: false
 math: true
 mermaid: true
 image:
-  path: /assets/img/instant-htb/instant.png
+  path: /assets/img/htb/instant/tn.png
 ---
 
 ### Overview
@@ -56,11 +56,11 @@ echo -e "<IP>\tinstant.htb" >> /etc/hosts
 ___
 Now let's navigate to `http://instant.htb`
 
-![](/assets/img/instant-htb/website.png)
+![](/assets/img/htb/instant/website.png)
 
 This seems to be a website for a mobile application. Clicking on 'Download Now', we can download the apk.
 
-![](/assets/img/instant-htb/download_apk.png)
+![](/assets/img/htb/instant/download_apk.png)
 
 
 ### APK Reversing
@@ -69,13 +69,13 @@ We can use [jadx](https://github.com/skylot/jadx) to decompile the apk and get a
 
 After opening the apk in jadx, we can use the search feature to look for endpoints that the application communicates with. We can try to search for `.instant.htb` for example:
 
-![](/assets/img/instant-htb/api_endpoints.png)
+![](/assets/img/htb/instant/api_endpoints.png)
 
 We can see in the results different API endpoints in the `mywalletv1` subdomain. Let's add it to our hosts file and take look at the api.
 
 In the second and third search results, we can see a token being set to the `Authorization` header:
 
-![](/assets/img/instant-htb/auth_header.png)
+![](/assets/img/htb/instant/auth_header.png)
 
 If we try to access an endpoint without the token, we get a 401:
 
@@ -100,7 +100,7 @@ This confirms the validity of the token. Now let's see if there is a documentati
 
 Unfortunately, we don't get any results with these. Let's do another search with jadx, but this time adding more elements to our search such as classes, comments, etc:
 
-![](/assets/img/instant-htb/jadx_extended_search.png)
+![](/assets/img/htb/instant/jadx_extended_search.png)
 
 Now we have another vhost: `swagger-ui.instant.htb`.
 
@@ -109,21 +109,21 @@ Now we have another vhost: `swagger-ui.instant.htb`.
 ___
 Navigating to this website, we get the access to the documentation of the api:
 
-![](/assets/img/instant-htb/swagger-page.png)
+![](/assets/img/htb/instant/swagger-page.png)
 
 Let's add our token by clicking on 'Authorize':
 
-![](/assets/img/instant-htb/adding_token.png)
+![](/assets/img/htb/instant/adding_token.png)
 
 Looking at the different endpoints, we can see one that stands out: `/api/v1/admin/read/log`
 
-![](/assets/img/instant-htb/read_logs.png)
+![](/assets/img/htb/instant/read_logs.png)
 
-![](/assets/img/instant-htb/possible_lfi.png)
+![](/assets/img/htb/instant/possible_lfi.png)
 
 This could potentially lead to an LFI, allowing us to read local files on the server. Let's first try to send a valid request to see what the response looks like:
 
-![](/assets/img/instant-htb/1log.png)
+![](/assets/img/htb/instant/1log.png)
 
 
 ### Foothold - User
@@ -134,7 +134,7 @@ Not only did we get the file, but also its full path. We could try to get access
 ../.ssh/id_rsa
 ```
 
-![](/assets/img/instant-htb/idrsa.png)
+![](/assets/img/htb/instant/idrsa.png)
 
 We got the private key. However, we'll need to clean it up for it to be usable. We can do that with the following command:
 
@@ -144,14 +144,14 @@ cat key | sed 's/^    "//' | sed 's/\\n".*$//' | tee id_rsa
 
 I copied the private key inside `key` and used `sed` to remove anything unnecessary and write the output to `id_rsa`. After that we can just change the permissions of the file (`chmod 600 id_rsa`) and log in:
 
-![](/assets/img/instant-htb/user.png)
+![](/assets/img/htb/instant/user.png)
 
 ### Root
 ___
 Inside `/opt/backups/Solar-PuTTY`, there is a file called `sessions-backup.dat`. After a little bit of research, we see that we can use [this script](https://gist.github.com/xHacka/052e4b09d893398b04bf8aff5872d0d5) to decrypt the session file:
 
-![](/assets/img/instant-htb/rootpass.png)
+![](/assets/img/htb/instant/rootpass.png)
 
 With this password, we can switch to root
 
-![](/assets/img/instant-htb/root.png)
+![](/assets/img/htb/instant/root.png)

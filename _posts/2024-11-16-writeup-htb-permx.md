@@ -8,7 +8,7 @@ pin: false
 math: true
 mermaid: true
 image:
-  path: /assets/img/2024-11-16-writeup-htb-permx/PermX.png
+  path: /assets/img/htb/permx/tn.png
 ---
 
 ### Overview
@@ -73,7 +73,7 @@ echo -e "<IP>\tpermx.htb" >> /etc/hosts
 ___
 Now let's navigate to `http://permx.htb`
 
-![](/assets/img/2024-11-16-writeup-htb-permx/main_web_page.png)
+![](/assets/img/htb/permx/main_web_page.png)
 
 After going through the different pages of site, we can notice that there nothing interesting here as there are only static pages and the form on the contact page doesn't send any data.
 
@@ -114,7 +114,7 @@ echo -e "<IP>\tlms.permx.htb"
 
 Navigating to the newly discovered vhost, we see a web page powered by Chamillo
 
-![](/assets/img/2024-11-16-writeup-htb-permx/lms_page.png)
+![](/assets/img/htb/permx/lms_page.png)
 
 After some research, we see that it is vulnerable to [CVE-2023-4220](https://nvd.nist.gov/vuln/detail/CVE-2023-4220) which is an arbitrary file upload allowing any unauthenticated user to achieve RCE by uploading a PHP webshell to the site. This can be exploited with [this POC](https://github.com/m3m0o/chamilo-lms-unauthenticated-big-upload-rce-poc).
 
@@ -130,13 +130,13 @@ python3 main.py -u http://lms.permx.htb -a revshell
 
 After running the script, we receive a shell on our netcat listener:
 
-![](/assets/img/2024-11-16-writeup-htb-permx/foothold_shell.png)
+![](/assets/img/htb/permx/foothold_shell.png)
 
 ### Privilege Escalation
 ___
 Looking around the different files on the server, we notice some interesting ones in `/var/www/chamilo/app/config`, espacially `configuration.php` containing some database credentials:
 
-![](/assets/img/2024-11-16-writeup-htb-permx/db_creds.png)
+![](/assets/img/htb/permx/db_creds.png)
 
 Under the `/home` directory we can find another user `mtz`. Let's try the password we found with this user:
 
@@ -146,11 +146,11 @@ ssh mtz@permx.htb
 
 We successfully logged in and can now retrieve the user flag:
 
-![](/assets/img/2024-11-16-writeup-htb-permx/user_flag.png)
+![](/assets/img/htb/permx/user_flag.png)
 
 Enumerating our sudo privileges as `mtz`, we can see that we can run `/opt/acl.sh` as root:
 
-![](/assets/img/2024-11-16-writeup-htb-permx/sudo_privs.png)
+![](/assets/img/htb/permx/sudo_privs.png)
 
 Let's see the content of the script:
 
@@ -208,5 +208,5 @@ sudo su
 
 And then retrieve the root flag:
 
-![](/assets/img/2024-11-16-writeup-htb-permx/root_flag.png)
+![](/assets/img/htb/permx/root_flag.png)
 
