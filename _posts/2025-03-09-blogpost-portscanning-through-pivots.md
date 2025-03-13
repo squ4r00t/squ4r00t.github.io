@@ -47,7 +47,7 @@ _Scanning through a pivot (default way)_
 In the above image, we can see 3 hosts:
 - **Attacker** which is in an external network trying to port scan a server that is situated in the internal network
 - **Pivot** relaying the packets from **Attacker** to the target server
-- **Server to scan** which is the target server being scan
+- **Server to scan** which is the target server being scanned
 
 We can also see **dashed arrows** reprensenting the flow of packets being transfered in the different network segments.
 
@@ -72,12 +72,12 @@ On the above image, we can see that the arrows between the attacker and the pivo
 
 On the perspective of the attacker, it's like the scan was ran from their machine.
 
-### Ameliorations/Aditions
+### Ameliorations/Additions
 ___
 At the time of writing, this tool is still at its early stage. But there could be some potential additions ameliorations:
 - [ ] Adding a config file, instead of typing all the parameters every time
 - [ ] Search for alternative for the SMB file share which is quite slow
-- [ ] Speed optimizations
+- [ ] Speed optimizations (scan times)
 - [ ] Possibility to run any executable (not just a port scanner) ?
 
 ___
