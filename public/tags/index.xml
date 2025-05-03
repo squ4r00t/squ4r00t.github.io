@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Tags on squ4r00t</title>
+    <link>//localhost:1313/tags/</link>
+    <description>Recent content in Tags on squ4r00t</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Wed, 30 Apr 2025 00:00:00 +0000</lastBuildDate><atom:link href="//localhost:1313/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Ctf</title>
+      <link>//localhost:1313/tags/ctf/</link>
+      <pubDate>Wed, 30 Apr 2025 00:00:00 +0000</pubDate>
+      
+      <guid>//localhost:1313/tags/ctf/</guid>
+      <description></description>
+      <content></content>
+    </item>
+    
+    <item>
+      <title>Htb</title>
+      <link>//localhost:1313/tags/htb/</link>
+      <pubDate>Wed, 30 Apr 2025 00:00:00 +0000</pubDate>
+      
+      <guid>//localhost:1313/tags/htb/</guid>
+      <description></description>
+      <content></content>
+    </item>
+    
+    <item>
+      <title>Networking</title>
+      <link>//localhost:1313/tags/networking/</link>
+      <pubDate>Sun, 09 Mar 2025 00:00:00 +0000</pubDate>
+      
+      <guid>//localhost:1313/tags/networking/</guid>
+      <description></description>
+      <content></content>
+    </item>
+    
+    <item>
+      <title>Pivoting</title>
+      <link>//localhost:1313/tags/pivoting/</link>
+      <pubDate>Sun, 09 Mar 2025 00:00:00 +0000</pubDate>
+      
+      <guid>//localhost:1313/tags/pivoting/</guid>
+      <description></description>
+      <content></content>
+    </item>
+    
+    <item>
+      <title>Port_scanning</title>
+      <link>//localhost:1313/tags/port_scanning/</link>
+      <pubDate>Sun, 09 Mar 2025 00:00:00 +0000</pubDate>
+      
+      <guid>//localhost:1313/tags/port_scanning/</guid>
+      <description></description>
+      <content></content>
+    </item>
+    
+    <item>
+      <title>Deserialization</title>
+      <link>//localhost:1313/tags/deserialization/</link>
+      <pubDate>Mon, 11 Nov 2024 00:00:00 +0000</pubDate>
+      
+      <guid>//localhost:1313/tags/deserialization/</guid>
+      <description></description>
+      <content></content>
+    </item>
+    
+    <item>
+      <title>Portswigger</title>
+      <link>//localhost:1313/tags/portswigger/</link>
+      <pubDate>Mon, 11 Nov 2024 00:00:00 +0000</pubDate>
+      
+      <guid>//localhost:1313/tags/portswigger/</guid>
+      <description></description>
+      <content></content>
+    </item>
+    
+  </channel>
+</rss>

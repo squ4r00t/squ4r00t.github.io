@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  
+    <title>HTB - Instant :: squ4r00t</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Writeup for the &#39;Medium&#39; rated machine: Instant" />
+<meta name="keywords" content=", " />
+
+  <meta name="robots" content="noodp" />
+
+<link rel="canonical" href="//localhost:1313/posts/htb-instant/" />
+
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  <link rel="stylesheet" href="//localhost:1313/styles.css">
+
+
+
+
+
+
+
+  <link rel="shortcut icon" href="//localhost:1313/img/theme-colors/orange.png">
+  <link rel="apple-touch-icon" href="//localhost:1313/img/theme-colors/orange.png">
+
+
+
+<meta name="twitter:card" content="summary" />
+
+
+
+<meta property="og:locale" content="en" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="HTB - Instant">
+<meta property="og:description" content="Writeup for the &#39;Medium&#39; rated machine: Instant" />
+<meta property="og:url" content="//localhost:1313/posts/htb-instant/" />
+<meta property="og:site_name" content="squ4r00t" />
+
+  
+  
+  <meta property="og:image" content="//localhost:1313/img/htb/instant/tn.png">
+
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="627">
+
+
+  <meta property="article:published_time" content="2025-03-18 21:14:52 &#43;0100 CET" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+</head>
+<body class="">
+
+
+
+
+<div class="container center headings--one-size">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
+      <a href="/">
+  <div class="logo">
+    &lt; squ4r00t &gt;
+  </div>
+</a>
+
+    </div>
+    
+      <ul class="menu menu--mobile">
+  <li class="menu__trigger">Menu&nbsp;▾</li>
+  <li>
+    <ul class="menu__dropdown">
+      
+        
+          <li><a href="/whoami">$ whoami</a></li>
+        
+      
+      
+    </ul>
+  </li>
+</ul>
+
+    
+    
+  </div>
+  
+    <nav class="navigation-menu">
+  <ul class="navigation-menu__inner menu--desktop">
+    
+      
+      
+        
+          <li><a href="/whoami" >$ whoami</a></li>
+        
+      
+      
+    
+  </ul>
+</nav>
+
+  
+</header>
+
+
+  <div class="content">
+    
+<article class="post">
+  <h1 class="post-title">
+    <a href="//localhost:1313/posts/htb-instant/">HTB - Instant</a>
+  </h1>
+  <div class="post-meta"><time class="post-date">2025-03-18</time>
+    
+<span class="post-reading-time">4 minute(s) read (720 words)</span></div>
+
+  
+    <span class="post-tags">
+      
+      #<a href="//localhost:1313/tags/ctf/">ctf</a>&nbsp;
+      
+      #<a href="//localhost:1313/tags/htb/">htb</a>&nbsp;
+      
+    </span>
+  
+  
+    
+    <img src="//localhost:1313/img/htb/instant/tn.png"
+      class="post-cover"
+      alt=" "
+      title="Cover Image" />
+  
+
+
+
+  
+
+  <div class="post-content"><div>
+        <p>Instant is a medium difficulty machine covering Reverse Engineering of an android apk, API hacking and decryption of encrypted PuTTY session data.</p>
+<p>It starts off by downloading the apk of a banking/finance app. After some static analysis, we find some endpoints in the source code. One of these endpoints contains the documentation of the API that the app communicates with. Reading that documentation allows us to spot vulnerability in one of the endpoints allowing us to read local files on the server. By leveraging that vulnerability, we are able to read the private key of a user on the box.</p>
+<p>After login in as that user, we find a certain file containing encrypted data of a PuTTY session which we are able to decrypt using a python script allowing us to get a root shell.</p>
+<h3 id="nmap-results">Nmap Results<a href="#nmap-results" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<hr>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">PORT   STATE SERVICE REASON  VERSION
+</span></span><span class="line"><span class="cl">22/tcp open  ssh     syn-ack OpenSSH 9.6p1 Ubuntu 3ubuntu13.5 <span class="o">(</span>Ubuntu Linux<span class="p">;</span> protocol 2.0<span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">|</span> ssh-hostkey:
+</span></span><span class="line"><span class="cl"><span class="p">|</span>   <span class="m">256</span> 31:83:eb:9f:15:f8:40:a5:04:9c:cb:3f:f6:ec:49:76 <span class="o">(</span>ECDSA<span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">|</span> ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBMM6fK04LJ4jNNL950Ft7YHPO9NKONYVCbau/+tQKoy3u7J9d8xw2sJaajQGLqTvyWMolbN3fKzp7t/s/ZMiZNo<span class="o">=</span>
+</span></span><span class="line"><span class="cl"><span class="p">|</span>   <span class="m">256</span> 6f:66:03:47:0e:8a:e0:03:97:67:5b:41:cf:e2:c7:c7 <span class="o">(</span>ED25519<span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">|</span>_ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIL+zjgyGvnf4lMAlvdgVHlwHd+/U4NcThn1bx5/4DZYY
+</span></span><span class="line"><span class="cl">80/tcp open  http    syn-ack Apache httpd 2.4.58
+</span></span><span class="line"><span class="cl"><span class="p">|</span>_http-title: Did not follow redirect to http://instant.htb/
+</span></span><span class="line"><span class="cl"><span class="p">|</span> http-methods:
+</span></span><span class="line"><span class="cl"><span class="p">|</span>_  Supported Methods: GET HEAD POST OPTIONS
+</span></span><span class="line"><span class="cl"><span class="p">|</span>_http-server-header: Apache/2.4.58 <span class="o">(</span>Ubuntu<span class="o">)</span>
+</span></span><span class="line"><span class="cl">Service Info: Host: instant.htb<span class="p">;</span> OS: Linux<span class="p">;</span> CPE: cpe:/o:linux:linux_kernel
+</span></span></code></pre></div><p>From the scan results, we see that we have 2 ports open:</p>
+<ul>
+<li>22 running ssh</li>
+<li>80 running an Apache server redirecting to <code>http://instant.htb</code></li>
+</ul>
+<p>Let&rsquo;s add it to our host file</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">echo</span> -e <span class="s2">&#34;&lt;IP&gt;\tinstant.htb&#34;</span> &gt;&gt; /etc/hosts
+</span></span></code></pre></div><h3 id="website">Website<a href="#website" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<hr>
+<p>Now let&rsquo;s navigate to <code>http://instant.htb</code></p>
+
+  <figure class="center" >
+    <img src="/img/htb/instant/website.png"   />
+    
+      <figcaption class="center" >Home Page</figcaption>
+    
+  </figure>
+
+
+<p>This seems to be a website for a mobile application. Clicking on &lsquo;Download Now&rsquo;, we can download the apk.</p>
+
+  <figure class="center" >
+    <img src="/img/htb/instant/download_apk.png"   />
+    
+      <figcaption class="center" >Downloading apk file</figcaption>
+    
+  </figure>
+
+
+<h3 id="apk-reversing">APK Reversing<a href="#apk-reversing" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<hr>
+<p>We can use <a href="https://github.com/skylot/jadx">jadx</a> to decompile the apk and get access to the source code.</p>
+<p>After opening the apk in jadx, we can use the search feature to look for endpoints that the application communicates with. We can try to search for <code>.instant.htb</code> for example:</p>
+
+  <figure class="center" >
+    <img src="/img/htb/instant/api_endpoints.png"   />
+    
+      <figcaption class="center" >Searching for API endpoints</figcaption>
+    
+  </figure>
+
+
+<p>We can see in the results different API endpoints in the <code>mywalletv1</code> subdomain. Let&rsquo;s add it to our hosts file and take look at the api.</p>
+<p>In the second and third search results, we can see a token being set to the <code>Authorization</code> header:</p>
+
+  <figure class="center" >
+    <img src="/img/htb/instant/auth_header.png"   />
+    
+      <figcaption class="center" >JWT token</figcaption>
+    
+  </figure>
+
+
+<p>If we try to access an endpoint without the token, we get a 401:</p>
+
+
+
+  <div class="collapsable-code">
+    <input id="527138946" type="checkbox"  />
+    <label for="527138946">
+      <span class="collapsable-code__language">bash</span>
+      <span class="collapsable-code__title">Accessing API without the token</span>
+      <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
+    </label>
+    <pre class="language-bash" ><code>
+curl http://mywalletv1.instant.htb/api/v1/view/profile
+
+{&#34;Description&#34;:&#34;Unauthorized!&#34;,&#34;Status&#34;:401}
+</code></pre>
+  </div>
+
+
+<p>After adding the token:</p>
+
+
+
+  <div class="collapsable-code">
+    <input id="986523417" type="checkbox"  />
+    <label for="986523417">
+      <span class="collapsable-code__language">bash</span>
+      <span class="collapsable-code__title">Accessing API with the token</span>
+      <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
+    </label>
+    <pre class="language-bash" ><code>
+curl http://mywalletv1.instant.htb/api/v1/view/profile -H &#34;Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6IkFkbWluIiwid2FsSWQiOiJmMGVjYTZlNS03ODNhLTQ3MWQtOWQ4Zi0wMTYyY2JjOTAwZGIiLCJleHAiOjMzMjU5MzAzNjU2fQ.v0qyyAqDSgyoNFHU7MgRQcDA0Bw99_8AEXKGtWZ6rYA&#34;
+
+{&#34;Profile&#34;:{&#34;account_status&#34;:&#34;active&#34;,&#34;email&#34;:&#34;admin@instant.htb&#34;,&#34;invite_token&#34;:&#34;instant_admin_inv&#34;,&#34;role&#34;:&#34;Admin&#34;,&#34;username&#34;:&#34;instantAdmin&#34;,&#34;wallet_balance&#34;:&#34;10000000&#34;,&#34;wallet_id&#34;:&#34;f0eca6e5-783a-471d-9d8f-0162cbc900db&#34;},&#34;Status&#34;:200}
+</code></pre>
+  </div>
+
+
+<p>This confirms the validity of the token. Now let&rsquo;s see if there is a documentation for this api.</p>
+<p>Documentation pages are usually found in endpoints like:</p>
+<ul>
+<li><code>/api</code></li>
+<li><code>/swagger/index.html</code></li>
+<li><code>/openapi.json</code></li>
+</ul>
+<p>Unfortunately, we don&rsquo;t get any results with these. Let&rsquo;s do another search with jadx, but this time adding more elements to our search such as classes, comments, etc:</p>
+
+  <figure class="center" >
+    <img src="/img/htb/instant/jadx_extended_search.png"   />
+    
+      <figcaption class="center" >Extended search in jadx</figcaption>
+    
+  </figure>
+
+
+<p>Now we find have another vhost: <code>swagger-ui.instant.htb</code>.</p>
+<h3 id="swagger-ui">Swagger UI<a href="#swagger-ui" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<hr>
+<p>Navigating to this website, we get the access to the documentation of the api:</p>
+
+  <figure class="center" >
+    <img src="/img/htb/instant/swagger-page.png"   />
+    
+      <figcaption class="center" >Documentation page</figcaption>
+    
+  </figure>
+
+
+<p>Let&rsquo;s add our token by clicking on &lsquo;Authorize&rsquo;:</p>
+
+  <figure class="center" >
+    <img src="/img/htb/instant/adding_token.png"   />
+    
+      <figcaption class="center" >Adding the JWT token</figcaption>
+    
+  </figure>
+
+
+<p>Looking at the different endpoints, we can see one that stands out: <code>/api/v1/admin/read/log</code></p>
+
+  <figure class="center" >
+    <img src="/img/htb/instant/read_logs.png"   />
+    
+      <figcaption class="center" >Endpoint to read log files</figcaption>
+    
+  </figure>
+
+
+
+  <figure class="center" >
+    <img src="/img/htb/instant/possible_lfi.png"   />
+    
+      <figcaption class="center" >Parameter needed</figcaption>
+    
+  </figure>
+
+
+<p>This could potentially lead to a LFI, allowing us to read local files on the server. Let&rsquo;s first try to send a valid request to see what the response looks like:</p>
+
+  <figure class="center" >
+    <img src="/img/htb/instant/1log.png"   />
+    
+      <figcaption class="center" >Sending a valid request</figcaption>
+    
+  </figure>
+
+
+<h3 id="foothold---user">Foothold - User<a href="#foothold---user" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<hr>
+<p>Not only did we get the file, but also its full path. We could try to get access to the user&rsquo;s private key by leveraging a path traversal as follows:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">../.ssh/id_rsa
+</span></span></code></pre></div>
+  <figure class="center" >
+    <img src="/img/htb/instant/idrsa.png"   />
+    
+      <figcaption class="center" >Reading private ssh key</figcaption>
+    
+  </figure>
+
+
+<p>We got the private key. However, we&rsquo;ll need to clean it up for it to be usable. We can do that with the following command:</p>
+
+
+
+  <div class="collapsable-code">
+    <input id="763512948" type="checkbox"  />
+    <label for="763512948">
+      <span class="collapsable-code__language">bash</span>
+      <span class="collapsable-code__title">Cleaning up key file</span>
+      <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
+    </label>
+    <pre class="language-bash" ><code>
+cat key | sed &#39;s/^    &#34;//&#39; | sed &#39;s/\\n&#34;.*$//&#39; | tee id_rsa
+</code></pre>
+  </div>
+
+
+<p>We copied the private key inside <code>key</code> and used <code>sed</code> to remove anything unnecessary and write the output to <code>id_rsa</code>. After that we can just change the permissions of the file (<code>chmod 600 id_rsa</code>) and log in:</p>
+
+  <figure class="center" >
+    <img src="/img/htb/instant/user.png"   />
+    
+      <figcaption class="center" >User flag obtained !</figcaption>
+    
+  </figure>
+
+
+<h3 id="root">Root<a href="#root" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<hr>
+<p>Inside <code>/opt/backups/Solar-PuTTY</code>, there is a file called <code>sessions-backup.dat</code>. After a little bit of research, we see that we can use <a href="https://gist.github.com/xHacka/052e4b09d893398b04bf8aff5872d0d5">this script</a> to decrypt the session file:</p>
+
+  <figure class="center" >
+    <img src="/img/htb/instant/rootpass.png"   />
+    
+      <figcaption class="center" >Root password</figcaption>
+    
+  </figure>
+
+
+<p>With this password, we can switch to root</p>
+
+  <figure class="center" >
+    <img src="/img/htb/instant/root.png"   />
+    
+      <figcaption class="center" >Root flag obtained !</figcaption>
+    
+  </figure>
+
+
+
+      </div></div>
+
+  
+    
+<div class="pagination">
+    <div class="pagination__title">
+        <span class="pagination__title-h">Read other posts</span>
+        <hr />
+    </div>
+    <div class="pagination__buttons">
+        
+        <span class="button previous">
+            <a href="//localhost:1313/posts/htb-tenet/">
+                <span class="button__icon">←</span>
+                <span class="button__text">HTB - Tenet</span>
+            </a>
+        </span>
+        
+        
+        <span class="button next">
+            <a href="//localhost:1313/posts/blogpost-portscanning-through-pivots/">
+                <span class="button__text">Port scanning through network pivots</span>
+                <span class="button__icon">→</span>
+            </a>
+        </span>
+        
+    </div>
+</div>
+
+  
+
+  
+    
+
+  
+</article>
+
+  </div>
+
+  
+    <footer class="footer">
+  <div class="footer__inner">
+    
+      <div class="copyright">
+        <span>© 2025 Powered by <a href="https://gohugo.io">Hugo</a></span>
+    
+      <span>:: <a href="https://github.com/mirus-ua/hugo-theme-re-terminal" target="_blank">Theme</a> made by <a href="https://github.com/mirus-ua" target="_blank">Mirus</a></span>
+      </div>
+  </div>
+</footer>
+
+
+
+
+
+
+<script type="text/javascript" src="/bundle.min.js"></script>
+
+
+
+
+
+
+
+
+  
+</div>
+
+</body>
+</html>

