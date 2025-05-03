@@ -57,3 +57,6 @@ pagination.pagerSize = 5
           name = "$ whoami"
           url = "/whoami"
 
+[caches]
+  [caches.images]
+    dir = ':cacheDir/images'
