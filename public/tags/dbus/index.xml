@@ -2,184 +2,31 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Dbus on squ4r00t</title>
-    <link>//localhost:1313/tags/dbus/</link>
+    <link>http://localhost:1313/tags/dbus/</link>
     <description>Recent content in Dbus on squ4r00t</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Wed, 07 May 2025 00:00:00 +0000</lastBuildDate><atom:link href="//localhost:1313/tags/dbus/index.xml" rel="self" type="application/rss+xml" />
+    <copyright>© 2025 squ4r00t</copyright>
+    <lastBuildDate>Sat, 10 May 2025 00:00:00 +0000</lastBuildDate><atom:link href="http://localhost:1313/tags/dbus/index.xml" rel="self" type="application/rss+xml" />
+    
     <item>
       <title>HTB - Oouch</title>
-      <link>//localhost:1313/posts/htb-oouch/</link>
-      <pubDate>Wed, 07 May 2025 00:00:00 +0000</pubDate>
+      <link>http://localhost:1313/posts/htb-oouch/</link>
+      <pubDate>Sat, 10 May 2025 00:00:00 +0000</pubDate>
       
-      <guid>//localhost:1313/posts/htb-oouch/</guid>
-      <description>&lt;blockquote&gt;
-&lt;p&gt;Oouch is a hard difficulty Linux machine featuring web applications that use the OAuth authorization framework. Absence of a CSRF Token is leveraged to link an administrative account to our account, providing access to sensitive information. This information is used to register a new client application and steal the authorization code. This code is used to gain an access token, which provides unrestricted access to user resources. A misconfigured DBus server is then exploited through uWSGI in order to execute code in the context of root.&lt;/p&gt;</description>
-      <content>&lt;blockquote&gt;
-&lt;p&gt;Oouch is a hard difficulty Linux machine featuring web applications that use the OAuth authorization framework. Absence of a CSRF Token is leveraged to link an administrative account to our account, providing access to sensitive information. This information is used to register a new client application and steal the authorization code. This code is used to gain an access token, which provides unrestricted access to user resources. A misconfigured DBus server is then exploited through uWSGI in order to execute code in the context of root.&lt;/p&gt;&lt;/blockquote&gt;
-&lt;h2 id=&#34;port-scan-results&#34;&gt;Port Scan Results&lt;/h2&gt;
-&lt;hr&gt;
-&lt;p&gt;From the results of the nmap scan, we see that we have 4 ports open: 21, 22, 5000 and 8000&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-txt&#34; data-lang=&#34;txt&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;PORT     STATE SERVICE VERSION
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;21/tcp   open  ftp     vsftpd 2.0.8 or later
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;| ftp-anon: Anonymous FTP login allowed (FTP code 230)
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;|_-rw-r--r--    1 ftp      ftp            49 Feb 11  2020 project.txt
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;22/tcp   open  ssh     OpenSSH 7.9p1 Debian 10+deb10u2 (protocol 2.0)
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;5000/tcp open  http    nginx 1.14.2
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;| http-title: Welcome to Oouch
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;|_Requested resource was http://10.10.10.177:5000/login?next=%2F
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;|_http-server-header: nginx/1.14.2
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;8000/tcp open  rtsp
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;ftp&#34;&gt;FTP&lt;/h2&gt;
-&lt;hr&gt;
-&lt;p&gt;From the nmap results, we can see that we have anonymous login allowed and we can access &lt;code&gt;project.txt&lt;/code&gt;:&lt;/p&gt;
-
-
-
-  &lt;div class=&#34;collapsable-code&#34;&gt;
-    &lt;input id=&#34;814659273&#34; type=&#34;checkbox&#34;  /&gt;
-    &lt;label for=&#34;814659273&#34;&gt;
-      &lt;span class=&#34;collapsable-code__language&#34;&gt;bash&lt;/span&gt;
-      &lt;span class=&#34;collapsable-code__title&#34;&gt;Retrieving the project.txt file&lt;/span&gt;
-      &lt;span class=&#34;collapsable-code__toggle&#34; data-label-expand=&#34;△&#34; data-label-collapse=&#34;▽&#34;&gt;&lt;/span&gt;
-    &lt;/label&gt;
-    &lt;pre class=&#34;language-bash&#34; &gt;&lt;code&gt;
-ftp 10.10.10.177
-
-Connected to 10.10.10.177.
-220 qtc&amp;#39;s development server
-Name (10.10.10.177:squ4r00t): anonymous
-230 Login successful.
-Remote system type is UNIX.
-Using binary mode to transfer files.
-ftp&amp;gt; ls
-229 Entering Extended Passive Mode (|||48291|)
-150 Here comes the directory listing.
--rw-r--r--    1 ftp      ftp            49 Feb 11  2020 project.txt
-226 Directory send OK.
-ftp&amp;gt; get project.txt
-local: project.txt remote: project.txt
-229 Entering Extended Passive Mode (|||40240|)
-150 Opening BINARY mode data connection for project.txt (49 bytes).
-100% |***************************************************************************************|    49       65.01 KiB/s    00:00 ETA
-226 Transfer complete.
-49 bytes received in 00:00 (0.94 KiB/s)
-ftp&amp;gt; exit
-221 Goodbye.
-&lt;/code&gt;&lt;/pre&gt;
-  &lt;/div&gt;
-
-
-&lt;p&gt;And the file contains the following:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Flask -&amp;gt; Consumer
-&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Django -&amp;gt; Authorization Server
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;From this, we can assume that there is an Oauth system in place and that the Django server is the Authorization Server and the Flask server is the consumer / client app.&lt;/p&gt;
-&lt;h2 id=&#34;website-at-5000&#34;&gt;Website at :5000&lt;/h2&gt;
-&lt;hr&gt;
-&lt;p&gt;Navigating to &lt;code&gt;http://10.10.10.177&lt;/code&gt;, we are redirected to &lt;code&gt;/login?next=%2f&lt;/code&gt;:&lt;/p&gt;
-
-  &lt;figure class=&#34;center&#34; &gt;
-    &lt;img src=&#34;//localhost:1313/img/htb/oouch/web5000_homepage.png&#34;   /&gt;
+      <guid>http://localhost:1313/posts/htb-oouch/</guid>
+      <description></description>
+      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/posts/htb-oouch/featured.png" />
+    </item>
     
-      &lt;figcaption class=&#34;center&#34; &gt;Login Page&lt;/figcaption&gt;
-    
-  &lt;/figure&gt;
-
-
-&lt;p&gt;We can also register an account at &lt;code&gt;/register&lt;/code&gt;:&lt;/p&gt;
-
-  &lt;figure class=&#34;center&#34; &gt;
-    &lt;img src=&#34;//localhost:1313/img/htb/oouch/web5000_register.png&#34;   /&gt;
-    
-      &lt;figcaption class=&#34;center&#34; &gt;Register Page&lt;/figcaption&gt;
-    
-  &lt;/figure&gt;
-
-
-&lt;p&gt;Let&amp;rsquo;s try to register an account&lt;/p&gt;
-
-  &lt;figure class=&#34;center&#34; &gt;
-    &lt;img src=&#34;//localhost:1313/img/htb/oouch/web5000_register_request.png&#34;   /&gt;
-    
-      &lt;figcaption class=&#34;center&#34; &gt;Registering an Account&lt;/figcaption&gt;
-    
-  &lt;/figure&gt;
-
-
-&lt;p&gt;After logging in with the newly created account, we get this page:&lt;/p&gt;
-
-  &lt;figure class=&#34;center&#34; &gt;
-    &lt;img src=&#34;//localhost:1313/img/htb/oouch/web5000_after_login.png&#34;   /&gt;
-    
-      &lt;figcaption class=&#34;center&#34; &gt;After login&lt;/figcaption&gt;
-    
-  &lt;/figure&gt;
-
-
-&lt;p&gt;We have several other pages on the side bar:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Menu
-
-  &lt;figure class=&#34;center&#34; &gt;
-    &lt;img src=&#34;//localhost:1313/img/htb/oouch/web5000_menu.png&#34;   /&gt;
-    
-      &lt;figcaption class=&#34;center&#34; &gt;Menu&lt;/figcaption&gt;
-    
-  &lt;/figure&gt;
-
-&lt;/li&gt;
-&lt;li&gt;Profile
-
-  &lt;figure class=&#34;center&#34; &gt;
-    &lt;img src=&#34;//localhost:1313/img/htb/oouch/web5000_profile.png&#34;   /&gt;
-    
-      &lt;figcaption class=&#34;center&#34; &gt;Profile Page&lt;/figcaption&gt;
-    
-  &lt;/figure&gt;
-
-&lt;/li&gt;
-&lt;li&gt;Password Change
-
-  &lt;figure class=&#34;center&#34; &gt;
-    &lt;img src=&#34;//localhost:1313/img/htb/oouch/web5000_password_change.png&#34;   /&gt;
-    
-      &lt;figcaption class=&#34;center&#34; &gt;Password Change Page&lt;/figcaption&gt;
-    
-  &lt;/figure&gt;
-
-&lt;/li&gt;
-&lt;li&gt;Documents
-
-  &lt;figure class=&#34;center&#34; &gt;
-    &lt;img src=&#34;//localhost:1313/img/htb/oouch/web5000_documents.png&#34;   /&gt;
-    
-      &lt;figcaption class=&#34;center&#34; &gt;Documents&lt;/figcaption&gt;
-    
-  &lt;/figure&gt;
-
-&lt;/li&gt;
-&lt;li&gt;About
-
-  &lt;figure class=&#34;center&#34; &gt;
-    &lt;img src=&#34;//localhost:1313/img/htb/oouch/web5000_about.png&#34;   /&gt;
-    
-      &lt;figcaption class=&#34;center&#34; &gt;About&lt;/figcaption&gt;
-    
-  &lt;/figure&gt;
-
-&lt;/li&gt;
-&lt;li&gt;Contact
-
-  &lt;figure class=&#34;center&#34; &gt;
-    &lt;img src=&#34;//localhost:1313/img/htb/oouch/web5000_contact.png&#34;   /&gt;
-    
-      &lt;figcaption class=&#34;center&#34; &gt;Contact2&lt;/figcaption&gt;
-    
-  &lt;/figure&gt;
-
-&lt;/li&gt;
-&lt;/ul&gt;
-</content>
+    <item>
+      <title>HTB - Passage</title>
+      <link>http://localhost:1313/posts/htb-passage/</link>
+      <pubDate>Sun, 27 Apr 2025 00:00:00 +0000</pubDate>
+      
+      <guid>http://localhost:1313/posts/htb-passage/</guid>
+      <description></description>
+      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/posts/htb-passage/featured.png" />
     </item>
     
   </channel>

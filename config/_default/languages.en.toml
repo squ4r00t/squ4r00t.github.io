@@ -1,0 +1,28 @@
+disabled = false
+languageCode = "en"
+languageName = "English"
+weight = 1
+title = "squ4r00t"
+
+[params]
+  displayName = "EN"
+  isoCode = "en"
+  rtl = false
+  dateFormat = "2 January 2006"
+  # logo = "img/ura.jpeg"
+  # secondaryLogo = "img/secondary-logo.png"
+  description = "Writeups and stuff"
+  # copyright = "Copy, _right?_ :thinking_face:"
+
+[params.author]
+  name = "squ4r00t"
+#   email = "youremail@example.com"
+  image = "img/ura.jpeg"
+#   imageQuality = 96
+#   headline = "I'm only human"
+#   bio = "A little bit about you"
+  links = [
+    { github = "https://github.com/squ4r00t" },
+    { twitter = "https://twitter.com/squ4r00t" },
+    { hackthebox = "https://app.hackthebox.com/profile/1634933"},
+  ]

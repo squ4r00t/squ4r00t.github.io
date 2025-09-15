@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Python on squ4r00t</title>
+    <link>http://localhost:1313/tags/python/</link>
+    <description>Recent content in Python on squ4r00t</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <copyright>© 2025 squ4r00t</copyright>
+    <lastBuildDate>Mon, 03 Mar 2025 00:00:00 +0000</lastBuildDate><atom:link href="http://localhost:1313/tags/python/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>HTB - Chemistry</title>
+      <link>http://localhost:1313/posts/htb-chemistry/</link>
+      <pubDate>Mon, 03 Mar 2025 00:00:00 +0000</pubDate>
+      
+      <guid>http://localhost:1313/posts/htb-chemistry/</guid>
+      <description></description>
+      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/posts/htb-chemistry/featured.png" />
+    </item>
+    
+    <item>
+      <title>THM - Pyrat</title>
+      <link>http://localhost:1313/posts/thm-pyrat/</link>
+      <pubDate>Wed, 09 Oct 2024 00:00:00 +0000</pubDate>
+      
+      <guid>http://localhost:1313/posts/thm-pyrat/</guid>
+      <description></description>
+      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/posts/thm-pyrat/featured.png" />
+    </item>
+    
+  </channel>
+</rss>

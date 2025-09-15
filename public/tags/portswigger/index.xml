@@ -2,127 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Portswigger on squ4r00t</title>
-    <link>//localhost:1313/tags/portswigger/</link>
+    <link>http://localhost:1313/tags/portswigger/</link>
     <description>Recent content in Portswigger on squ4r00t</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Mon, 11 Nov 2024 00:00:00 +0000</lastBuildDate><atom:link href="//localhost:1313/tags/portswigger/index.xml" rel="self" type="application/rss+xml" />
+    <copyright>© 2025 squ4r00t</copyright>
+    <lastBuildDate>Mon, 11 Nov 2024 00:00:00 +0000</lastBuildDate><atom:link href="http://localhost:1313/tags/portswigger/index.xml" rel="self" type="application/rss+xml" />
+    
     <item>
       <title>Exploiting path mapping for web cache deception</title>
-      <link>//localhost:1313/posts/portswigger-exploiting-path-mapping-for-web-cache-deception/</link>
+      <link>http://localhost:1313/posts/portswigger-exploiting-path-mapping-for-web-cache-deception/</link>
       <pubDate>Mon, 11 Nov 2024 00:00:00 +0000</pubDate>
       
-      <guid>//localhost:1313/posts/portswigger-exploiting-path-mapping-for-web-cache-deception/</guid>
-      <description>&lt;h2 id=&#34;lab-info&#34;&gt;Lab Info&lt;/h2&gt;
-&lt;hr&gt;
-&lt;p&gt;| &lt;strong&gt;Lab name&lt;/strong&gt; | Exploiting path mapping for web cache deception |
-| &lt;strong&gt;Level&lt;/strong&gt; | Apprentice |
-| &lt;strong&gt;Link&lt;/strong&gt; | &lt;a href=&#34;https://portswigger.net/web-security/web-cache-deception/lab-wcd-exploiting-path-mapping&#34;&gt;https://portswigger.net/web-security/web-cache-deception/lab-wcd-exploiting-path-mapping&lt;/a&gt; |&lt;/p&gt;
-&lt;p&gt;To solve the lab, find the API key for the user carlos. You can log in to your own account using the following credentials: &lt;code&gt;wiener:peter&lt;/code&gt;.&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;&lt;strong&gt;Required Knowlegde&lt;/strong&gt;&lt;br&gt;
-To solve this lab, you&amp;rsquo;ll need to know:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;How regex endpoints map URL paths to resources.&lt;/li&gt;
-&lt;li&gt;How to detect and exploit discrepancies in the way the cache and origin server map URL paths.
-{: .prompt-warning}
-These points are covered here -&amp;gt; &lt;a href=&#34;https://portswigger.net/web-security/web-cache-deception&#34;&gt;Web cache deception&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;&lt;/blockquote&gt;
-&lt;h2 id=&#34;solving-the-lab&#34;&gt;Solving the lab&lt;/h2&gt;
-&lt;hr&gt;</description>
-      <content>&lt;h2 id=&#34;lab-info&#34;&gt;Lab Info&lt;/h2&gt;
-&lt;hr&gt;
-&lt;p&gt;| &lt;strong&gt;Lab name&lt;/strong&gt; | Exploiting path mapping for web cache deception |
-| &lt;strong&gt;Level&lt;/strong&gt; | Apprentice |
-| &lt;strong&gt;Link&lt;/strong&gt; | &lt;a href=&#34;https://portswigger.net/web-security/web-cache-deception/lab-wcd-exploiting-path-mapping&#34;&gt;https://portswigger.net/web-security/web-cache-deception/lab-wcd-exploiting-path-mapping&lt;/a&gt; |&lt;/p&gt;
-&lt;p&gt;To solve the lab, find the API key for the user carlos. You can log in to your own account using the following credentials: &lt;code&gt;wiener:peter&lt;/code&gt;.&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;&lt;strong&gt;Required Knowlegde&lt;/strong&gt;&lt;br&gt;
-To solve this lab, you&amp;rsquo;ll need to know:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;How regex endpoints map URL paths to resources.&lt;/li&gt;
-&lt;li&gt;How to detect and exploit discrepancies in the way the cache and origin server map URL paths.
-{: .prompt-warning}
-These points are covered here -&amp;gt; &lt;a href=&#34;https://portswigger.net/web-security/web-cache-deception&#34;&gt;Web cache deception&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;&lt;/blockquote&gt;
-&lt;h2 id=&#34;solving-the-lab&#34;&gt;Solving the lab&lt;/h2&gt;
-&lt;hr&gt;
-</content>
-    </item>
-    
-    <item>
-      <title>Modifying Serialized Objects</title>
-      <link>//localhost:1313/posts/portswigger-modifying-serial-obj/</link>
-      <pubDate>Mon, 11 Nov 2024 00:00:00 +0000</pubDate>
-      
-      <guid>//localhost:1313/posts/portswigger-modifying-serial-obj/</guid>
-      <description>&lt;p&gt;This lab uses a serialization-based session mechanism and is vulnerable to privilege escalation as a result. To solve the lab, edit the serialized object in the session cookie to exploit this vulnerability and gain administrative privileges. Then, delete the user &lt;code&gt;carlos&lt;/code&gt;.&lt;/p&gt;
-&lt;p&gt;You can log in to your own account using the following credentials: &lt;code&gt;wiener:peter&lt;/code&gt;&lt;/p&gt;
-&lt;h3 id=&#34;solving-the-lab&#34;&gt;Solving the lab&lt;/h3&gt;
-&lt;hr&gt;
-&lt;p&gt;To solve the lab, let&amp;rsquo;s first login as &lt;code&gt;wiener&lt;/code&gt; using the provided credentials.&lt;/p&gt;</description>
-      <content>&lt;p&gt;This lab uses a serialization-based session mechanism and is vulnerable to privilege escalation as a result. To solve the lab, edit the serialized object in the session cookie to exploit this vulnerability and gain administrative privileges. Then, delete the user &lt;code&gt;carlos&lt;/code&gt;.&lt;/p&gt;
-&lt;p&gt;You can log in to your own account using the following credentials: &lt;code&gt;wiener:peter&lt;/code&gt;&lt;/p&gt;
-&lt;h3 id=&#34;solving-the-lab&#34;&gt;Solving the lab&lt;/h3&gt;
-&lt;hr&gt;
-&lt;p&gt;To solve the lab, let&amp;rsquo;s first login as &lt;code&gt;wiener&lt;/code&gt; using the provided credentials.&lt;/p&gt;
-
-  &lt;figure class=&#34;center&#34; &gt;
-    &lt;img src=&#34;//localhost:1313/img/portswigger/insecure_deserial/modifying_serial_obj/login.png&#34;   /&gt;
-    
-      &lt;figcaption class=&#34;center&#34; &gt;Login page&lt;/figcaption&gt;
-    
-  &lt;/figure&gt;
-
-
-&lt;p&gt;Once logged in, we notice that we get a base64 encoded cookie:&lt;/p&gt;
-
-  &lt;figure class=&#34;center&#34; &gt;
-    &lt;img src=&#34;//localhost:1313/img/portswigger/insecure_deserial/modifying_serial_obj/cookie.png&#34;   /&gt;
-    
-      &lt;figcaption class=&#34;center&#34; &gt;Base64 encode cookie&lt;/figcaption&gt;
-    
-  &lt;/figure&gt;
-
-
-&lt;p&gt;After decoding it, we get the following PHP serialized object:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;O:4:&amp;#34;User&amp;#34;:2:{s:8:&amp;#34;username&amp;#34;;s:6:&amp;#34;wiener&amp;#34;;s:5:&amp;#34;admin&amp;#34;;b:0;}
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;This is an object of the class &lt;code&gt;User&lt;/code&gt; containing 2 attributes:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;username&lt;/code&gt;: string set to the value &amp;ldquo;wiener&amp;rdquo;&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;admin&lt;/code&gt;: boolean set to False (0)&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Let&amp;rsquo;s try to set the &lt;code&gt;admin&lt;/code&gt; attribute to &lt;code&gt;True&lt;/code&gt;, re-encode the object and update the value of our cookie:&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-text&#34; data-lang=&#34;text&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;O:4:&amp;#34;User&amp;#34;:2:{s:8:&amp;#34;username&amp;#34;;s:6:&amp;#34;wiener&amp;#34;;s:5:&amp;#34;admin&amp;#34;;b:1;}
-&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-  &lt;figure class=&#34;center&#34; &gt;
-    &lt;img src=&#34;//localhost:1313/img/portswigger/insecure_deserial/modifying_serial_obj/new-cookie.png&#34;   /&gt;
-    
-      &lt;figcaption class=&#34;center&#34; &gt;Updating cookie&lt;/figcaption&gt;
-    
-  &lt;/figure&gt;
-
-
-&lt;p&gt;If we refresh the page, we can see that we now have access to the admin panel where we can delete the user &lt;code&gt;carlos&lt;/code&gt; and solve the lab:&lt;/p&gt;
-
-  &lt;figure class=&#34;center&#34; &gt;
-    &lt;img src=&#34;//localhost:1313/img/portswigger/insecure_deserial/modifying_serial_obj/delete_carlos.png&#34;   /&gt;
-    
-      &lt;figcaption class=&#34;center&#34; &gt;Deleting user carlos&lt;/figcaption&gt;
-    
-  &lt;/figure&gt;
-
-
-
-  &lt;figure class=&#34;center&#34; &gt;
-    &lt;img src=&#34;//localhost:1313/img/portswigger/insecure_deserial/modifying_serial_obj/congrats.png&#34;   /&gt;
-    
-      &lt;figcaption class=&#34;center&#34; &gt;Lab solved&lt;/figcaption&gt;
-    
-  &lt;/figure&gt;
-
-
-</content>
+      <guid>http://localhost:1313/posts/portswigger-exploiting-path-mapping-for-web-cache-deception/</guid>
+      <description></description>
+      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/posts/portswigger-exploiting-path-mapping-for-web-cache-deception/featured.png" />
     </item>
     
   </channel>
