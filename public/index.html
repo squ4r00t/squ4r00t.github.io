@@ -397,13 +397,12 @@
   
   
     
-
-<article class="max-w-full prose dark:prose-invert">
+<article class="prose dark:prose-invert max-w-full">
   <div class="relative">
     <div class="absolute inset-x-0 bottom-0 h-1/2 bg-gray-100"></div>
     <div class="mx-auto max-w-7xl p-0">
-      <div class="relative shadow-xl sm:overflow-hidden rounded-2xl">
-        <div class="absolute inset-0">
+      <div class="relative sm:overflow-hidden">
+        <div class="fixed inset-x-0 top-0 -z-10">
           
           
           
@@ -412,15 +411,18 @@
             
           
           
-            <img class="h-full w-full object-cover nozoom mt-0 mr-0 mb-0 ml-0" src="/img/background.gif">
-            
-              <div
-                class="absolute inset-0 bg-gradient-to-r from-primary-500 to-secondary-600 dark:from-primary-600 dark:to-secondary-800 mix-blend-multiply"></div>
-            
+            <img
+              id="homepage-background-image"
+              class="nozoom mt-0 mr-0 mb-0 ml-0 h-[1000px] w-full object-cover"
+              src="/img/background.gif"
+              role="presentation">
+            <div
+              class="from-neutral absolute inset-0 h-[1000px] bg-gradient-to-t to-transparent mix-blend-normal dark:from-neutral-800"></div>
+            <div
+              class="from-neutral absolute inset-0 h-[1000px] bg-gradient-to-t to-neutral-100 opacity-60 mix-blend-normal dark:from-neutral-800 dark:to-neutral-800"></div>
           
         </div>
-        <div
-          class="relative px-4 py-16 sm:px-6 sm:py-24 lg:py-32 lg:px-8 flex flex-col items-center justify-center text-center">
+        <div class="relative flex flex-col items-center justify-center px-1 py-1 text-center">
           
             
             
@@ -431,60 +433,53 @@
                 
               
               <img
-                class="mb-2 rounded-full h-36 w-36"
+                class="mb-2 h-36 w-36 rounded-full"
                 width="144"
                 height="144"
                 alt="squ4r00t"
                 src="/img/ura_hu_e71875d49be1b662.jpeg">
             
           
-          
-            <h1 class="mb-2 text-4xl font-extrabold text-neutral-200">
-              squ4r00t
-            </h1>
-            
+          <h1 class="mb-2 text-4xl font-extrabold text-neutral-800 dark:text-neutral-200">
+            squ4r00t
+          </h1>
           
           <div class="mt-3 mb-10 text-2xl">
             
               <div class="flex flex-wrap">
                 
                   
-                    
-                      <a
-                        class="px-1 hover:text-primary-400 text-primary-300"
-                        href="https://github.com/squ4r00t"
-                        target="_blank"
-                        aria-label="Github"
-                        rel="me noopener noreferrer"
-                        ><span class="relative block icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><path fill="currentColor" d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+                    <a
+                      class="hover:text-primary-400 text-primary-800 dark:text-primary-200 px-1"
+                      href="https://github.com/squ4r00t"
+                      target="_blank"
+                      aria-label="Github"
+                      rel="me noopener noreferrer"
+                      ><span class="relative block icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><path fill="currentColor" d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
 </span></a
-                      >
-                    
+                    >
                   
                 
                   
-                    
-                      <a
-                        class="px-1 hover:text-primary-400 text-primary-300"
-                        href="https://twitter.com/squ4r00t"
-                        target="_blank"
-                        aria-label="Twitter"
-                        rel="me noopener noreferrer"
-                        ><span class="relative block icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"/></svg>
+                    <a
+                      class="hover:text-primary-400 text-primary-800 dark:text-primary-200 px-1"
+                      href="https://twitter.com/squ4r00t"
+                      target="_blank"
+                      aria-label="Twitter"
+                      rel="me noopener noreferrer"
+                      ><span class="relative block icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"/></svg>
 </span></a
-                      >
-                    
+                    >
                   
                 
                   
-                    
-                      <a
-                        class="px-1 hover:text-primary-400 text-primary-300"
-                        href="https://app.hackthebox.com/profile/1634933"
-                        target="_blank"
-                        aria-label="Hackthebox"
-                        rel="me noopener noreferrer"
-                        ><span class="relative block icon"><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+                    <a
+                      class="hover:text-primary-400 text-primary-800 dark:text-primary-200 px-1"
+                      href="https://app.hackthebox.com/profile/1634933"
+                      target="_blank"
+                      aria-label="Hackthebox"
+                      rel="me noopener noreferrer"
+                      ><span class="relative block icon"><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
 <!-- Uploaded to: SVG Repo, www.svgrepo.com, Transformed by: SVG Repo Mixer Tools -->
 <svg fill="#57e389" width="800px" height="800px" viewBox="0 0 24.00 24.00" role="img" xmlns="http://www.w3.org/2000/svg" stroke="#57e389" stroke-width="0.00024000000000000003">
 <g id="SVGRepo_bgCarrier" stroke-width="0"/>
@@ -493,14 +488,13 @@
 <path d="M11.996 0a1.119 1.119 0 0 0-.057.003.9.9 0 0 0-.236.05.907.907 0 0 0-.165.079L1.936 5.675a.889.889 0 0 0-.445.77v11.111a.889.889 0 0 0 .47.784l9.598 5.541.054.029v.002a.857.857 0 0 0 .083.035l.012.004c.028.01.056.018.085.024.01.001.011.003.016.004a.93.93 0 0 0 .296.015.683.683 0 0 0 .086-.015c.01 0 .011-.002.016-.004a.94.94 0 0 0 .085-.024l.012-.004a.882.882 0 0 0 .083-.035v-.002a1.086 1.086 0 0 0 .054-.029l9.599-5.541a.889.889 0 0 0 .469-.784V6.48l-.001-.026v-.008a.889.889 0 0 0-.312-.676l-.029-.024c0-.002-.01-.005-.01-.007a.899.899 0 0 0-.107-.07L12.453.127A.887.887 0 0 0 11.99 0zm.01 2.253c.072 0 .144.019.209.056l6.537 3.774a.418.418 0 0 1 0 .724l-6.537 3.774a.418.418 0 0 1-.418 0L5.26 6.807a.418.418 0 0 1 0-.724l6.537-3.774a.42.42 0 0 1 .209-.056zm-8.08 6.458a.414.414 0 0 1 .215.057l6.524 3.766a.417.417 0 0 1 .208.361v7.533a.417.417 0 0 1-.626.361l-6.523-3.766a.417.417 0 0 1-.209-.362V9.13c0-.241.196-.414.41-.418zm16.16 0c.215.004.41.177.41.418v7.532a.42.42 0 0 1-.208.362l-6.524 3.766a.417.417 0 0 1-.626-.361v-7.533c0-.149.08-.286.209-.36l6.523-3.767a.415.415 0 0 1 .216-.057z"/>
 </g>
 </svg></span></a
-                      >
-                    
+                    >
                   
                 
               </div>
             
           </div>
-          <section class="prose prose-invert w-full"></section>
+          <section class="prose dark:prose-invert w-full"></section>
         </div>
       </div>
     </div>
@@ -2432,6 +2426,20 @@
 
 
 </section>
+
+  <div
+    id="background-blur"
+    class="fixed opacity-0 inset-x-0 top-0 h-full single_hero_background nozoom backdrop-blur-2xl"></div>
+  
+  
+  <script
+    type="text/javascript"
+    src="/js/background-blur.min.0ad33cb9c066f652728b2cc09c9ceaf32645544f48e8b6b38f120d86f433ed997da275a49e6151fe0176430c45376812708d84727f3f969101fb44a4345b3f34.js"
+    integrity="sha512-CtM8ucBm9lJyiyzAnJzq8yZFVE9I6LazjxINhvQz7Zl9onWknmFR/gF2QwxFN2gScI2Ecn8/lpEB&#43;0SkNFs/NA=="
+    data-target-id="background-blur"
+    data-image-id="homepage-background-image"
+    data-image-url="/img/background.gif"></script>
+
 
   
 
