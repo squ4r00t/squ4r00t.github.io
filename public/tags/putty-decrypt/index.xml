@@ -11,12 +11,12 @@
     
     <item>
       <title>HTB - Instant</title>
-      <link>http://localhost:1313/posts/htb-instant/</link>
+      <link>http://localhost:1313/htb/instant/</link>
       <pubDate>Tue, 18 Mar 2025 21:14:52 +0100</pubDate>
       
-      <guid>http://localhost:1313/posts/htb-instant/</guid>
+      <guid>http://localhost:1313/htb/instant/</guid>
       <description></description>
-      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/posts/htb-instant/featured.png" />
+      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/htb/instant/featured.png" />
     </item>
     
   </channel>

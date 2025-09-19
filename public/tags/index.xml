@@ -460,41 +460,11 @@
     </item>
     
     <item>
-      <title>CVE-2023-4220</title>
-      <link>http://localhost:1313/tags/cve-2023-4220/</link>
-      <pubDate>Sat, 16 Nov 2024 00:00:00 +0000</pubDate>
-      
-      <guid>http://localhost:1313/tags/cve-2023-4220/</guid>
-      <description></description>
-      
-    </item>
-    
-    <item>
-      <title>Database Creds</title>
-      <link>http://localhost:1313/tags/database-creds/</link>
-      <pubDate>Sat, 16 Nov 2024 00:00:00 +0000</pubDate>
-      
-      <guid>http://localhost:1313/tags/database-creds/</guid>
-      <description></description>
-      
-    </item>
-    
-    <item>
       <title>Dcsync</title>
       <link>http://localhost:1313/tags/dcsync/</link>
       <pubDate>Sat, 16 Nov 2024 00:00:00 +0000</pubDate>
       
       <guid>http://localhost:1313/tags/dcsync/</guid>
-      <description></description>
-      
-    </item>
-    
-    <item>
-      <title>Vulnerable Bash Script</title>
-      <link>http://localhost:1313/tags/vulnerable-bash-script/</link>
-      <pubDate>Sat, 16 Nov 2024 00:00:00 +0000</pubDate>
-      
-      <guid>http://localhost:1313/tags/vulnerable-bash-script/</guid>
       <description></description>
       
     </item>

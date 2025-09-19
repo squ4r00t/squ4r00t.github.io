@@ -11,92 +11,82 @@
     
     <item>
       <title>HTB - Oouch</title>
-      <link>http://localhost:1313/posts/htb-oouch/</link>
+      <link>http://localhost:1313/htb/oouch/</link>
       <pubDate>Sat, 10 May 2025 00:00:00 +0000</pubDate>
       
-      <guid>http://localhost:1313/posts/htb-oouch/</guid>
+      <guid>http://localhost:1313/htb/oouch/</guid>
       <description></description>
-      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/posts/htb-oouch/featured.png" />
+      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/htb/oouch/featured.png" />
     </item>
     
     <item>
       <title>HTB - CTF</title>
-      <link>http://localhost:1313/posts/htb-ctf/</link>
+      <link>http://localhost:1313/htb/ctf/</link>
       <pubDate>Wed, 30 Apr 2025 00:00:00 +0000</pubDate>
       
-      <guid>http://localhost:1313/posts/htb-ctf/</guid>
+      <guid>http://localhost:1313/htb/ctf/</guid>
       <description></description>
-      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/posts/htb-ctf/featured.png" />
+      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/htb/ctf/featured.png" />
     </item>
     
     <item>
       <title>HTB - Passage</title>
-      <link>http://localhost:1313/posts/htb-passage/</link>
+      <link>http://localhost:1313/htb/passage/</link>
       <pubDate>Sun, 27 Apr 2025 00:00:00 +0000</pubDate>
       
-      <guid>http://localhost:1313/posts/htb-passage/</guid>
+      <guid>http://localhost:1313/htb/passage/</guid>
       <description></description>
-      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/posts/htb-passage/featured.png" />
+      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/htb/passage/featured.png" />
     </item>
     
     <item>
       <title>HTB - Tenet</title>
-      <link>http://localhost:1313/posts/htb-tenet/</link>
+      <link>http://localhost:1313/htb/tenet/</link>
       <pubDate>Sun, 27 Apr 2025 00:00:00 +0000</pubDate>
       
-      <guid>http://localhost:1313/posts/htb-tenet/</guid>
+      <guid>http://localhost:1313/htb/tenet/</guid>
       <description></description>
-      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/posts/htb-tenet/featured.png" />
+      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/htb/tenet/featured.png" />
     </item>
     
     <item>
       <title>HTB - Instant</title>
-      <link>http://localhost:1313/posts/htb-instant/</link>
+      <link>http://localhost:1313/htb/instant/</link>
       <pubDate>Tue, 18 Mar 2025 21:14:52 +0100</pubDate>
       
-      <guid>http://localhost:1313/posts/htb-instant/</guid>
+      <guid>http://localhost:1313/htb/instant/</guid>
       <description></description>
-      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/posts/htb-instant/featured.png" />
+      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/htb/instant/featured.png" />
     </item>
     
     <item>
       <title>HTB - Chemistry</title>
-      <link>http://localhost:1313/posts/htb-chemistry/</link>
+      <link>http://localhost:1313/htb/chemistry/</link>
       <pubDate>Mon, 03 Mar 2025 00:00:00 +0000</pubDate>
       
-      <guid>http://localhost:1313/posts/htb-chemistry/</guid>
+      <guid>http://localhost:1313/htb/chemistry/</guid>
       <description></description>
-      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/posts/htb-chemistry/featured.png" />
+      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/htb/chemistry/featured.png" />
     </item>
     
     <item>
       <title>HTB - Forest</title>
-      <link>http://localhost:1313/posts/htb-forest/</link>
+      <link>http://localhost:1313/htb/forest/</link>
       <pubDate>Sat, 16 Nov 2024 00:00:00 +0000</pubDate>
       
-      <guid>http://localhost:1313/posts/htb-forest/</guid>
+      <guid>http://localhost:1313/htb/forest/</guid>
       <description></description>
-      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/posts/htb-forest/featured.png" />
-    </item>
-    
-    <item>
-      <title>HTB - Permx</title>
-      <link>http://localhost:1313/posts/htb-permx/</link>
-      <pubDate>Sat, 16 Nov 2024 00:00:00 +0000</pubDate>
-      
-      <guid>http://localhost:1313/posts/htb-permx/</guid>
-      <description></description>
-      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/posts/htb-permx/featured.png" />
+      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/htb/forest/featured.png" />
     </item>
     
     <item>
       <title>THM - Pyrat</title>
-      <link>http://localhost:1313/posts/thm-pyrat/</link>
+      <link>http://localhost:1313/thm/pyrat/</link>
       <pubDate>Wed, 09 Oct 2024 00:00:00 +0000</pubDate>
       
-      <guid>http://localhost:1313/posts/thm-pyrat/</guid>
+      <guid>http://localhost:1313/thm/pyrat/</guid>
       <description></description>
-      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/posts/thm-pyrat/featured.png" />
+      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/thm/pyrat/featured.png" />
     </item>
     
   </channel>
