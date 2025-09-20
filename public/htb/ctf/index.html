@@ -42,8 +42,8 @@
   <link
     type="text/css"
     rel="stylesheet"
-    href="/css/main.bundle.min.42e117630064169104300069fe2492ea8a37cc8bda7f1f026c58862b976a232fef8b1d58d36a884266142db34a38cc54a0d376b6131b9b581e29595ab5d2f7ce.css"
-    integrity="sha512-QuEXYwBkFpEEMABp/iSS6oo3zIvafx8CbFiGK5dqIy/vix1Y02qIQmYULbNKOMxUoNN2thMbm1geKVlatdL3zg==">
+    href="/css/main.bundle.min.08c3b9aed1319530a6e2c6e0dcba1f900b303e715be3d6a2b8ab81127aab94554c7ea7cb998fd0bbd3e23df13c3beff718fd83d27134f8a9f39b7059de9ce5cb.css"
+    integrity="sha512-CMO5rtExlTCm4sbg3LofkAswPnFb49aiuKuBEnqrlFVMfqfLmY/Qu9PiPfE8O&#43;/3GP2D0nE0&#43;Knzm3BZ3pzlyw==">
 
   
   
@@ -271,12 +271,40 @@
       
         
   <a
-  href=""
+  href="/posts/"
   
   class="flex items-center text-gray-500 hover:text-primary-600 dark:hover:text-primary-400">
   
-  <p class="text-base font-medium" title="">
+  <p class="text-base font-medium" title="Posts">
     Blog
+  </p>
+</a>
+
+
+
+      
+        
+  <a
+  href="/htb/"
+  
+  class="flex items-center text-gray-500 hover:text-primary-600 dark:hover:text-primary-400">
+  
+  <p class="text-base font-medium" title="Htbs">
+    HTB
+  </p>
+</a>
+
+
+
+      
+        
+  <a
+  href="/portswigger/"
+  
+  class="flex items-center text-gray-500 hover:text-primary-600 dark:hover:text-primary-400">
+  
+  <p class="text-base font-medium" title="Portswiggers">
+    Portswigger
   </p>
 </a>
 
@@ -365,12 +393,44 @@
               
   <li class="mt-1">
   <a
-    href=""
+    href="/posts/"
     
     class="flex items-center text-gray-500 hover:text-primary-600 dark:hover:text-primary-400">
     
-    <p class="text-bg font-bg" title="">
+    <p class="text-bg font-bg" title="Posts">
       Blog
+    </p>
+  </a>
+</li>
+
+
+
+            
+              
+  <li class="mt-1">
+  <a
+    href="/htb/"
+    
+    class="flex items-center text-gray-500 hover:text-primary-600 dark:hover:text-primary-400">
+    
+    <p class="text-bg font-bg" title="Htbs">
+      HTB
+    </p>
+  </a>
+</li>
+
+
+
+            
+              
+  <li class="mt-1">
+  <a
+    href="/portswigger/"
+    
+    class="flex items-center text-gray-500 hover:text-primary-600 dark:hover:text-primary-400">
+    
+    <p class="text-bg font-bg" title="Portswiggers">
+      Portswigger
     </p>
   </a>
 </li>
@@ -683,6 +743,8 @@
       </div>
     
     
+      <div class="text-sm text-neutral-700 dark:text-neutral-400">🧪 Experimenting</div>
+    
     <div class="text-2xl sm:text-lg">
   <div class="flex flex-wrap text-neutral-400 dark:text-neutral-500">
     
@@ -927,7 +989,6 @@
     </span>        
     
 </h2>
-<hr>
 <p>From the results of the nmap scan, we see that we have 2 ports open: 22 and 80</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">PORT   STATE SERVICE VERSION
 </span></span><span class="line"><span class="cl">22/tcp open  ssh     OpenSSH 7.4 <span class="o">(</span>protocol 2.0<span class="o">)</span>
@@ -949,7 +1010,6 @@
     </span>        
     
 </h2>
-<hr>
 <p>Navigating to <code>http://10.10.10.122</code>, we get this page telling us about a token-based (software tokens specifically) authentication system to be tested:</p>
 
 <figure>
@@ -996,7 +1056,6 @@
     </span>        
     
 </h3>
-<hr>
 <p>Testing for LDAP Injection would help us validate our hypothesis that the website is using LDAP and potentially bypass the authentication system.</p>
 <p>First, we can try to send characters that are specific to LDAP&rsquo;s syntax. For example, the <code>*</code> (wilcard) character:</p>
 
@@ -1038,7 +1097,6 @@
     </span>        
     
 </h3>
-<hr>
 <p>This is how we&rsquo;ll retrieve the username:</p>
 <ul>
 <li>First we send <code>a*</code> as the username. If we get the message &ldquo;Cannot login&rdquo;, then we know that the first letter is &lsquo;a&rsquo;. If we don&rsquo;t, we move on to the letter &lsquo;b&rsquo; by sending <code>b*</code>, so on and so forth.</li>
@@ -1165,7 +1223,6 @@
     </span>        
     
 </h3>
-<hr>
 <p>We can use a slightly modified version of the previous script:</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">requests</span>
 </span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">string</span>
@@ -1215,7 +1272,6 @@
     </span>        
     
 </h3>
-<hr>
 <p>From the token we obtained previously, we need to generate a valid OTP which we can use to login. For this we can use  the command line tool: <code>stoken</code> (It was mentionned on the home page that the authentication was based on <a
   href="https://manpages.ubuntu.com/manpages/focal/man1/stoken.1.html"
     target="_blank"
@@ -1240,7 +1296,6 @@
     </span>        
     
 </h3>
-<hr>
 <p>If we try to run a command, we receive this error message:</p>
 
 <figure>
@@ -1306,7 +1361,6 @@
     </span>        
     
 </h2>
-<hr>
 
 <h3 class="relative group">apache -&gt; ldapuser 
     <div id="apache---ldapuser" class="anchor"></div>
@@ -1317,7 +1371,6 @@
     </span>        
     
 </h3>
-<hr>
 <p>Looking at the files of the website, we find credentials for <code>ldapuser</code> in <code>/var/www/html/login.php</code>:</p>
 <p>
 
@@ -1356,7 +1409,6 @@
     </span>        
     
 </h3>
-<hr>
 <p>Under <code>/backup</code>, we can see different archives with timestamps in their name. Looking at the last modified date, we see they are each separated by a minute.</p>
 <p>This indicates that there might be a cron job running every minute.</p>
 <p>We also have a <code>error.log</code> file running every minute which is empty. And a bash script called <code>honeypot.sh</code>:</p>

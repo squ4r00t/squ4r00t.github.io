@@ -45,6 +45,18 @@
     <priority>0.5</priority>
   </url>
   <url>
+    <loc>http://localhost:1313/posts/portscanning-through-pivots/portscanning-through-pivots/</loc>
+    <lastmod>2025-03-09T00:00:00+00:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>http://localhost:1313/posts/</loc>
+    <lastmod>2025-03-09T00:00:00+00:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
     <loc>http://localhost:1313/htb/chemistry/</loc>
     <lastmod>2025-03-03T00:00:00+00:00</lastmod>
     <changefreq>daily</changefreq>
@@ -65,18 +77,6 @@
   <url>
     <loc>http://localhost:1313/portswigger/</loc>
     <lastmod>2024-11-11T00:00:00+00:00</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>http://localhost:1313/thm/pyrat/</loc>
-    <lastmod>2024-10-09T00:00:00+00:00</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.5</priority>
-  </url>
-  <url>
-    <loc>http://localhost:1313/thm/</loc>
-    <lastmod>2024-10-09T00:00:00+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>

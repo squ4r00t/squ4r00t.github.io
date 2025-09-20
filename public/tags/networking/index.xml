@@ -2,89 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Networking on squ4r00t</title>
-    <link>//localhost:1313/tags/networking/</link>
+    <link>http://localhost:1313/tags/networking/</link>
     <description>Recent content in Networking on squ4r00t</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Sun, 09 Mar 2025 00:00:00 +0000</lastBuildDate><atom:link href="//localhost:1313/tags/networking/index.xml" rel="self" type="application/rss+xml" />
+    <copyright>© 2025 squ4r00t</copyright>
+    <lastBuildDate>Sun, 09 Mar 2025 00:00:00 +0000</lastBuildDate><atom:link href="http://localhost:1313/tags/networking/index.xml" rel="self" type="application/rss+xml" />
+    
     <item>
       <title>Port scanning through network pivots</title>
-      <link>//localhost:1313/posts/blogpost-portscanning-through-pivots/</link>
+      <link>http://localhost:1313/posts/portscanning-through-pivots/portscanning-through-pivots/</link>
       <pubDate>Sun, 09 Mar 2025 00:00:00 +0000</pubDate>
       
-      <guid>//localhost:1313/posts/blogpost-portscanning-through-pivots/</guid>
-      <description>&lt;h3 id=&#34;introduction&#34;&gt;Introduction&lt;/h3&gt;
-&lt;hr&gt;
-&lt;p&gt;If you&amp;rsquo;ve ever tried port scanning a machine in an internal network through a pivot machine, you might have noticed that it can be very slow at times and that the results of the scan aren&amp;rsquo;t always very reliable (missing open ports :/).&lt;/p&gt;
-&lt;p&gt;Once solution that comes to mind might be to transfer nmap (or another port scanner) on the pivot machine and then run the scan from there.&lt;/p&gt;</description>
-      <content>&lt;h3 id=&#34;introduction&#34;&gt;Introduction&lt;/h3&gt;
-&lt;hr&gt;
-&lt;p&gt;If you&amp;rsquo;ve ever tried port scanning a machine in an internal network through a pivot machine, you might have noticed that it can be very slow at times and that the results of the scan aren&amp;rsquo;t always very reliable (missing open ports :/).&lt;/p&gt;
-&lt;p&gt;Once solution that comes to mind might be to transfer nmap (or another port scanner) on the pivot machine and then run the scan from there.&lt;/p&gt;
-&lt;p&gt;This method, although effective in terms of packet transmission (during the scan, packets will only travel from pivot to target without third-party), it presents some obstacles such as:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Lack of stealth&lt;/strong&gt;: Uploading a binary to the host is quite noisy and can be very easily detected&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Missing services&lt;/strong&gt;: There has been many times where nmap threw errors for some missing services (although still able to do a basic port scan)&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Inconvenience&lt;/strong&gt;: Uploading the binary &amp;gt; Login to the host &amp;gt; Running the binary &amp;gt; Copying the results &amp;gt; Pasting them. These are a lot of steps just for a port scan.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;a href=&#34;https://github.com/squ4r00t/sps&#34;&gt;sps&lt;/a&gt; is a tool that tries to circumvent these issues. It is a simple TCP port scanner written in Go to which you can specify a host to run the scan from (&lt;strong&gt;filelessly&lt;/strong&gt;).&lt;/p&gt;
-&lt;h3 id=&#34;quick-reminder-on-pivoting&#34;&gt;Quick Reminder on Pivoting&lt;/h3&gt;
-&lt;hr&gt;
-&lt;p&gt;Pivoting is a technique used to access internal networks that are not directly reachable by the intermediary of pivots. A pivot host is a machine that is both in our network and the internal network that we want to access:&lt;/p&gt;
-
-  &lt;figure class=&#34;center&#34; &gt;
-    &lt;img src=&#34;//localhost:1313/img/general/pscan_through_pivots/pivoting_primer.png&#34;   /&gt;
-    
-      &lt;figcaption class=&#34;center&#34; &gt;Basic Pivoting Scenario&lt;/figcaption&gt;
-    
-  &lt;/figure&gt;
-
-
-&lt;p&gt;In the image above, as the attacker (&lt;code&gt;10.10.50.20&lt;/code&gt;) we cannot directly access Server 1 (&lt;code&gt;172.16.10.3&lt;/code&gt;). However there is a host that we can reach and which can reach Server 1. That host is the Pivot here having the IP addresses: &lt;code&gt;10.10.50.100&lt;/code&gt; &amp;amp; &lt;code&gt;172.16.10.2&lt;/code&gt;.&lt;/p&gt;
-&lt;p&gt;In this situation, we can pivot into the internal network (&lt;code&gt;172.16.10.0/24&lt;/code&gt;) by tunneling our traffic through the Pivot (also called Jump Host). That way, if we want to send a packet to Server 1, we would send it first to the Pivot, which will then relay it to Server 1.&lt;/p&gt;
-&lt;p&gt;Using tools like &lt;a href=&#34;https://github.com/nicocha30/ligolo-ng&#34;&gt;ligolo-ng&lt;/a&gt; or &lt;a href=&#34;https://github.com/jpillora/chisel&#34;&gt;chisel&lt;/a&gt; we can easily do just that.&lt;/p&gt;
-&lt;h3 id=&#34;port-scanning-through-pivots&#34;&gt;Port Scanning through Pivots&lt;/h3&gt;
-&lt;hr&gt;
-&lt;p&gt;When scanning hosts that are in an internal network from an external network, we usually have to make a compromise between speed and accuracy/stability. If we send too many requests, we will probably lose some packets which might result in missing open ports making the scan results unreliable. Furthermore, it can also break the tunnel that we constructed to access the internal network.&lt;/p&gt;
-
-  &lt;figure class=&#34;center&#34; &gt;
-    &lt;img src=&#34;//localhost:1313/img/general/pscan_through_pivots/old_way.png&#34;   /&gt;
-    
-      &lt;figcaption class=&#34;center&#34; &gt;Scanning through a pivot (default way)&lt;/figcaption&gt;
-    
-  &lt;/figure&gt;
-
-
-&lt;p&gt;In the above image, we can see 3 hosts:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Attacker&lt;/strong&gt; which is in an external network trying to port scan a server that is situated in the internal network&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Pivot&lt;/strong&gt; relaying the packets from &lt;strong&gt;Attacker&lt;/strong&gt; to the target server&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Server to scan&lt;/strong&gt; which is the target server being scanned&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;We can also see &lt;strong&gt;dashed arrows&lt;/strong&gt; reprensenting the flow of packets being transfered in the different network segments.&lt;/p&gt;
-&lt;p&gt;In this scenario, let&amp;rsquo;s say we are probing port 80. Before we get back info whether the port is opened or closed, the information would have went through 4 segments (2 for request, 2 for response). And that&amp;rsquo;s if we&amp;rsquo;re doing a SYN scan. In this case we can see that it&amp;rsquo;s not unlikely that one of the packets might be lost, especially when our connection is not very stable (typical when pivoting).&lt;/p&gt;
-&lt;p&gt;To avoid all these problems we can, like mentionned in the introduction, perform the scan from the pivot machine. But without having to write on disk (for the sake of stealth).&lt;/p&gt;
-&lt;h3 id=&#34;sps-simpleportscanner&#34;&gt;SPS (SimplePortScanner)&lt;/h3&gt;
-&lt;hr&gt;
-&lt;p&gt;&lt;a href=&#34;https://github.com/squ4r00t/sps&#34;&gt;sps&lt;/a&gt; is a TCP port scanner written in Go to which you can specify a host (which you have ssh access to) to run the scan from (&lt;strong&gt;filelessly&lt;/strong&gt;).&lt;/p&gt;
-&lt;p&gt;It will connect to the specified host with the credentials provided. Upon successful authentication, it executes a command that will retrieve the compiled binary of sps hosted on a HTTP server or SMB share that you&amp;rsquo;ve set up before running sps.&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;The command that is executed, as well as whether a HTTP server or SMB share should be setup, both depends on the OS of the host perfoming the scan. This is explained in &lt;a href=&#34;https://github.com/squ4r00t/sps&#34;&gt;sps&amp;rsquo; README&lt;/a&gt;.&lt;/p&gt;&lt;/blockquote&gt;
-&lt;p&gt;Once the binary is retrieved it will be executed in memory and the results will be returned on STDOUT.&lt;/p&gt;
-
-  &lt;figure class=&#34;center&#34; &gt;
-    &lt;img src=&#34;//localhost:1313/img/general/pscan_through_pivots/tn.png&#34;   /&gt;
-    
-      &lt;figcaption class=&#34;center&#34; &gt;Port scanning through pivot using sps&lt;/figcaption&gt;
-    
-  &lt;/figure&gt;
-
-
-&lt;p&gt;On the above image, we can see that the arrows between the attacker and the pivot are not dashed anymore. This illustrates that we are not sending each single packet (for a single probe) all the way from attacker to target, rather we will send one &amp;ldquo;big request&amp;rdquo; to the pivot, which will do the work and returns us back the results.&lt;/p&gt;
-&lt;p&gt;On the perspective of the attacker, it&amp;rsquo;s like the scan was ran from their machine.&lt;/p&gt;
-&lt;p&gt;Thanks for reading, you can check out the tool here
--&amp;gt; &lt;a href=&#34;https://github.com/squ4r00t/sps&#34;&gt;SPS&lt;/a&gt;&lt;/p&gt;
-</content>
+      <guid>http://localhost:1313/posts/portscanning-through-pivots/portscanning-through-pivots/</guid>
+      <description></description>
+      
     </item>
     
   </channel>

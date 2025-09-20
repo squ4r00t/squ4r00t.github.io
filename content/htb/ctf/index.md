@@ -9,7 +9,7 @@ description = "Writeup for the 'Insane' rated machine: CTF"
  > CTF is an insane difficulty Linux box with a web application using LDAP based authentication. The application is vulnerable to LDAP injection but due to character blacklisting the payloads need to be double URL encoded. After enumeration, a token string is found, which is obtained using boolean injection. Using the token an OTP can be generated, which allows for execution of commands. After establishing a foothold, a cron can be exploited to gain sensitive information.
 
 ## Port Scan Results
-___
+
 From the results of the nmap scan, we see that we have 2 ports open: 22 and 80
 
 ```bash
@@ -26,7 +26,7 @@ PORT   STATE SERVICE VERSION
 ```
 
 ## Website
-___
+
 Navigating to `http://10.10.10.122`, we get this page telling us about a token-based (software tokens specifically) authentication system to be tested:
 
 {{<figure src="/img/htb/ctf/homepage.png" position=center caption="Home Page">}}
@@ -50,7 +50,7 @@ Looking at the source page, we see the following comment under the OTP input fie
 Knowing that the token string is stored in an "attribute", we can make the assumption that the authentication system is based on LDAP.
 
 ### Testing for LDAP Injection
-___
+
 Testing for LDAP Injection would help us validate our hypothesis that the website is using LDAP and potentially bypass the authentication system.
 
 First, we can try to send characters that are specific to LDAP's syntax. For example, the `*` (wilcard) character:
@@ -72,7 +72,7 @@ Earlier, when we tried admin we got the response: "User admin not found"
 This means we got a valid user by using the `*` character. Knowing this, and leveraging the difference between the 2 responses, we can retrieve a username character by character.
 
 ### Username enumeration
-___
+
 This is how we'll retrieve the username:
 - First we send `a*` as the username. If we get the message "Cannot login", then we know that the first letter is 'a'. If we don't, we move on to the letter 'b' by sending `b*`, so on and so forth.
 - Let's say that we confirmed that the first letter is 'a'. Now we repeat the process for the second letter by sending `aa*`
@@ -186,7 +186,7 @@ Using burp intruder, we can fuzz every attribute in our wordlist and see for whi
 Among this list of valid attributes, `pager` seems to be a good candidate for containing a 81 digits token. We can verify it by using the same method as we did in the username enumeration.
 
 ### Token leak
-___
+
 We can use a slightly modified version of the previous script:
 
 ```python
@@ -223,7 +223,7 @@ while True:
 {{<figure src="/img/htb/ctf/token_brute_end.png" position=center caption="Brute Force finished">}}
 
 ### OTP Generation
-___
+
 From the token we obtained previously, we need to generate a valid OTP which we can use to login. For this we can use  the command line tool: `stoken` (It was mentionned on the home page that the authentication was based on [Software Tokens](https://manpages.ubuntu.com/manpages/focal/man1/stoken.1.html))
 
 > Before running the tool, we need to make sure that our clock is synchronized with the server's or use a time offset
@@ -237,7 +237,7 @@ After submitting the login request with the generated OTP, we are redirected to 
 {{<figure src="/img/htb/ctf/page.php.png" position=center caption="/page.php">}}
 
 ### Command execution
-___
+
 If we try to run a command, we receive this error message:
 
 {{<figure src="/img/htb/ctf/cmd_error_message.png" position=center caption="Cannot run commands">}}
@@ -269,9 +269,9 @@ Now we are able to run commands, we can therefore get a reverse shell:
 {{<figure src="/img/htb/ctf/revshell_caught.png" position=center caption="Catching the reverse shell">}}
 
 ## Privesc
-___
+
 ### apache -> ldapuser
-___
+
 Looking at the files of the website, we find credentials for `ldapuser` in `/var/www/html/login.php`:
 
 ![](/img/htb/ctf/ldapuser_creds.png)
@@ -281,7 +281,7 @@ We can use them to login as `ldapuser` via ssh and retrieve the user flag:
 ![](/img/htb/ctf/user.txt.png)
 
 ### ldapuser -> root
-___
+
 Under `/backup`, we can see different archives with timestamps in their name. Looking at the last modified date, we see they are each separated by a minute. 
 
 This indicates that there might be a cron job running every minute.

@@ -16,6 +16,16 @@
   weight = 10
 
 [[main]]
+  name = "HTB"
+  pageRef = "htb"
+  weight = 10
+
+[[main]]
+  name = "Portswigger"
+  pageRef = "portswigger"
+  weight = 10
+
+[[main]]
   name = "Tags"
   pageRef = "tags"
   weight = 40

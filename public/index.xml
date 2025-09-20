@@ -60,6 +60,16 @@
     </item>
     
     <item>
+      <title>Port scanning through network pivots</title>
+      <link>http://localhost:1313/posts/portscanning-through-pivots/portscanning-through-pivots/</link>
+      <pubDate>Sun, 09 Mar 2025 00:00:00 +0000</pubDate>
+      
+      <guid>http://localhost:1313/posts/portscanning-through-pivots/portscanning-through-pivots/</guid>
+      <description></description>
+      
+    </item>
+    
+    <item>
       <title>HTB - Chemistry</title>
       <link>http://localhost:1313/htb/chemistry/</link>
       <pubDate>Mon, 03 Mar 2025 00:00:00 +0000</pubDate>
@@ -81,22 +91,22 @@
     
     <item>
       <title>Exploiting path mapping for web cache deception</title>
-      <link>http://localhost:1313/portswigger/portswigger-exploiting-path-mapping-for-web-cache-deception/</link>
+      <link>http://localhost:1313/portswigger/exploiting-path-mapping-for-web-cache-deception/</link>
       <pubDate>Mon, 11 Nov 2024 00:00:00 +0000</pubDate>
       
-      <guid>http://localhost:1313/portswigger/portswigger-exploiting-path-mapping-for-web-cache-deception/</guid>
+      <guid>http://localhost:1313/portswigger/exploiting-path-mapping-for-web-cache-deception/</guid>
       <description></description>
-      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/portswigger/portswigger-exploiting-path-mapping-for-web-cache-deception/featured.png" />
+      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/portswigger/exploiting-path-mapping-for-web-cache-deception/featured.png" />
     </item>
     
     <item>
-      <title>THM - Pyrat</title>
-      <link>http://localhost:1313/thm/pyrat/</link>
-      <pubDate>Wed, 09 Oct 2024 00:00:00 +0000</pubDate>
+      <title>Modifying Serialized Objects</title>
+      <link>http://localhost:1313/portswigger/modifying-serial-obj/</link>
+      <pubDate>Mon, 11 Nov 2024 00:00:00 +0000</pubDate>
       
-      <guid>http://localhost:1313/thm/pyrat/</guid>
+      <guid>http://localhost:1313/portswigger/modifying-serial-obj/</guid>
       <description></description>
-      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/thm/pyrat/featured.png" />
+      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/portswigger/modifying-serial-obj/featured.png" />
     </item>
     
   </channel>
