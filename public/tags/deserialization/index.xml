@@ -11,12 +11,12 @@
     
     <item>
       <title>Modifying Serialized Objects</title>
-      <link>http://localhost:1313/portswigger/portswigger-modifying-serial-obj/</link>
+      <link>http://localhost:1313/portswigger/modifying-serial-obj/</link>
       <pubDate>Mon, 11 Nov 2024 00:00:00 +0000</pubDate>
       
-      <guid>http://localhost:1313/portswigger/portswigger-modifying-serial-obj/</guid>
+      <guid>http://localhost:1313/portswigger/modifying-serial-obj/</guid>
       <description></description>
-      
+      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/portswigger/modifying-serial-obj/featured.png" />
     </item>
     
   </channel>
