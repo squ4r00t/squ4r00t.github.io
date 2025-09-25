@@ -1,12 +1,12 @@
 +++
 title = "HTB - CTF"
 date = "2025-04-30T00:00:00+00:00"
-tags = ["ctf", "htb", "ldap", "ldap injection", "otp", "otp generation", "cron", "7z", "7zip"]
+tags = ["htb", "linux", "insane", "ldap_injection", "stoken", "otp_bypass", "7z_privesc"]
 description = "Writeup for the 'Insane' rated machine: CTF"
 +++
 
 
- > CTF is an insane difficulty Linux box with a web application using LDAP based authentication. The application is vulnerable to LDAP injection but due to character blacklisting the payloads need to be double URL encoded. After enumeration, a token string is found, which is obtained using boolean injection. Using the token an OTP can be generated, which allows for execution of commands. After establishing a foothold, a cron can be exploited to gain sensitive information.
+CTF is an insane difficulty Linux box with a web application using LDAP based authentication. The application is vulnerable to LDAP injection but due to character blacklisting the payloads need to be double URL encoded. After enumeration, a token string is found, which is obtained using boolean injection. Using the token an OTP can be generated, which allows for execution of commands. After establishing a foothold, a cron can be exploited to gain sensitive information.
 
 ## Port Scan Results
 

@@ -1,13 +1,11 @@
 +++
 title = "HTB - Oouch"
 date = "2025-05-10T00:00:00+00:00"
-tags = ["ctf", "htb", "oauth", "oauth2", "authorization code", "csrf", "dbus", "uwsgi"]
+tags = ["htb", "linux", "hard", "oauth2", "csrf", "dbus", "uwsgi"]
 description = "Writeup for the 'Hard' rated machine: Oouch"
 +++
 
-{{<lead>}}
 Oouch is a hard difficulty Linux machine featuring web applications that use the OAuth authorization framework. Absence of a CSRF Token is leveraged to link an administrative account to our account, providing access to sensitive information. This information is used to register a new client application and steal the authorization code. This code is used to gain an access token, which provides unrestricted access to user resources. A misconfigured DBus server is then exploited through uWSGI in order to execute code in the context of root.
-{{</lead>}}
 
 ## Port Scanning
 
@@ -150,7 +148,7 @@ Let's also add `authorization.oouch.htb` to our hosts file.
 
 Navigating once again to the previous URL, we land on this page:
 
-{{<figure src="/img/htb/oouch/web8000_login.png" position=center caption="OAuth Server Login Page :8000/login">}}{{<figure>}}
+{{<figure src="/img/htb/oouch/web8000_login.png" position=center caption="OAuth Server Login Page :8000/login">}}
 
 Before moving forward, let's have a look at how Oauth works.
 
@@ -242,9 +240,7 @@ We'll send the following payload in the contact form:
 <a href="http://consumer.oouch.htb:5000/oauth/connect/token?code=a1b2.....xyz">click here!</a>
 ```
 
-{{<alert>}}
 Make sure to replace the authorization code with a valid one tied to your account on the Authorization server.
-{{</alert>}}
 
 {{<figure src="/img/htb/oouch/web5000_link_sent.png" position=center caption="CSRF link sent to admin">}}
 
@@ -314,9 +310,7 @@ Client id and client secret are provided by the application. Clicking on save wi
 
 Now that our application is created, we use it with the CSRF in the contact form in order to trick the user to authorize our application. Once they do, we'll receive the authorization code (tied to their account) which we can then use to request an access token that will allow us to authenticate as them.
 
-{{<alert>}}
 Don't forget to setup a listener on the return URL to catch the authorization token
-{{</alert>}}
 
 We can use the following payload:
 
@@ -444,9 +438,7 @@ Looking further in the `/code` directory, we see the `uwsgi.ini` file suggesting
 
 Searching for uwsgi exploits, we find [this one](https://github.com/wofeiwo/webcgi-exploits/blob/master/python/uwsgi_exp.py) which is an RCE. This will likely get us a shell as `www-data`.
 
-{{<alert>}}
 You will need to remove "import bytes" on line 18
-{{</alert>}}
 
 {{<figure src="/img/htb/oouch/rce_www_data.png" position=center caption="RCE as www-data">}}
 

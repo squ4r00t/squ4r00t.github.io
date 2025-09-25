@@ -1,83 +1,26 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Htb on squ4r00t</title>
-    <link>http://localhost:1313/tags/htb/</link>
-    <description>Recent content in Htb on squ4r00t</description>
-    <generator>Hugo -- gohugo.io</generator>
+    <title>Htb on Terminal</title>
+    <link>//localhost:1313/tags/htb/</link>
+    <description>Recent content in Htb on Terminal</description>
+    <generator>Hugo</generator>
     <language>en</language>
-    <copyright>© 2025 squ4r00t</copyright>
-    <lastBuildDate>Sat, 10 May 2025 00:00:00 +0000</lastBuildDate><atom:link href="http://localhost:1313/tags/htb/index.xml" rel="self" type="application/rss+xml" />
-    
+    <lastBuildDate>Sat, 10 May 2025 00:00:00 +0000</lastBuildDate>
+    <atom:link href="//localhost:1313/tags/htb/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>HTB - Oouch</title>
-      <link>http://localhost:1313/htb/oouch/</link>
+      <link>//localhost:1313/htb/oouch/</link>
       <pubDate>Sat, 10 May 2025 00:00:00 +0000</pubDate>
-      
-      <guid>http://localhost:1313/htb/oouch/</guid>
-      <description></description>
-      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/htb/oouch/featured.png" />
+      <guid>//localhost:1313/htb/oouch/</guid>
+      <description>&lt;p&gt;Oouch is a hard difficulty Linux machine featuring web applications that use the OAuth authorization framework. Absence of a CSRF Token is leveraged to link an administrative account to our account, providing access to sensitive information. This information is used to register a new client application and steal the authorization code. This code is used to gain an access token, which provides unrestricted access to user resources. A misconfigured DBus server is then exploited through uWSGI in order to execute code in the context of root.&lt;/p&gt;</description>
     </item>
-    
     <item>
       <title>HTB - CTF</title>
-      <link>http://localhost:1313/htb/ctf/</link>
+      <link>//localhost:1313/htb/ctf/</link>
       <pubDate>Wed, 30 Apr 2025 00:00:00 +0000</pubDate>
-      
-      <guid>http://localhost:1313/htb/ctf/</guid>
-      <description></description>
-      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/htb/ctf/featured.png" />
+      <guid>//localhost:1313/htb/ctf/</guid>
+      <description>&lt;p&gt;CTF is an insane difficulty Linux box with a web application using LDAP based authentication. The application is vulnerable to LDAP injection but due to character blacklisting the payloads need to be double URL encoded. After enumeration, a token string is found, which is obtained using boolean injection. Using the token an OTP can be generated, which allows for execution of commands. After establishing a foothold, a cron can be exploited to gain sensitive information.&lt;/p&gt;</description>
     </item>
-    
-    <item>
-      <title>HTB - Passage</title>
-      <link>http://localhost:1313/htb/passage/</link>
-      <pubDate>Sun, 27 Apr 2025 00:00:00 +0000</pubDate>
-      
-      <guid>http://localhost:1313/htb/passage/</guid>
-      <description></description>
-      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/htb/passage/featured.png" />
-    </item>
-    
-    <item>
-      <title>HTB - Tenet</title>
-      <link>http://localhost:1313/htb/tenet/</link>
-      <pubDate>Sun, 27 Apr 2025 00:00:00 +0000</pubDate>
-      
-      <guid>http://localhost:1313/htb/tenet/</guid>
-      <description></description>
-      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/htb/tenet/featured.png" />
-    </item>
-    
-    <item>
-      <title>HTB - Instant</title>
-      <link>http://localhost:1313/htb/instant/</link>
-      <pubDate>Tue, 18 Mar 2025 21:14:52 +0100</pubDate>
-      
-      <guid>http://localhost:1313/htb/instant/</guid>
-      <description></description>
-      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/htb/instant/featured.png" />
-    </item>
-    
-    <item>
-      <title>HTB - Chemistry</title>
-      <link>http://localhost:1313/htb/chemistry/</link>
-      <pubDate>Mon, 03 Mar 2025 00:00:00 +0000</pubDate>
-      
-      <guid>http://localhost:1313/htb/chemistry/</guid>
-      <description></description>
-      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/htb/chemistry/featured.png" />
-    </item>
-    
-    <item>
-      <title>HTB - Forest</title>
-      <link>http://localhost:1313/htb/forest/</link>
-      <pubDate>Sat, 16 Nov 2024 00:00:00 +0000</pubDate>
-      
-      <guid>http://localhost:1313/htb/forest/</guid>
-      <description></description>
-      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/htb/forest/featured.png" />
-    </item>
-    
   </channel>
 </rss>
