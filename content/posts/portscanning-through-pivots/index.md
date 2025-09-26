@@ -1,13 +1,11 @@
 +++
-title = "Port scanning through network pivots"
-date = "2025-03-09T00:00:00+00:00"
-author = "squ4r00t"
-cover = "/img/general/pscan_through_pivots/tn.png"
-tags = ["networking", "port_scanning", "pivoting"]
+title = "SPS: A convenient way of scanning through network pivots"
+date = "2025-09-26T00:00:00+00:00"
+tags = ["networking", "port_scanning", "pivoting", "tool"]
 description = "In this blog post, I present a way to efficiently do port scanning when we're pivoting into a network."
 +++
 
-If you've ever tried scanning ports on a machine present in an internal network through a pivot machine, you might have noticed that it can be very slow at times and that the results of the scan aren't always very reliable (missing open ports :/).
+If you've ever tried scanning ports on a machine present in an internal network through a pivot machine, you might have noticed that it can be very slow at times and that the results of the scan aren't always very reliable (often times missing open ports :/).
 
 Once solution that comes to mind might be to transfer nmap (or another port scanner) on the pivot machine and then run the scan from there.
 

@@ -2,7 +2,7 @@
 <html lang="en">
 <head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
   
-    <title>Port scanning through network pivots :: Terminal</title>
+    <title>SPS: A convenient way of scanning through network pivots :: Terminal</title>
   
   <meta http-equiv="content-type" content="text/html; charset=utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,7 +11,7 @@
 
   <meta name="robots" content="noodp" />
 
-<link rel="canonical" href="//localhost:1313/posts/portscanning-through-pivots/portscanning-through-pivots/" />
+<link rel="canonical" href="//localhost:1313/posts/portscanning-through-pivots/" />
 
 
 
@@ -71,15 +71,15 @@
   
     <meta name="twitter:site" content="" />
   
-    <meta name="twitter:creator" content="squ4r00t" />
+    <meta name="twitter:creator" content="" />
 
 
 
 <meta property="og:locale" content="en" />
 <meta property="og:type" content="article" />
-<meta property="og:title" content="Port scanning through network pivots">
+<meta property="og:title" content="SPS: A convenient way of scanning through network pivots">
 <meta property="og:description" content="In this blog post, I present a way to efficiently do port scanning when we&#39;re pivoting into a network." />
-<meta property="og:url" content="//localhost:1313/posts/portscanning-through-pivots/portscanning-through-pivots/" />
+<meta property="og:url" content="//localhost:1313/posts/portscanning-through-pivots/" />
 <meta property="og:site_name" content="Terminal" />
 
   <meta property="og:image" content="//localhost:1313/og-image.png">
@@ -88,7 +88,7 @@
 <meta property="og:image:height" content="627">
 
 
-  <meta property="article:published_time" content="2025-03-09 00:00:00 &#43;0000 UTC" />
+  <meta property="article:published_time" content="2025-09-26 00:00:00 &#43;0000 UTC" />
 
 
 
@@ -113,6 +113,7 @@
       <a href="/">
   <div class="logo">
     squ4r00t
+    <img href=x />
   </div>
 </a>
 
@@ -124,11 +125,11 @@
     <ul class="menu__dropdown">
       
         
-          <li><a href="/htb">HTB writeups</a></li>
+          <li><a href="/posts">Blog</a></li>
         
       
         
-          <li><a href="/posts">Posts</a></li>
+          <li><a href="/htb">HTB writeups</a></li>
         
       
       
@@ -145,11 +146,11 @@
     
       
         
-          <li><a href="/htb" >HTB writeups</a></li>
+          <li><a href="/posts" >Blog</a></li>
         
       
         
-          <li><a href="/posts" >Posts</a></li>
+          <li><a href="/htb" >HTB writeups</a></li>
         
       
       
@@ -165,9 +166,9 @@
     
 <article class="post">
   <h1 class="post-title">
-    <a href="//localhost:1313/posts/portscanning-through-pivots/portscanning-through-pivots/">Port scanning through network pivots</a>
+    <a href="//localhost:1313/posts/portscanning-through-pivots/">SPS: A convenient way of scanning through network pivots</a>
   </h1>
-  <div class="post-meta"><time class="post-date">2025-03-09</time><span class="post-author">squ4r00t</span></div>
+  <div class="post-meta"><time class="post-date">2025-09-26</time></div>
 
   
     <span class="post-tags">
@@ -178,15 +179,21 @@
       
       #<a href="//localhost:1313/tags/pivoting/">pivoting</a>&nbsp;
       
+      #<a href="//localhost:1313/tags/tool/">tool</a>&nbsp;
+      
     </span>
   
   
+  <img src="/posts/portscanning-through-pivots/cover.png"
+    class="post-cover"
+    alt="SPS: A convenient way of scanning through network pivots"
+    title="Cover Image" />
 
 
   
 
   <div class="post-content"><div>
-        <p>If you&rsquo;ve ever tried scanning ports on a machine present in an internal network through a pivot machine, you might have noticed that it can be very slow at times and that the results of the scan aren&rsquo;t always very reliable (missing open ports :/).</p>
+        <p>If you&rsquo;ve ever tried scanning ports on a machine present in an internal network through a pivot machine, you might have noticed that it can be very slow at times and that the results of the scan aren&rsquo;t always very reliable (often times missing open ports :/).</p>
 <p>Once solution that comes to mind might be to transfer nmap (or another port scanner) on the pivot machine and then run the scan from there.</p>
 <p>This method, although effective in terms of packet transmission (the scanning traffic is isolated in the pivot-target segment), presents some drawbacks such as:</p>
 <ul>
