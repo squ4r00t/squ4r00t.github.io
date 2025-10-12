@@ -2,7 +2,7 @@
 title = "SPS: A convenient way of scanning through network pivots"
 date = "2025-09-26T00:00:00+00:00"
 tags = ["networking", "port_scanning", "pivoting", "tool"]
-description = "In this blog post, I will present a way to efficiently do port scanning when we're pivoting into a network."
+description = "Efficient port scanning when pivoting into a network."
 +++
 
 If you've ever tried scanning ports on a machine present in an internal network through a pivot machine, you might have noticed that it can be very slow at times and that the results of the scan aren't always very reliable (often times missing open ports :/).

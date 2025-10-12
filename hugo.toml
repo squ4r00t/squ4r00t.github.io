@@ -12,7 +12,7 @@ pagination.pagerSize = 5
 [params]
   # dir name of your main content (default is `content/posts`).
   # the list of set content will show up on your index page (baseurl).
-  contentTypeName = "htb"
+  contentTypeName = "posts"
 
   # if you set this to 0, only submenu trigger will be visible
   showMenuItems = 2
@@ -35,6 +35,8 @@ pagination.pagerSize = 5
   # If you use git, you can set `enableGitInfo` to `true` and then post will automatically get the last updated
   showLastUpdated = false
 
+  math = false
+
   # Provide a string as a prefix for the last update date. By default, it looks like this: 2020-xx-xx [Updated: 2020-xx-xx] :: Author
   # updatedDatePrefix = "Updated"
 
@@ -43,7 +45,7 @@ pagination.pagerSize = 5
 
   # whether to show a table of contents
   # can be overridden in a page's front-matter
-  Toc = true # default
+  Toc = false # default
 
   # set title for the table of contents
   # can be overridden in a page's front-matter
@@ -98,10 +100,19 @@ pagination.pagerSize = 5
       [languages.en.menu]
         [[languages.en.menu.main]]
           identifier = "htb"
-          name = "HTB writeups"
+          name = "htb_writeups"
           url = "/htb"
         [[languages.en.menu.main]]
           identifier = "posts"
-          name = "Blog"
+          name = "blog_posts"
           url = "/posts"
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.extensions]
+      [markup.goldmark.extensions.passthrough]
+        enable = true
+        [markup.goldmark.extensions.passthrough.delimiters]
+          block = [['\[', '\]'], ['$$', '$$']]
+          inline = [['\(', '\)']]
 

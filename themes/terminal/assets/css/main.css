@@ -72,7 +72,20 @@ table {
 
 a {
   color: var(--accent);
+  text-decoration: none;
 }
+
+.header ul li a {
+  background-color: rgba(0, 89, 255, 0.12);
+  border-radius: 5px;
+  padding: 4px;
+}
+
+.header ul {
+  justify-content: center;
+  align-items: center;
+}
+
 
 button {
   position: relative;

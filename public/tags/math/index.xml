@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Math on squ4r00t&#39;s</title>
+    <link>//localhost:1313/tags/math/</link>
+    <description>Recent content in Math on squ4r00t&#39;s</description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    <lastBuildDate>Sun, 12 Oct 2025 00:00:00 +0000</lastBuildDate>
+    <atom:link href="//localhost:1313/tags/math/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Extended Euclidian Algorithm Explained</title>
+      <link>//localhost:1313/posts/ext_euclid_alg/</link>
+      <pubDate>Sun, 12 Oct 2025 00:00:00 +0000</pubDate>
+      <guid>//localhost:1313/posts/ext_euclid_alg/</guid>
+      <description>&lt;p&gt;In this blog post, I explain the Euclidian Algorithm and how to implement it in python.&lt;/p&gt;&#xA;&lt;h2 id=&#34;modulus-operator&#34;&gt;Modulus Operator&lt;/h2&gt;&#xA;&lt;p&gt;First, we need to understand the modulus operator.&lt;/p&gt;&#xA;&lt;p&gt;The modulus operator, often represented by the percent character (&lt;code&gt;%&lt;/code&gt;) in many programming languages, returns the rest of the division between 2 operands.&lt;/p&gt;&#xA;&lt;p&gt;For example, let&amp;rsquo;s say we have 2 integers &lt;code&gt;a=5&lt;/code&gt; and &lt;code&gt;b=2&lt;/code&gt;. Then &lt;code&gt;a mod b&lt;/code&gt; will be equal to &lt;code&gt;1&lt;/code&gt;&lt;/p&gt;&#xA;&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-bash&#34; data-lang=&#34;bash&#34;&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;~ ❯ python3&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Python 3.13.7 &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;main, Aug &lt;span class=&#34;m&#34;&gt;14&lt;/span&gt; 2025, 00:00:00&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;GCC 14.3.1 &lt;span class=&#34;m&#34;&gt;20250523&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;Red Hat 14.3.1-1&lt;span class=&#34;o&#34;&gt;)]&lt;/span&gt; on linux&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;Type &lt;span class=&#34;s2&#34;&gt;&amp;#34;help&amp;#34;&lt;/span&gt;, &lt;span class=&#34;s2&#34;&gt;&amp;#34;copyright&amp;#34;&lt;/span&gt;, &lt;span class=&#34;s2&#34;&gt;&amp;#34;credits&amp;#34;&lt;/span&gt; or &lt;span class=&#34;s2&#34;&gt;&amp;#34;license&amp;#34;&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;for&lt;/span&gt; more information.&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&amp;gt;&amp;gt;&amp;gt; &lt;span class=&#34;nv&#34;&gt;a&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;5&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&amp;gt;&amp;gt;&amp;gt; &lt;span class=&#34;nv&#34;&gt;b&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;m&#34;&gt;2&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&amp;gt;&amp;gt;&amp;gt; a%b&#xA;&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;line&#34;&gt;&lt;span class=&#34;cl&#34;&gt;&lt;span class=&#34;m&#34;&gt;1&lt;/span&gt;&#xA;&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;We can also think of it as:&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>
