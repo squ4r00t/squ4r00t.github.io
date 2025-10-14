@@ -36,7 +36,7 @@
   <link rel="stylesheet" href="//localhost:1313/css/header.min.b246f77a68a20a42410f6ef10f5a4c0355e44a1e6161b71356c92d912d3ad1d2.css">
 
   
-  <link rel="stylesheet" href="//localhost:1313/css/main.min.c6c205140aab8c6525ba837049b4d493f622f76e35fa96ac4ae989d2a0f9fb6d.css">
+  <link rel="stylesheet" href="//localhost:1313/css/main.min.62d2456261fa4d2ce45cd4693d643a5d24e1945034aabacad53f93d874da5fd2.css">
 
   
   <link rel="stylesheet" href="//localhost:1313/css/menu.min.3c17467ebeb3d38663dce68f71f519901124fa5cbb4519b2fb0667a21e9aca39.css">
@@ -127,11 +127,11 @@
     <ul class="menu__dropdown">
       
         
-          <li><a href="/posts">blog_posts</a></li>
+          <li><a href="/posts">blog</a></li>
         
       
         
-          <li><a href="/htb">htb_writeups</a></li>
+          <li><a href="/htb">writeups</a></li>
         
       
       
@@ -148,11 +148,11 @@
     
       
         
-          <li><a href="/posts" >blog_posts</a></li>
+          <li><a href="/posts" >blog</a></li>
         
       
         
-          <li><a href="/htb" >htb_writeups</a></li>
+          <li><a href="/htb" >writeups</a></li>
         
       
       
@@ -192,6 +192,19 @@
     title="Cover Image" />
 
 
+  
+    <div class="table-of-contents">
+      <h2>
+        Table of Contents
+      </h2>
+      <nav id="TableOfContents">
+  <ul>
+    <li><a href="#quick-reminder-on-pivoting">Quick Reminder on Pivoting</a></li>
+    <li><a href="#port-scanning-through-pivots">Port Scanning through Pivots</a></li>
+    <li><a href="#sps-simpleportscanner">SPS (SimplePortScanner)</a></li>
+  </ul>
+</nav>
+    </div>
   
 
   <div class="post-content"><div>
@@ -238,7 +251,7 @@
 <blockquote>
 <p>The command that is executed and whether a HTTP server or SMB share should be setup, both depends on the OS of the host perfoming the scan. This is explained in <a href="https://github.com/squ4r00t/sps">sps&rsquo; README</a>.</p></blockquote>
 <p>Once the binary is retrieved it will be executed in memory and the results will be returned on STDOUT.</p>
-<figure><img src="/img/general/pscan_through_pivots/tn.png"
+<figure><img src="/img/general/pscan_through_pivots/with_sps.png"
     alt="Port scanning through pivot using sps"><figcaption>
       <p>Port scanning through pivot using sps</p>
     </figcaption>
@@ -246,8 +259,6 @@
 
 <p>On the above image, we can see that the arrows between the attacker and the pivot are not dashed anymore. This illustrates that we are not sending each single packet (for a single probe) all the way from attacker to target, rather we will send one &ldquo;big request&rdquo; to the pivot, which will do the work and returns us back the results.</p>
 <p>On the perspective of the attacker, it&rsquo;s like the scan was ran from their machine.</p>
-<p>Thanks for reading, you can check out the tool here
--&gt; <a href="https://github.com/squ4r00t/sps">SPS</a></p>
 
       </div></div>
 

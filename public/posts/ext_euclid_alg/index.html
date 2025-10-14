@@ -36,7 +36,7 @@
   <link rel="stylesheet" href="//localhost:1313/css/header.min.b246f77a68a20a42410f6ef10f5a4c0355e44a1e6161b71356c92d912d3ad1d2.css">
 
   
-  <link rel="stylesheet" href="//localhost:1313/css/main.min.c6c205140aab8c6525ba837049b4d493f622f76e35fa96ac4ae989d2a0f9fb6d.css">
+  <link rel="stylesheet" href="//localhost:1313/css/main.min.62d2456261fa4d2ce45cd4693d643a5d24e1945034aabacad53f93d874da5fd2.css">
 
   
   <link rel="stylesheet" href="//localhost:1313/css/menu.min.3c17467ebeb3d38663dce68f71f519901124fa5cbb4519b2fb0667a21e9aca39.css">
@@ -142,11 +142,11 @@
     <ul class="menu__dropdown">
       
         
-          <li><a href="/posts">blog_posts</a></li>
+          <li><a href="/posts">blog</a></li>
         
       
         
-          <li><a href="/htb">htb_writeups</a></li>
+          <li><a href="/htb">writeups</a></li>
         
       
       
@@ -163,11 +163,11 @@
     
       
         
-          <li><a href="/posts" >blog_posts</a></li>
+          <li><a href="/posts" >blog</a></li>
         
       
         
-          <li><a href="/htb" >htb_writeups</a></li>
+          <li><a href="/htb" >writeups</a></li>
         
       
       
@@ -204,6 +204,27 @@
 
 
   
+    <div class="table-of-contents">
+      <h2>
+        Table of Contents
+      </h2>
+      <nav id="TableOfContents">
+  <ul>
+    <li><a href="#prerequisite-modulus-operator">Prerequisite: Modulus Operator</a></li>
+    <li><a href="#euclidian-algorithm">Euclidian Algorithm</a>
+      <ul>
+        <li><a href="#implementation">Implementation</a></li>
+      </ul>
+    </li>
+    <li><a href="#extended-euclidian-algorithm">Extended Euclidian Algorithm</a>
+      <ul>
+        <li><a href="#implementation-1">Implementation</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    </div>
+  
 
   <div class="post-content"><div>
         <p>In this blog post, I explain the Euclidian Algorithm (+extended) and how to implement them in python.</p>
@@ -232,10 +253,12 @@
 \[ a = bq + r \]<h2 id="euclidian-algorithm">Euclidian Algorithm<a href="#euclidian-algorithm" class="hanchor" ariaLabel="Anchor">#</a> </h2>
 <p>The Euclidian algorithm is used to get the <strong>Greatest Common Divisor</strong> <code>d</code> of 2 integers <code>a</code> and <code>b</code> (ie. the biggest number that divides both <code>a</code> and <code>b</code>).</p>
 \[ d = gcd(a,b) \]<p>In order to find the gcd, the algorithm relies on the following claim:</p>
-<p>if <code>a</code> and <code>b</code> are both divisible by <code>d</code> then <code>r</code> which is equal to <code>a mod b</code> is also divisible by <code>d</code></p>
+<blockquote>
+<p>if <code>a</code> and <code>b</code> are both divisible by <code>d</code>, then <code>r = a mod b</code> is also divisible by <code>d</code></p></blockquote>
 <p>but how can we prove it ?</p>
-<h4 id="approach-1-math">Approach 1: math<a href="#approach-1-math" class="hanchor" ariaLabel="Anchor">#</a> </h4>
-<p>What we know is that both <code>a</code> and <code>b</code> are divisible by <code>d</code>. And we are trying to prove that <code>r = a mod b</code> is also divisible by <code>d</code>.</p>
+<p><strong>Approach 1: math</strong></p>
+<p>What we know: both <code>a</code> and <code>b</code> are divisible by <code>d</code>.</p>
+<p>What we are trying to prove: <code>r = a mod b</code> is also divisible by <code>d</code>.</p>
 <blockquote>
 <p><strong>Info</strong> <br>
 An integer <code>x</code> being divisible by another integer <code>y</code> means that <code>x</code> can be written: </p>
@@ -250,7 +273,7 @@ r = a - bq \\
 r = (nd) - (md)q \\
 r = (n - mq) * d
 $$<p><code>r</code> can be written as an integer (<code>n-mq</code>) times <code>d</code>, therefore <code>r</code> is divisible by <code>d</code>.</p>
-<h4 id="approach-2-visual-intuition">Approach 2: visual intuition<a href="#approach-2-visual-intuition" class="hanchor" ariaLabel="Anchor">#</a> </h4>
+<p><strong>Approach 2: visual intuition</strong></p>
 <p>In this approach, we need to think of <code>x</code> being divisible by <code>y</code> as <code>x</code> being made of <code>n</code> blocks of size <code>y</code> (x, y, n integers).</p>
 <figure><img src="/img/general/ext_euclid_alg/blocks_illustration.png"
     alt="Blocks illustration"><figcaption>
@@ -259,7 +282,7 @@ $$<p><code>r</code> can be written as an integer (<code>n-mq</code>) times <code
 </figure>
 
 <p>In the above figure, we see that <code>a</code> is made of <code>n</code> blocks of size <code>d</code> and <code>b</code> is made of <code>m</code> blocks of size <code>d</code>. This is the same as <code>a=n*d</code> and <code>b=m*d</code></p>
-<p>In this illustration, we can see that the remainder <code>r</code> will always be made up of <strong>whole</strong> number of blocks of size <code>d</code>, thus will always be divisible by <code>d</code>. This is because <code>r</code> is what remains when you substract <code>b</code> &ldquo;<code>q</code> times&rdquo; from <code>a</code> (ie. <code>r = a - bq</code>) and since <code>a</code> and <code>b</code> are made of the same unit blocks, naturally the remainder will also be the same.</p>
+<p>In this illustration, we can see that the remainder <code>r</code> will always be made up of a <strong>whole</strong> number of blocks of size <code>d</code>, thus will always be divisible by <code>d</code>. This is because <code>r</code> is what remains when you substract <code>b</code> &ldquo;<code>q</code> times&rdquo; from <code>a</code> (ie. <code>r = a - bq</code>) and since <code>a</code> and <code>b</code> are made of the same unit blocks, naturally the remainder will also be the same.</p>
 <p>Now coming back to the Euclidian Algorithm.</p>
 <p>We have shown that if <code>a</code> and <code>b</code> are divisible by <code>d</code>, then <code>r = a mod b</code> is also divisible by <code>d</code>.</p>
 <p>And we know that <code>a</code> and <code>b</code> are both divisible by <code>gcd(a,b)</code>, which means that <code>r = a mod b</code> is also divisible by <code>gcd(a,b)</code>.</p>
@@ -268,6 +291,7 @@ $$<p><code>r</code> can be written as an integer (<code>n-mq</code>) times <code
 $$
 gcd(a,b) = gcd(a,r) = gcd(b,r)
 $$<p>This helps a lot in reducing the possibilities, since finding the gcd for smaller numbers is easier that larger ones.</p>
+<h3 id="implementation">Implementation<a href="#implementation" class="hanchor" ariaLabel="Anchor">#</a> </h3>
 <p>The algorithm will first compute <code>r = a % b</code>.</p>
 <p>If <code>r</code> is equal to 0, it will return <code>min(a,b)</code></p>
 <p>Else it will return <code>gcd(min(a,b), r)</code></p>
@@ -327,7 +351,8 @@ $$<p>In the end we have:</p>
 $$
 x_{k-1} = y_{k} \\
 y_{k-1} = x - yq_{k-1}
-$$<p>We now have everything we need to implement the algorithm.</p>
+$$<h3 id="implementation-1">Implementation<a href="#implementation-1" class="hanchor" ariaLabel="Anchor">#</a> </h3>
+<p>We now have everything we need to implement the algorithm.</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">f</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
 </span></span><span class="line"><span class="cl">    <span class="c1"># Calculating the remainder</span>
 </span></span><span class="line"><span class="cl">    <span class="n">r</span> <span class="o">=</span> <span class="n">a</span> <span class="o">%</span> <span class="n">b</span>

@@ -5,6 +5,8 @@ tags = ["htb", "linux", "hard", "oauth2", "csrf", "dbus", "uwsgi"]
 description = "Writeup for the 'Hard' rated machine: Oouch"
 +++
 
+## Overview
+
 Oouch is a hard difficulty Linux machine featuring web applications that use the OAuth authorization framework. Absence of a CSRF Token is leveraged to link an administrative account to our account, providing access to sensitive information. This information is used to register a new client application and steal the authorization code. This code is used to gain an access token, which provides unrestricted access to user resources. A misconfigured DBus server is then exploited through uWSGI in order to execute code in the context of root.
 
 ## Port Scanning

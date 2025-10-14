@@ -36,7 +36,7 @@
   <link rel="stylesheet" href="//localhost:1313/css/header.min.b246f77a68a20a42410f6ef10f5a4c0355e44a1e6161b71356c92d912d3ad1d2.css">
 
   
-  <link rel="stylesheet" href="//localhost:1313/css/main.min.c6c205140aab8c6525ba837049b4d493f622f76e35fa96ac4ae989d2a0f9fb6d.css">
+  <link rel="stylesheet" href="//localhost:1313/css/main.min.62d2456261fa4d2ce45cd4693d643a5d24e1945034aabacad53f93d874da5fd2.css">
 
   
   <link rel="stylesheet" href="//localhost:1313/css/menu.min.3c17467ebeb3d38663dce68f71f519901124fa5cbb4519b2fb0667a21e9aca39.css">
@@ -127,11 +127,11 @@
     <ul class="menu__dropdown">
       
         
-          <li><a href="/posts">blog_posts</a></li>
+          <li><a href="/posts">blog</a></li>
         
       
         
-          <li><a href="/htb">htb_writeups</a></li>
+          <li><a href="/htb">writeups</a></li>
         
       
       
@@ -148,11 +148,11 @@
     
       
         
-          <li><a href="/posts" >blog_posts</a></li>
+          <li><a href="/posts" >blog</a></li>
         
       
         
-          <li><a href="/htb" >htb_writeups</a></li>
+          <li><a href="/htb" >writeups</a></li>
         
       
       
@@ -198,6 +198,33 @@
     title="Cover Image" />
 
 
+  
+    <div class="table-of-contents">
+      <h2>
+        Table of Contents
+      </h2>
+      <nav id="TableOfContents">
+  <ul>
+    <li><a href="#port-scan-results">Port Scan Results</a></li>
+    <li><a href="#website">Website</a>
+      <ul>
+        <li><a href="#testing-for-ldap-injection">Testing for LDAP Injection</a></li>
+        <li><a href="#username-enumeration">Username enumeration</a></li>
+        <li><a href="#attribute-enumeration">Attribute enumeration</a></li>
+        <li><a href="#token-leak">Token leak</a></li>
+        <li><a href="#otp-generation">OTP Generation</a></li>
+        <li><a href="#command-execution">Command execution</a></li>
+      </ul>
+    </li>
+    <li><a href="#privesc">Privesc</a>
+      <ul>
+        <li><a href="#apache---ldapuser">apache -&gt; ldapuser</a></li>
+        <li><a href="#ldapuser---root">ldapuser -&gt; root</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    </div>
   
 
   <div class="post-content"><div>

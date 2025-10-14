@@ -45,7 +45,7 @@ pagination.pagerSize = 5
 
   # whether to show a table of contents
   # can be overridden in a page's front-matter
-  Toc = false # default
+  Toc = true # default
 
   # set title for the table of contents
   # can be overridden in a page's front-matter
@@ -100,11 +100,11 @@ pagination.pagerSize = 5
       [languages.en.menu]
         [[languages.en.menu.main]]
           identifier = "htb"
-          name = "htb_writeups"
+          name = "writeups"
           url = "/htb"
         [[languages.en.menu.main]]
           identifier = "posts"
-          name = "blog_posts"
+          name = "blog"
           url = "/posts"
 
 [markup]

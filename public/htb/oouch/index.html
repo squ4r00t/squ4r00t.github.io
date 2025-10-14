@@ -36,7 +36,7 @@
   <link rel="stylesheet" href="//localhost:1313/css/header.min.b246f77a68a20a42410f6ef10f5a4c0355e44a1e6161b71356c92d912d3ad1d2.css">
 
   
-  <link rel="stylesheet" href="//localhost:1313/css/main.min.c6c205140aab8c6525ba837049b4d493f622f76e35fa96ac4ae989d2a0f9fb6d.css">
+  <link rel="stylesheet" href="//localhost:1313/css/main.min.810acd43c419a5842b2cd4c7651f275cdeacc6499a0896dcdabe98e2d6151e08.css">
 
   
   <link rel="stylesheet" href="//localhost:1313/css/menu.min.3c17467ebeb3d38663dce68f71f519901124fa5cbb4519b2fb0667a21e9aca39.css">
@@ -127,11 +127,11 @@
     <ul class="menu__dropdown">
       
         
-          <li><a href="/posts">blog_posts</a></li>
+          <li><a href="/posts">blog</a></li>
         
       
         
-          <li><a href="/htb">htb_writeups</a></li>
+          <li><a href="/htb">writeups</a></li>
         
       
       
@@ -148,11 +148,11 @@
     
       
         
-          <li><a href="/posts" >blog_posts</a></li>
+          <li><a href="/posts" >blog</a></li>
         
       
         
-          <li><a href="/htb" >htb_writeups</a></li>
+          <li><a href="/htb" >writeups</a></li>
         
       
       
@@ -199,9 +199,37 @@
 
 
   
+    <div class="table-of-contents">
+      <h2>
+        Table of Contents
+      </h2>
+      <nav id="TableOfContents">
+  <ul>
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#port-scanning">Port Scanning</a></li>
+    <li><a href="#ftp">FTP</a></li>
+    <li><a href="#website-at-5000">Website at :5000</a></li>
+    <li><a href="#website-at-8000">Website at :8000</a>
+      <ul>
+        <li><a href="#how-oauth-works-">How Oauth works ?</a></li>
+        <li><a href="#understanding-oouchs-oauth-flow">Understanding Oouch&rsquo;s OAuth Flow</a></li>
+        <li><a href="#oauth-exploitation-part-1">OAuth Exploitation: Part 1</a></li>
+        <li><a href="#oauth-exploitation-part-2">OAuth Exploitation: Part 2</a></li>
+      </ul>
+    </li>
+    <li><a href="#privesc">Privesc</a>
+      <ul>
+        <li><a href="#qtc---www-data">qtc -&gt; www-data</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    </div>
+  
 
   <div class="post-content"><div>
-        <p>Oouch is a hard difficulty Linux machine featuring web applications that use the OAuth authorization framework. Absence of a CSRF Token is leveraged to link an administrative account to our account, providing access to sensitive information. This information is used to register a new client application and steal the authorization code. This code is used to gain an access token, which provides unrestricted access to user resources. A misconfigured DBus server is then exploited through uWSGI in order to execute code in the context of root.</p>
+        <h2 id="overview">Overview<a href="#overview" class="hanchor" ariaLabel="Anchor">#</a> </h2>
+<p>Oouch is a hard difficulty Linux machine featuring web applications that use the OAuth authorization framework. Absence of a CSRF Token is leveraged to link an administrative account to our account, providing access to sensitive information. This information is used to register a new client application and steal the authorization code. This code is used to gain an access token, which provides unrestricted access to user resources. A misconfigured DBus server is then exploited through uWSGI in order to execute code in the context of root.</p>
 <h2 id="port-scanning">Port Scanning<a href="#port-scanning" class="hanchor" ariaLabel="Anchor">#</a> </h2>
 <p>From the results of the nmap scan, we see that we have 4 ports open: 21, 22, 5000 and 8000</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">PORT     STATE SERVICE VERSION

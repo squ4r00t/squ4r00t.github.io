@@ -1,10 +1,11 @@
 :root {
   --background: #000000;
   --foreground: #ffffff;
-  --accent: #75c3f0;
+  --accent: #00eeff;
   --font-size: 1.1rem;
   --line-height: 1.54em;
   --radius: 5px;
+  --blockquote-background: rgba(117, 195, 240, 0.1);
 }
 
 html {
@@ -208,7 +209,7 @@ img {
   display: block;
   max-width: 100%;
   border: 1px solid var(--accent);
-  border-radius: var(--radius);
+  border-radius: var(--radius) var(--radius) 0 0;
   padding: 8px;
   overflow: hidden;
 }
@@ -249,13 +250,14 @@ figure video {
 }
 
 figure figcaption {
-  background: var(--accent);
-  color: var(--background);
+  /* background: var(--accent); */
+  background: var(--blockquote-background);
+  color: var(--foreground);
   text-align: center;
   font-size: var(--font-size);
   font-weight: normal;
-  margin-top: -8px;
-  padding: 0 8px;
+  margin-top: 0px;
+  padding: 0px 8px;
   border-radius: 0 0 var(--radius) var(--radius);
 }
 
@@ -362,7 +364,8 @@ blockquote {
   border-top: 1px solid var(--accent);
   border-bottom: 1px solid var(--accent);
   margin: 0;
-  padding: 25px;
+  padding: 15px 10px 15px 35px;
+  background-color: var(--blockquote-background);
 }
 
 blockquote::before {

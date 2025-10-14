@@ -32,25 +32,27 @@ We can also think of it as:
 
 In our example, `q=2` is the maximum number of times we can fit `b` into `a` without going over. And the remainder (to reach the value of a) is `r=1`. This can be seen in the below figure:
 
-{{<figure src="/img/general/ext_euclid_alg/modulus_explain_1.png" caption="Visual Representation"  >}}
+{{<figure src="/img/general/ext_euclid_alg/modulus_explain_1.png" position=center caption="Visual Representation">}}
 
 This gives the following relation: \[ a = bq + r \]
 
 ## Euclidian Algorithm
-
+  
 The Euclidian algorithm is used to get the **Greatest Common Divisor** `d` of 2 integers `a` and `b` (ie. the biggest number that divides both `a` and `b`).
 
 \[ d = gcd(a,b) \]
 
 In order to find the gcd, the algorithm relies on the following claim:
 
-if `a` and `b` are both divisible by `d` then `r` which is equal to `a mod b` is also divisible by `d`
+> if `a` and `b` are both divisible by `d`, then `r = a mod b` is also divisible by `d`
 
 but how can we prove it ?
 
-#### Approach 1: math
+**Approach 1: math**
 
-What we know is that both `a` and `b` are divisible by `d`. And we are trying to prove that `r = a mod b` is also divisible by `d`.
+What we know: both `a` and `b` are divisible by `d`.
+
+What we are trying to prove: `r = a mod b` is also divisible by `d`.
 
 
 > **Info** \
@@ -73,15 +75,15 @@ $$
 
 `r` can be written as an integer (`n-mq`) times `d`, therefore `r` is divisible by `d`.
 
-#### Approach 2: visual intuition
+**Approach 2: visual intuition**
 
 In this approach, we need to think of `x` being divisible by `y` as `x` being made of `n` blocks of size `y` (x, y, n integers).
 
-{{<figure src="/img/general/ext_euclid_alg/blocks_illustration.png" caption="Blocks illustration">}}
+{{<figure src="/img/general/ext_euclid_alg/blocks_illustration.png" position=center caption="Blocks illustration">}}
 
 In the above figure, we see that `a` is made of `n` blocks of size `d` and `b` is made of `m` blocks of size `d`. This is the same as `a=n*d` and `b=m*d`
 
-In this illustration, we can see that the remainder `r` will always be made up of **whole** number of blocks of size `d`, thus will always be divisible by `d`. This is because `r` is what remains when you substract `b` "`q` times" from `a` (ie. `r = a - bq`) and since `a` and `b` are made of the same unit blocks, naturally the remainder will also be the same.
+In this illustration, we can see that the remainder `r` will always be made up of a **whole** number of blocks of size `d`, thus will always be divisible by `d`. This is because `r` is what remains when you substract `b` "`q` times" from `a` (ie. `r = a - bq`) and since `a` and `b` are made of the same unit blocks, naturally the remainder will also be the same.
 
 Now coming back to the Euclidian Algorithm.
 
@@ -98,6 +100,8 @@ gcd(a,b) = gcd(a,r) = gcd(b,r)
 $$
 
 This helps a lot in reducing the possibilities, since finding the gcd for smaller numbers is easier that larger ones.
+
+### Implementation
 
 The algorithm will first compute `r = a % b`.
 
@@ -140,7 +144,7 @@ This will be the base case of the recursion.
 
 Now let's try to understand the different steps involved.
 
-{{<figure src="/img/general/ext_euclid_alg/recursion_steps.png" caption="Recursion Steps">}}
+{{<figure src="/img/general/ext_euclid_alg/recursion_steps.png" position=center caption="Recursion Steps">}}
 
 At the start, we are given 2 integers `A0` and `B0` (`A0` > `B0`) and we are trying to find:
 - `d = gcd(A0, B0)`
@@ -182,6 +186,8 @@ $$
 x_{k-1} = y_{k} \\
 y_{k-1} = x - yq_{k-1}
 $$
+
+### Implementation
 
 We now have everything we need to implement the algorithm.
 

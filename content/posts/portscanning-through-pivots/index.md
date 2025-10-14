@@ -55,11 +55,9 @@ It will connect to the specified host with the credentials provided. Upon succes
 
 Once the binary is retrieved it will be executed in memory and the results will be returned on STDOUT.
 
-{{<figure src="/img/general/pscan_through_pivots/tn.png" position=center caption="Port scanning through pivot using sps">}}
+{{<figure src="/img/general/pscan_through_pivots/with_sps.png" position=center caption="Port scanning through pivot using sps">}}
 
 On the above image, we can see that the arrows between the attacker and the pivot are not dashed anymore. This illustrates that we are not sending each single packet (for a single probe) all the way from attacker to target, rather we will send one "big request" to the pivot, which will do the work and returns us back the results.
 
 On the perspective of the attacker, it's like the scan was ran from their machine.
 
-Thanks for reading, you can check out the tool here
--> [SPS](https://github.com/squ4r00t/sps)
