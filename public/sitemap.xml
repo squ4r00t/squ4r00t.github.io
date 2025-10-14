@@ -2,84 +2,84 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>//localhost:1313/posts/ext_euclid_alg/</loc>
+    <loc>http://localhost:1313/posts/ext_euclid_alg/</loc>
     <lastmod>2025-10-12T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/math/</loc>
+    <loc>http://localhost:1313/tags/math/</loc>
     <lastmod>2025-10-12T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/posts/</loc>
+    <loc>http://localhost:1313/posts/</loc>
     <lastmod>2025-10-12T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/python/</loc>
+    <loc>http://localhost:1313/tags/python/</loc>
     <lastmod>2025-10-12T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/</loc>
+    <loc>http://localhost:1313/</loc>
     <lastmod>2025-10-12T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/</loc>
+    <loc>http://localhost:1313/tags/</loc>
     <lastmod>2025-10-12T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/networking/</loc>
+    <loc>http://localhost:1313/tags/networking/</loc>
     <lastmod>2025-09-26T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/pivoting/</loc>
+    <loc>http://localhost:1313/tags/pivoting/</loc>
     <lastmod>2025-09-26T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/port_scanning/</loc>
+    <loc>http://localhost:1313/tags/port_scanning/</loc>
     <lastmod>2025-09-26T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/posts/portscanning-through-pivots/</loc>
+    <loc>http://localhost:1313/posts/portscanning-through-pivots/</loc>
     <lastmod>2025-09-26T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/tool/</loc>
+    <loc>http://localhost:1313/tags/tool/</loc>
     <lastmod>2025-09-26T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/csrf/</loc>
+    <loc>http://localhost:1313/tags/csrf/</loc>
     <lastmod>2025-05-10T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/dbus/</loc>
+    <loc>http://localhost:1313/tags/dbus/</loc>
     <lastmod>2025-05-10T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/hard/</loc>
+    <loc>http://localhost:1313/tags/hard/</loc>
     <lastmod>2025-05-10T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/htb/</loc>
+    <loc>http://localhost:1313/tags/htb/</loc>
     <lastmod>2025-05-10T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/htb/oouch/</loc>
+    <loc>http://localhost:1313/htb/oouch/</loc>
     <lastmod>2025-05-10T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/htb/</loc>
+    <loc>http://localhost:1313/htb/</loc>
     <lastmod>2025-05-10T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/linux/</loc>
+    <loc>http://localhost:1313/tags/linux/</loc>
     <lastmod>2025-05-10T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/oauth2/</loc>
+    <loc>http://localhost:1313/tags/oauth2/</loc>
     <lastmod>2025-05-10T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/uwsgi/</loc>
+    <loc>http://localhost:1313/tags/uwsgi/</loc>
     <lastmod>2025-05-10T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/7z_privesc/</loc>
+    <loc>http://localhost:1313/tags/7z_privesc/</loc>
     <lastmod>2025-04-30T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/htb/ctf/</loc>
+    <loc>http://localhost:1313/htb/ctf/</loc>
     <lastmod>2025-04-30T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/insane/</loc>
+    <loc>http://localhost:1313/tags/insane/</loc>
     <lastmod>2025-04-30T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/ldap_injection/</loc>
+    <loc>http://localhost:1313/tags/ldap_injection/</loc>
     <lastmod>2025-04-30T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/otp_bypass/</loc>
+    <loc>http://localhost:1313/tags/otp_bypass/</loc>
     <lastmod>2025-04-30T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/tags/stoken/</loc>
+    <loc>http://localhost:1313/tags/stoken/</loc>
     <lastmod>2025-04-30T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>//localhost:1313/categories/</loc>
+    <loc>http://localhost:1313/categories/</loc>
   </url>
 </urlset>
