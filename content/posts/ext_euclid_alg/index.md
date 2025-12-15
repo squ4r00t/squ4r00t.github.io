@@ -1,7 +1,7 @@
 +++
 title = "Extended Euclidian Algorithm Explained"
 date = "2025-10-12T00:00:00+00:00"
-tags = ["math", "python"]
+tags = ["math", "algorithm", "python"]
 description = "Explanation and implementation of the extended euclidian algorithm in python"
 math = true
 +++

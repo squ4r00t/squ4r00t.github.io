@@ -100,7 +100,7 @@ pagination.pagerSize = 5
       [languages.en.menu]
         [[languages.en.menu.main]]
           identifier = "htb"
-          name = "HTB Writeups"
+          name = "HTB"
           url = "/htb"
         [[languages.en.menu.main]]
           identifier = "posts"
@@ -108,7 +108,7 @@ pagination.pagerSize = 5
           url = "/posts"
         [[languages.en.menu.main]]
           identifier = "portswigger"
-          name = "Portswigger Labs"
+          name = "Portswigger"
           url = "/portswigger"
 
 

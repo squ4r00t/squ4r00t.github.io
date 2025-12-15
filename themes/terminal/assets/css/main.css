@@ -1,11 +1,11 @@
 :root {
   --background: #000000;
   --foreground: #ffffff;
-  --accent: #00eeff;
+  --accent: #1823E7;
   --font-size: 1.1rem;
   --line-height: 1.54em;
   --radius: 5px;
-  --blockquote-background: rgba(117, 195, 240, 0.1);
+  --blockquote-background: rgba(117, 195, 240, 0.03);
 }
 
 html {
@@ -77,9 +77,9 @@ a {
 }
 
 .header ul li a {
-  background-color: rgba(0, 89, 255, 0.12);
-  border-radius: 5px;
-  padding: 4px;
+  background-color: rgba(0, 100, 255, 0.1);
+  color: #dddddd;
+  padding: 7px;
 }
 
 .header ul {
