@@ -7,7 +7,7 @@ description = "Writeup for the 'Medium' rated machine: Previous"
 
 ## Overview
 
-This machine starts with a nextjs website that is found vulnerable to `CVE-2025-29927`. Exploiting this, we are to bypass authentication and access an api endpoint that allows us to read local files on the server. This is leveraged to retrieve the password of the user jeremy and login to the box. This user is able to run the terraform binary with sudo, this can be exploited in order to get root access to the box.
+This machine starts with a nextjs website that is found to be vulnerable to `CVE-2025-29927`. Exploiting this, we are able to bypass authentication and access an api endpoint that allows us to read local files on the server. This is leveraged to retrieve the password of the user jeremy and login to the box. This user is able to run the terraform binary with sudo, this can be exploited in order to get root access to the box.
 
 ## Port Scanning
 
@@ -69,7 +69,7 @@ To set the header, we can use Burp Match & Replace, or [this extension](https://
 
 {{<figure src="/img/htb/previous/setting_subreq_header.png" position=center caption="Setting the x-middleware-subrequest header with the firefox extension">}}
 
-After setting the header, if we go back to the homepage and click started, we are directed to `/docs` without needing to authenticate:
+After setting the header, if we go back to the homepage and click "Get started", we are directed to `/docs` without needing to authenticate:
 
 {{<figure src="/img/htb/previous/got_to_docs.png" position=center caption="Authentication Bypass successful">}}
 
