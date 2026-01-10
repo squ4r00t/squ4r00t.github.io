@@ -10,10 +10,10 @@
     <atom:link href="http://localhost:1313/tags/terraform/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>HTB - Previous</title>
-      <link>http://localhost:1313/htb/previous/</link>
+      <link>http://localhost:1313/writeups/previous/</link>
       <pubDate>Fri, 09 Jan 2026 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/htb/previous/</guid>
-      <description>Overview This machine starts with a nextjs website that is found vulnerable to CVE-2025-29927. Exploiting this, we are to bypass authentication and access an api endpoint that allows us to read local files on the server. This is leveraged to retrieve the password of the user jeremy and login to the box. This user is able to run the terraform binary with sudo. Exploiting this, we are able to get root access to the box.</description>
+      <guid>http://localhost:1313/writeups/previous/</guid>
+      <description>Overview This machine starts with a nextjs website that is found to be vulnerable to CVE-2025-29927. Exploiting this, we are able to bypass authentication and access an api endpoint that allows us to read local files on the server. This is leveraged to retrieve the password of the user jeremy and login to the box. This user is able to run the terraform binary with sudo, this can be exploited in order to get root access to the box.</description>
     </item>
   </channel>
 </rss>

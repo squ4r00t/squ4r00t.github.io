@@ -10,9 +10,9 @@
     <atom:link href="http://localhost:1313/tags/cache_poisoning/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Portswigger - Cache Poisoning DOM XSS</title>
-      <link>http://localhost:1313/portswigger/cp_dom_xss/</link>
+      <link>http://localhost:1313/writeups/cp_dom_xss/</link>
       <pubDate>Sat, 06 Dec 2025 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/portswigger/cp_dom_xss/</guid>
+      <guid>http://localhost:1313/writeups/cp_dom_xss/</guid>
       <description>Lab Description This lab contains a DOM-based vulnerability that can be exploited as part of a web cache poisoning attack. A user visits the home page roughly once a minute. Note that the cache used by this lab has stricter criteria for deciding which responses are cacheable, so you will need to study the cache behavior closely.&#xA;To solve the lab, poison the cache with a response that executes alert(document.cookie) in the visitor&amp;rsquo;s browser.</description>
     </item>
   </channel>

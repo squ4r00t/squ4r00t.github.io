@@ -10,9 +10,9 @@
     <atom:link href="http://localhost:1313/tags/ldap_injection/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>HTB - CTF</title>
-      <link>http://localhost:1313/htb/ctf/</link>
+      <link>http://localhost:1313/writeups/ctf/</link>
       <pubDate>Wed, 30 Apr 2025 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/htb/ctf/</guid>
+      <guid>http://localhost:1313/writeups/ctf/</guid>
       <description>CTF is an insane difficulty Linux box with a web application using LDAP based authentication. The application is vulnerable to LDAP injection but due to character blacklisting the payloads need to be double URL encoded. After enumeration, a token string is found, which is obtained using boolean injection. Using the token an OTP can be generated, which allows for execution of commands. After establishing a foothold, a cron can be exploited to gain sensitive information.</description>
     </item>
   </channel>

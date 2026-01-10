@@ -10,10 +10,10 @@
     <atom:link href="http://localhost:1313/tags/middleware/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>HTB - Previous</title>
-      <link>http://localhost:1313/htb/previous/</link>
+      <link>http://localhost:1313/writeups/previous/</link>
       <pubDate>Fri, 09 Jan 2026 00:00:00 +0000</pubDate>
-      <guid>http://localhost:1313/htb/previous/</guid>
-      <description>Overview Web 80 Navigating to http://10.129.242.162 redirects us to previous.htb&#xA;Redirected to previous.htb&#xA;Let&amp;rsquo;s add it to our host file and go back again:&#xA;Homepage&#xA;Based on the information on this page, the website seems to make use of middleware. Clicking on &amp;ldquo;Get Started&amp;rdquo; presents us with a login form:&#xA;Login Form&#xA;The X-Powered-By header indicates that the server is running Next.js:&#xA;Running Next.js&#xA;So far we know that:&#xA;The server is running Next.</description>
+      <guid>http://localhost:1313/writeups/previous/</guid>
+      <description>Overview This machine starts with a nextjs website that is found to be vulnerable to CVE-2025-29927. Exploiting this, we are able to bypass authentication and access an api endpoint that allows us to read local files on the server. This is leveraged to retrieve the password of the user jeremy and login to the box. This user is able to run the terraform binary with sudo, this can be exploited in order to get root access to the box.</description>
     </item>
   </channel>
 </rss>

@@ -99,18 +99,13 @@ pagination.pagerSize = 5
 
       [languages.en.menu]
         [[languages.en.menu.main]]
-          identifier = "htb"
-          name = "HTB"
-          url = "/htb"
+          identifier = "writeups"
+          name = "writeups"
+          url = "/writeups"
         [[languages.en.menu.main]]
-          identifier = "posts"
-          name = "Blog"
+          identifier = "blog"
+          name = "blog"
           url = "/posts"
-        [[languages.en.menu.main]]
-          identifier = "portswigger"
-          name = "Portswigger"
-          url = "/portswigger"
-
 
 [markup]
   [markup.goldmark]
