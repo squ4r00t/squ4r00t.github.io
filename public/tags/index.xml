@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Tags on squ4r00t&#39;s</title>
+    <link>http://localhost:1313/tags/</link>
+    <description>Recent content in Tags on squ4r00t&#39;s</description>
+    <generator>Hugo</generator>
+    <language>en</language>
+    <lastBuildDate>Sat, 06 Dec 2025 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://localhost:1313/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Cache_poisoning</title>
+      <link>http://localhost:1313/tags/cache_poisoning/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/tags/cache_poisoning/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Dom_xss</title>
+      <link>http://localhost:1313/tags/dom_xss/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/tags/dom_xss/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Portswigger</title>
+      <link>http://localhost:1313/tags/portswigger/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/tags/portswigger/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Xss</title>
+      <link>http://localhost:1313/tags/xss/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/tags/xss/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Algorithm</title>
+      <link>http://localhost:1313/tags/algorithm/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/tags/algorithm/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Math</title>
+      <link>http://localhost:1313/tags/math/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/tags/math/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Python</title>
+      <link>http://localhost:1313/tags/python/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/tags/python/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Networking</title>
+      <link>http://localhost:1313/tags/networking/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/tags/networking/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Pivoting</title>
+      <link>http://localhost:1313/tags/pivoting/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/tags/pivoting/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Port_scanning</title>
+      <link>http://localhost:1313/tags/port_scanning/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/tags/port_scanning/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Tool</title>
+      <link>http://localhost:1313/tags/tool/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/tags/tool/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Csrf</title>
+      <link>http://localhost:1313/tags/csrf/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/tags/csrf/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Dbus</title>
+      <link>http://localhost:1313/tags/dbus/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/tags/dbus/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Hard</title>
+      <link>http://localhost:1313/tags/hard/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/tags/hard/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Htb</title>
+      <link>http://localhost:1313/tags/htb/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/tags/htb/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Linux</title>
+      <link>http://localhost:1313/tags/linux/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/tags/linux/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Oauth2</title>
+      <link>http://localhost:1313/tags/oauth2/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/tags/oauth2/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Uwsgi</title>
+      <link>http://localhost:1313/tags/uwsgi/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/tags/uwsgi/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>7z_privesc</title>
+      <link>http://localhost:1313/tags/7z_privesc/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/tags/7z_privesc/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Insane</title>
+      <link>http://localhost:1313/tags/insane/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/tags/insane/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Ldap_injection</title>
+      <link>http://localhost:1313/tags/ldap_injection/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/tags/ldap_injection/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Otp_bypass</title>
+      <link>http://localhost:1313/tags/otp_bypass/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/tags/otp_bypass/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>Stoken</title>
+      <link>http://localhost:1313/tags/stoken/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>http://localhost:1313/tags/stoken/</guid>
+      <description></description>
+    </item>
+  </channel>
+</rss>
