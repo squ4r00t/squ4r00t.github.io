@@ -3,8 +3,9 @@ title = "Extended Euclidian Algorithm Explained"
 date = "2025-10-12T00:00:00+00:00"
 tags = ["math", "algorithm", "python"]
 description = "Explanation and implementation of the extended euclidian algorithm in python"
-math = true
 +++
+
+{{< katex >}}
 
 In this blog post, I explain the Euclidian Algorithm (+extended) and how to implement them in python.
 
