@@ -56,7 +56,7 @@ What we know: both `a` and `b` are divisible by `d`.
 What we are trying to prove: `r = a mod b` is also divisible by `d`.
 
 
-> **Info** \
+> [!Info]
 > An integer `x` being divisible by another integer `y` means that `x` can be written: $$ x = ny $$ where `n` is also an integer.
 
 Knowing this, `a` and `b` could be written:

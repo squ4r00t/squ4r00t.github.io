@@ -2,33 +2,33 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Posts on squ4r00t&#39;s</title>
-    <link>//localhost:1313/posts/</link>
+    <link>http://localhost:1313/posts/</link>
     <description>Recent content in Posts on squ4r00t&#39;s</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <managingEditor>youremail@example.com (squ4r00t)</managingEditor>
     <webMaster>youremail@example.com (squ4r00t)</webMaster>
     <copyright>© 2026 squ4r00t</copyright>
-    <lastBuildDate>Sun, 12 Oct 2025 00:00:00 +0000</lastBuildDate><atom:link href="//localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 12 Oct 2025 00:00:00 +0000</lastBuildDate><atom:link href="http://localhost:1313/posts/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>Extended Euclidian Algorithm Explained</title>
-      <link>//localhost:1313/posts/ext_euclid_alg/</link>
+      <link>http://localhost:1313/posts/ext_euclid_alg/</link>
       <pubDate>Sun, 12 Oct 2025 00:00:00 +0000</pubDate>
       <author>youremail@example.com (squ4r00t)</author>
-      <guid>//localhost:1313/posts/ext_euclid_alg/</guid>
+      <guid>http://localhost:1313/posts/ext_euclid_alg/</guid>
       <description></description>
-      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="//localhost:1313/posts/ext_euclid_alg/cover.png" />
+      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/posts/ext_euclid_alg/cover.png" />
     </item>
     
     <item>
       <title>SPS: A convenient way of scanning through network pivots</title>
-      <link>//localhost:1313/posts/portscanning-through-pivots/</link>
+      <link>http://localhost:1313/posts/portscanning-through-pivots/</link>
       <pubDate>Fri, 26 Sep 2025 00:00:00 +0000</pubDate>
       <author>youremail@example.com (squ4r00t)</author>
-      <guid>//localhost:1313/posts/portscanning-through-pivots/</guid>
+      <guid>http://localhost:1313/posts/portscanning-through-pivots/</guid>
       <description></description>
-      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="//localhost:1313/posts/portscanning-through-pivots/cover.png" />
+      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/posts/portscanning-through-pivots/cover.png" />
     </item>
     
   </channel>

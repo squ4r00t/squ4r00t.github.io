@@ -2,23 +2,23 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Ldap_injection on squ4r00t&#39;s</title>
-    <link>//localhost:1313/tags/ldap_injection/</link>
+    <link>http://localhost:1313/tags/ldap_injection/</link>
     <description>Recent content in Ldap_injection on squ4r00t&#39;s</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <managingEditor>youremail@example.com (squ4r00t)</managingEditor>
     <webMaster>youremail@example.com (squ4r00t)</webMaster>
     <copyright>© 2026 squ4r00t</copyright>
-    <lastBuildDate>Wed, 30 Apr 2025 00:00:00 +0000</lastBuildDate><atom:link href="//localhost:1313/tags/ldap_injection/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 30 Apr 2025 00:00:00 +0000</lastBuildDate><atom:link href="http://localhost:1313/tags/ldap_injection/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>HTB - CTF</title>
-      <link>//localhost:1313/writeups/ctf/</link>
+      <link>http://localhost:1313/writeups/ctf/</link>
       <pubDate>Wed, 30 Apr 2025 00:00:00 +0000</pubDate>
       <author>youremail@example.com (squ4r00t)</author>
-      <guid>//localhost:1313/writeups/ctf/</guid>
+      <guid>http://localhost:1313/writeups/ctf/</guid>
       <description></description>
-      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="//localhost:1313/writeups/ctf/cover.png" />
+      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/writeups/ctf/cover.png" />
     </item>
     
   </channel>
