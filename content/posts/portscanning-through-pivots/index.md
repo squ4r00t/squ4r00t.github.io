@@ -1,7 +1,7 @@
 +++
-title = "SPS: A convenient way of scanning through network pivots"
+title = "Convenient Port Scanning through Network Pivots"
 date = "2025-09-26T00:00:00+00:00"
-tags = ["networking", "port_scanning", "pivoting", "tool"]
+tags = ["networking", "port-scanning", "pivoting", "tool"]
 description = "Efficient port scanning when pivoting into a network."
 +++
 
@@ -16,7 +16,7 @@ This method, although effective in terms of packet transmission (the scanning tr
 
 [sps (Simple Port Scanner)](https://github.com/squ4r00t/sps) is a tool that tries to circumvent these hurdles by giving us the ability to specify on which host we want to run the port scan from.
 
-## Quick Reminder on Pivoting
+## Pivoting Primer
 
 Pivoting is a technique used to access internal networks that are not directly reachable by the intermediary of pivots. A pivot host is a machine that is both in our network and the internal network that we want to access:
 

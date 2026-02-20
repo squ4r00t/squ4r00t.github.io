@@ -6,16 +6,26 @@
     <description>Recent content in Portswigger on squ4r00t&#39;s</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <managingEditor>youremail@example.com (squ4r00t)</managingEditor>
-    <webMaster>youremail@example.com (squ4r00t)</webMaster>
+    <managingEditor>squ4r00t@tuta.io (squ4r00t)</managingEditor>
+    <webMaster>squ4r00t@tuta.io (squ4r00t)</webMaster>
     <copyright>© 2026 squ4r00t</copyright>
-    <lastBuildDate>Sat, 06 Dec 2025 00:00:00 +0000</lastBuildDate><atom:link href="http://localhost:1313/tags/portswigger/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 20 Feb 2026 00:00:00 +0000</lastBuildDate><atom:link href="http://localhost:1313/tags/portswigger/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
-      <title>Portswigger - Cache Poisoning DOM XSS</title>
+      <title>Portswigger - Cache Poisoning with an Unkeyed Header</title>
+      <link>http://localhost:1313/writeups/cp_unkeyed_header/</link>
+      <pubDate>Fri, 20 Feb 2026 00:00:00 +0000</pubDate>
+      <author>squ4r00t@tuta.io (squ4r00t)</author>
+      <guid>http://localhost:1313/writeups/cp_unkeyed_header/</guid>
+      <description></description>
+      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/writeups/cp_unkeyed_header/cover.png" />
+    </item>
+    
+    <item>
+      <title>Portswigger - Cache Poisoning to DOM XSS</title>
       <link>http://localhost:1313/writeups/cp_dom_xss/</link>
       <pubDate>Sat, 06 Dec 2025 00:00:00 +0000</pubDate>
-      <author>youremail@example.com (squ4r00t)</author>
+      <author>squ4r00t@tuta.io (squ4r00t)</author>
       <guid>http://localhost:1313/writeups/cp_dom_xss/</guid>
       <description></description>
       <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/writeups/cp_dom_xss/cover.png" />

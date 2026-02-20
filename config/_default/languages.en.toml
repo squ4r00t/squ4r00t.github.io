@@ -16,11 +16,11 @@ title = "squ4r00t's"
 
 [params.author]
   name = "squ4r00t"
-  email = "youremail@example.com"
+  email = "squ4r00t@tuta.io"
   image = "img/00.png"
 #   imageQuality = 96
-  headline = "Offensive Security Blog"
-  bio = "hackerr"
+  headline = "Writeups & Offensive Security"
+  bio = "red teamer"
   links = [
     { hackthebox = "https://app.hackthebox.com/users/1634933" },
 #     { email = "mailto:hello@your_domain.com" },

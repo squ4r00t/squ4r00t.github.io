@@ -1,8 +1,10 @@
 +++
-title = "Portswigger - Cache Poisoning DOM XSS"
+title = "Portswigger - Cache Poisoning to DOM XSS"
 date = "2025-12-06T00:00:00+00:00"
 tags = ["portswigger", "cache_poisoning", "dom_xss", "xss"]
 description = "In this lab, we exploit a cache poisoning vulnerability to distribute a DOM XSS to other users"
+series = ["Web Cache Poisoning"]
+series_order = 10
 +++
 
 ## Lab Description
@@ -10,6 +12,8 @@ description = "In this lab, we exploit a cache poisoning vulnerability to distri
  This lab contains a DOM-based vulnerability that can be exploited as part of a web cache poisoning attack. A user visits the home page roughly once a minute. Note that the cache used by this lab has stricter criteria for deciding which responses are cacheable, so you will need to study the cache behavior closely.
 
 To solve the lab, poison the cache with a response that executes `alert(document.cookie)` in the visitor's browser. 
+
+Access [here](https://portswigger.net/web-security/web-cache-poisoning/exploiting-design-flaws/lab-web-cache-poisoning-to-exploit-a-dom-vulnerability-via-a-cache-with-strict-cacheability-criteria)
 
 ## Finding an unkeyed input
 

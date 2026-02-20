@@ -6,16 +6,26 @@
     <description>Recent content in Htb on squ4r00t&#39;s</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <managingEditor>youremail@example.com (squ4r00t)</managingEditor>
-    <webMaster>youremail@example.com (squ4r00t)</webMaster>
+    <managingEditor>squ4r00t@tuta.io (squ4r00t)</managingEditor>
+    <webMaster>squ4r00t@tuta.io (squ4r00t)</webMaster>
     <copyright>© 2026 squ4r00t</copyright>
-    <lastBuildDate>Fri, 09 Jan 2026 00:00:00 +0000</lastBuildDate><atom:link href="http://localhost:1313/tags/htb/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 18 Feb 2026 00:00:00 +0000</lastBuildDate><atom:link href="http://localhost:1313/tags/htb/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>HTB Challenge - Dusty Alleys</title>
+      <link>http://localhost:1313/private/htb-dustyalleys/</link>
+      <pubDate>Wed, 18 Feb 2026 00:00:00 +0000</pubDate>
+      <author>squ4r00t@tuta.io (squ4r00t)</author>
+      <guid>http://localhost:1313/private/htb-dustyalleys/</guid>
+      <description></description>
+      
+    </item>
     
     <item>
       <title>HTB - Previous</title>
       <link>http://localhost:1313/writeups/previous/</link>
       <pubDate>Fri, 09 Jan 2026 00:00:00 +0000</pubDate>
-      <author>youremail@example.com (squ4r00t)</author>
+      <author>squ4r00t@tuta.io (squ4r00t)</author>
       <guid>http://localhost:1313/writeups/previous/</guid>
       <description></description>
       <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/writeups/previous/cover.png" />
@@ -25,7 +35,7 @@
       <title>HTB - Oouch</title>
       <link>http://localhost:1313/writeups/oouch/</link>
       <pubDate>Sat, 10 May 2025 00:00:00 +0000</pubDate>
-      <author>youremail@example.com (squ4r00t)</author>
+      <author>squ4r00t@tuta.io (squ4r00t)</author>
       <guid>http://localhost:1313/writeups/oouch/</guid>
       <description></description>
       <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/writeups/oouch/cover.png" />
@@ -35,7 +45,7 @@
       <title>HTB - CTF</title>
       <link>http://localhost:1313/writeups/ctf/</link>
       <pubDate>Wed, 30 Apr 2025 00:00:00 +0000</pubDate>
-      <author>youremail@example.com (squ4r00t)</author>
+      <author>squ4r00t@tuta.io (squ4r00t)</author>
       <guid>http://localhost:1313/writeups/ctf/</guid>
       <description></description>
       <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/writeups/ctf/cover.png" />

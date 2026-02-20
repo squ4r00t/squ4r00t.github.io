@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Port-Scanning on squ4r00t&#39;s</title>
+    <link>http://localhost:1313/tags/port-scanning/</link>
+    <description>Recent content in Port-Scanning on squ4r00t&#39;s</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <managingEditor>squ4r00t@tuta.io (squ4r00t)</managingEditor>
+    <webMaster>squ4r00t@tuta.io (squ4r00t)</webMaster>
+    <copyright>© 2026 squ4r00t</copyright>
+    <lastBuildDate>Fri, 26 Sep 2025 00:00:00 +0000</lastBuildDate><atom:link href="http://localhost:1313/tags/port-scanning/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Convenient Port Scanning through Network Pivots</title>
+      <link>http://localhost:1313/posts/portscanning-through-pivots/</link>
+      <pubDate>Fri, 26 Sep 2025 00:00:00 +0000</pubDate>
+      <author>squ4r00t@tuta.io (squ4r00t)</author>
+      <guid>http://localhost:1313/posts/portscanning-through-pivots/</guid>
+      <description></description>
+      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/posts/portscanning-through-pivots/cover.png" />
+    </item>
+    
+  </channel>
+</rss>
