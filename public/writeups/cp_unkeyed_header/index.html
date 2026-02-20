@@ -21,7 +21,7 @@
 
   
   
-    <meta name="description" content="In this lab, we exploit a cache poisoning vulnerability via an unkeyed header">
+    <meta name="description" content="In this lab, we exploit a cache poisoning vulnerability via the `X-Forwarded-Host` header used to dynamically generate links to import resources">
   
   
     <meta name="keywords" content="portswigger,cache_poisoning,">
@@ -55,7 +55,7 @@
   <meta property="og:url" content="http://localhost:1313/writeups/cp_unkeyed_header/">
   <meta property="og:site_name" content="squ4r00t&#39;s">
   <meta property="og:title" content="Portswigger - Cache Poisoning with an Unkeyed Header">
-  <meta property="og:description" content="In this lab, we exploit a cache poisoning vulnerability via an unkeyed header">
+  <meta property="og:description" content="In this lab, we exploit a cache poisoning vulnerability via the `X-Forwarded-Host` header used to dynamically generate links to import resources">
   <meta property="og:locale" content="en">
   <meta property="og:type" content="article">
     <meta property="article:section" content="writeups">
@@ -70,7 +70,7 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="http://localhost:1313/writeups/cp_unkeyed_header/cover.png">
   <meta name="twitter:title" content="Portswigger - Cache Poisoning with an Unkeyed Header">
-  <meta name="twitter:description" content="In this lab, we exploit a cache poisoning vulnerability via an unkeyed header">
+  <meta name="twitter:description" content="In this lab, we exploit a cache poisoning vulnerability via the `X-Forwarded-Host` header used to dynamically generate links to import resources">
 
   
   
@@ -220,7 +220,7 @@
     "articleSection": "Writeups",
     "name": "Portswigger - Cache Poisoning with an Unkeyed Header",
     "headline": "Portswigger - Cache Poisoning with an Unkeyed Header",
-    "description": "In this lab, we exploit a cache poisoning vulnerability via an unkeyed header",
+    "description": "In this lab, we exploit a cache poisoning vulnerability via the \u0060X-Forwarded-Host\u0060 header used to dynamically generate links to import resources",
     "inLanguage": "en",
     "url" : "http://localhost:1313/writeups/cp_unkeyed_header/",
     "author" : {
@@ -236,7 +236,7 @@
     "keywords": ["portswigger","cache_poisoning"],
     
     "mainEntityOfPage": "true",
-    "wordCount": "58"
+    "wordCount": "223"
   }]
   </script>
 
@@ -626,7 +626,7 @@
   <div class="flex flex-row flex-wrap items-center">
     
     
-      <time datetime="2026-02-20T00:00:00&#43;00:00">20 February 2026</time><span class="px-2 text-primary-500">&middot;</span><span>58 words</span><span class="px-2 text-primary-500">&middot;</span><span title="Reading time">1 min</span>
+      <time datetime="2026-02-20T00:00:00&#43;00:00">20 February 2026</time><span class="px-2 text-primary-500">&middot;</span><span>223 words</span><span class="px-2 text-primary-500">&middot;</span><span title="Reading time">2 mins</span>
     
 
     
@@ -768,6 +768,8 @@
     <nav id="TableOfContents">
   <ul>
     <li><a href="#lab-description">Lab Description</a></li>
+    <li><a href="#finding-unkeyed-inputs">Finding Unkeyed Inputs</a></li>
+    <li><a href="#exploitation">Exploitation</a></li>
   </ul>
 </nav>
   </div>
@@ -782,6 +784,8 @@
     <nav id="TableOfContents">
   <ul>
     <li><a href="#lab-description">Lab Description</a></li>
+    <li><a href="#finding-unkeyed-inputs">Finding Unkeyed Inputs</a></li>
+    <li><a href="#exploitation">Exploitation</a></li>
   </ul>
 </nav>
   </div>
@@ -967,6 +971,61 @@
 </svg>
 </span></div>
       </summary><div class="admonition-content mt-3 text-base leading-relaxed text-inherit"><p>This lab supports the <code>X-Forwarded-Host</code> header.</p></div></details><p>Access <a href="https://portswigger.net/web-security/web-cache-poisoning/exploiting-design-flaws/lab-web-cache-poisoning-with-an-unkeyed-header"  target="_blank" rel="noreferrer">here</a></p>
+
+<h2 class="relative group">Finding Unkeyed Inputs
+    <div id="finding-unkeyed-inputs" class="anchor"></div>
+    
+    <span
+        class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100 select-none">
+        <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#finding-unkeyed-inputs" aria-label="Anchor">#</a>
+    </span>
+    
+</h2>
+<p>The first step is to find unkeyed headers. For this we can use the <a href="" >param miner</a> extension in Burp Suite. After running the extension to find unkeyed headers on the home page, we see that <code>X-Forwarded-Host</code> is an unkeyed header:</p>
+
+<figure>
+      <img class="my-0 rounded-md" src="/img/portswigger/cp_unkeyed_header/unkeyed_header.png" alt="" />
+  
+  <figcaption>X-Forwarded-Host header found by Param Miner</figcaption>
+  </figure>
+<p>To confirm this, we can send a request containing the <code>X-Forwarded-Host</code> header set to an arbitrary value and see where it is reflected in the response:</p>
+
+<figure>
+      <img class="my-0 rounded-md" src="/img/portswigger/cp_unkeyed_header/confirm-unkeyed-header.png" alt="" />
+  
+  <figcaption>Confirming that X-Forwarded-Host is reflected</figcaption>
+  </figure>
+<p>We can see that its value is used to generate the link of the <code>tracking.js</code> script.</p>
+
+<h2 class="relative group">Exploitation
+    <div id="exploitation" class="anchor"></div>
+    
+    <span
+        class="absolute top-0 w-6 transition-opacity opacity-0 -start-6 not-prose group-hover:opacity-100 select-none">
+        <a class="text-primary-300 dark:text-neutral-700 !no-underline" href="#exploitation" aria-label="Anchor">#</a>
+    </span>
+    
+</h2>
+<p>To exploit this, we can host a malicious <code>tracking.js</code> script on our exploit server, and poison the cache with the hostname of the exploit server so that the script is fetched from there.</p>
+
+<figure>
+      <img class="my-0 rounded-md" src="/img/portswigger/cp_unkeyed_header/hosting-malicious-script.png" alt="" />
+  
+  <figcaption>Configuring exploit server to host malicious script</figcaption>
+  </figure>
+
+<figure>
+      <img class="my-0 rounded-md" src="/img/portswigger/cp_unkeyed_header/poisoning-cache-with-exploit-server-hostname.png" alt="" />
+  
+  <figcaption>Poisoning the cache with the exploit server&rsquo;s hostname</figcaption>
+  </figure>
+<p>Now if we go back to the homepage, we can see that we solved the lab:</p>
+
+<figure>
+      <img class="my-0 rounded-md" src="/img/portswigger/cp_unkeyed_header/lab-solved.png" alt="" />
+  
+  <figcaption>Lab solved!</figcaption>
+  </figure>
 
           
           
