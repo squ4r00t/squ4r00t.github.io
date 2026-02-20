@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Portswigger - Web Cache Poisoning on squ4r00t&#39;s</title>
+    <link>http://localhost:1313/series/portswigger---web-cache-poisoning/</link>
+    <description>Recent content in Portswigger - Web Cache Poisoning on squ4r00t&#39;s</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <managingEditor>squ4r00t@tuta.io (squ4r00t)</managingEditor>
+    <webMaster>squ4r00t@tuta.io (squ4r00t)</webMaster>
+    <copyright>© 2026 squ4r00t</copyright>
+    <lastBuildDate>Fri, 20 Feb 2026 00:00:00 +0000</lastBuildDate><atom:link href="http://localhost:1313/series/portswigger---web-cache-poisoning/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Portswigger - Cache Poisoning with an Unkeyed Cookie</title>
+      <link>http://localhost:1313/writeups/cp_unkeyed_cookie/</link>
+      <pubDate>Fri, 20 Feb 2026 00:00:00 +0000</pubDate>
+      <author>squ4r00t@tuta.io (squ4r00t)</author>
+      <guid>http://localhost:1313/writeups/cp_unkeyed_cookie/</guid>
+      <description></description>
+      <media:content xmlns:media="http://search.yahoo.com/mrss/" url="http://localhost:1313/writeups/cp_unkeyed_cookie/cover.png" />
+    </item>
+    
+  </channel>
+</rss>
