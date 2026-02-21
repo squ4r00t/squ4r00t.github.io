@@ -1,6 +1,6 @@
 +++
 title = "Portswigger - Cache Poisoning with an Unkeyed Cookie"
-date = "2026-02-20T00:00:00+00:00"
+date = "2026-02-21T00:00:00+00:00"
 tags = ["portswigger", "cache_poisoning"]
 description = "In this lab, we exploit a cache poisoning vulnerability via the `X-Forwarded-Host` header used to dynamically generate part of the response"
 series = ["Web Cache Poisoning"]

@@ -3,19 +3,31 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
 
   <url>
-    <loc>http://localhost:1313/writeups/cp_unkeyed_header/</loc>
-    <lastmod>2026-02-20T00:00:00+00:00</lastmod>
+    <loc>http://localhost:1313/writeups/cp_unkeyed_cookie/</loc>
+    <lastmod>2026-02-21T00:00:00+00:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>http://localhost:1313/writeups/cp_multiple_headers/</loc>
+    <lastmod>2026-02-21T00:00:00+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>http://localhost:1313/</loc>
-    <lastmod>2026-02-20T00:00:00+00:00</lastmod>
+    <lastmod>2026-02-21T00:00:00+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
     <loc>http://localhost:1313/writeups/</loc>
+    <lastmod>2026-02-21T00:00:00+00:00</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>http://localhost:1313/writeups/cp_unkeyed_header/</loc>
     <lastmod>2026-02-20T00:00:00+00:00</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.5</priority>
